@@ -4,6 +4,12 @@ from PIL import Image, ImageTk
 from tkinter import ttk
 from tkcalendar import DateEntry
 
+from Model.customer import *
+from Model.user import *
+
+from Controller.customer_registration_dbms import *
+from Controller.login_dbms import *
+
 class MainPage:
     def __init__(self, window):
         self.window = window
@@ -79,13 +85,13 @@ class MainPage:
         self.username_label.place(x=120, y=200)
 
         self.username_entry = Entry(self.inner_login_frame, highlightthickness=0, relief=FLAT, bg='#040404',
-                                    fg='#6b6a69', font=('yu gothic ui', 12, 'bold'))
+                                    fg='white',insertbackground="white", font=('yu gothic ui', 12, 'bold'))
         self.username_entry.place(x=145, y=235, width=250)
 
         self.username_line = Canvas(self.inner_login_frame, width=250, height=2.0, bg='#bdb9b1', highlightthickness=0)
         self.username_line.place(x=145, y=262, width=250)
 
-        self.password_image = Image.open("Images/password.png")
+        self.password_image = Image.open("Images/password1.png")
         photo = ImageTk.PhotoImage(self.password_image)
 
         self.password_image_label = Label(self.inner_login_frame, image=photo, bg='#040405')
@@ -96,9 +102,28 @@ class MainPage:
                                     font=('yu gothic ui', 15, 'bold'))
         self.password_label.place(x=120, y=280)
 
-        self.password_entry = Entry(self.inner_login_frame, highlightthickness=0, relief=FLAT, bg='#040404',
-                                    fg='#6b6a69', font=('yu gothic ui', 12, 'bold'))
-        self.password_entry.place(x=145, y=315, width=250)
+        self.password_entry = Entry(self.inner_login_frame, show='*', relief=FLAT, bg='#040405',
+                                    fg='white', insertbackground="white", font=('yu gothic ui', 12, 'bold'))
+
+        self.password_entry.place(x=145, y=315, width=220)
+
+        self.hide_password_image = Image.open("Images/hide.png")
+        hide_photo = ImageTk.PhotoImage(self.hide_password_image)
+
+        self.hide_password_image_label = Label(self.inner_login_frame, image=hide_photo, bg='white', cursor='hand2')
+        self.hide_password_image_label.image = hide_photo
+        self.hide_password_image_label.place(x=370, y=315)
+        self.hide_password_image_label.bind("<Button-1>", self.hide_password)
+
+
+        self.show_password_image = Image.open("Images/show.png")
+        show_photo = ImageTk.PhotoImage(self.show_password_image)
+
+        self.show_password_image_label = Label(self.inner_login_frame, image=show_photo, bg='white',cursor='hand2')
+        self.show_password_image_label.image = show_photo
+        self.show_password_image_label.place(x=370, y=315)
+        self.show_password_image_label.bind("<Button-1>", self.show_password)
+
 
         self.password_line = Canvas(self.inner_login_frame, width=300, height=2.0, bg='#bdb9b1', highlightthickness=0)
         self.password_line.place(x=145, y=342, width=250)
@@ -111,6 +136,7 @@ class MainPage:
         self.login_button = Button(
             self.inner_login_frame,
             text="Login",
+            command=self.login_user,
             font=('Helvetica', 14, 'bold'),
             bg='#3498db',
             fg='white',
@@ -228,7 +254,7 @@ class MainPage:
         self.signup_button = Button(
             self.inner_registration_frame,
             text="Sign Up",
-            # command=self.login,
+            command=self.register_customer,
             font=('Helvetica', 14, 'bold'),
             bg='#3498db',
             fg='white',
@@ -279,8 +305,69 @@ class MainPage:
         registration_page = RegistrationPage(new_window)
         new_window.mainloop()
 
+    def show_password(self, event):
+        self.password_entry.configure(show='')
+        self.show_password_image_label.pack_forget()
+        self.hide_password_image_label.place(x=370, y=315)
+
+    def hide_password(self, event):
+        self.password_entry.configure(show='*')
+        self.hide_password_image_label.pack_forget()
+        self.show_password_image_label.place(x=370, y=315)
+
     def signup(self, event):
         print("Signup option clicked !")
+
+    # to register user
+    def register_customer(self):
+        name = self.name_entry.get()
+        phone_no = self.mobile_entry.get()
+        email = self.email_entry.get()
+        address = self.address_entry.get()
+        date_of_birth = self.dob_entry.get()
+        gender = self.gender_entry.get()
+        password = self.password_entry.get()
+        confirm_password = self.co_password_entry.get()
+
+        if not (name == "" or phone_no == "" or email=="" or address == "" or date_of_birth == "" or gender == "" or password == "" or confirm_password == ""):
+            if password == confirm_password:
+                if len(password) >= 8:
+                    user = User(email= email, password= password,user_type="customer")
+
+                    customer = Customer(name=name, phone_no= phone_no,payment="Online", address= address, date_of_birth = date_of_birth, gender= gender)
+
+                    user_isregistered = register_user(user)
+                    if user_isregistered:
+                        customer_isregistered = register_customer(customer, user)
+                        if customer_isregistered:
+                            messagebox.showinfo("Registration Complete", "Successfully Registered Your Account, You Can Login Now.")
+                            self.inner_registration_frame.pack_forget()
+                            self.login_frame()
+                        else:
+                            messagebox.showerror("Registration ERROR", "Sorry Could't Register Your Account !")
+                else:
+                    messagebox.showwarning("Password ERROR!", "Password Should Be Atleast 8 Character Long !")
+
+            else:
+                messagebox.showwarning("Password ERROR", "Password Didn't Match !")
+
+        else:
+            messagebox.showwarning("Registration Incomplete", "Please Fill All The Details To Register Your Account !")
+
+    # to check the login credentials
+    def login_user(self):
+        email = self.username_entry.get()
+        password = self.password_entry.get()
+
+        if not(email == "" or password == ""):
+            user_is_authenticated = validate_credentials(email, password)
+
+            if user_is_authenticated:
+                messagebox.showinfo("Login Success" , "Successfully Logged In.")
+            else:
+                messagebox.showerror("Invalid Credentials", "Invalid Credentials !")
+        else:
+            messagebox.showwarning("Empty Field", "Please Provide Your Login Credentials !")
 
 
 def page():
