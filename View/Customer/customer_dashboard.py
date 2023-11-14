@@ -1,8 +1,14 @@
 from tkinter import *
 import customtkinter
-from PIL import Image, ImageTk
+from PIL import Image as PILImage, ImageTk
 from datetime import datetime
-from View.Customer.booking_frame import *
+
+from booking_frame import *
+from driver_frame import *
+from payment_frame import *
+from login_activity_frame import *
+from tkinter import messagebox
+from main_page import *
 
 class CustomerDashboard:
     def __init__(self, window):
@@ -20,7 +26,7 @@ class CustomerDashboard:
         self.navbar = Frame(self.window, bg="#2c2c2c", pady=25)
         self.navbar.pack(side="top", fill="x")
 
-        self.taxi_logo = Image.open("Customer/Images/taxi.png")
+        self.taxi_logo = PILImage.open("Images/taxi.png")
         photo = ImageTk.PhotoImage(self.taxi_logo)
 
         self.taxi_logo_label = Label(self.navbar, image=photo, bg='#2c2c2c')
@@ -36,7 +42,7 @@ class CustomerDashboard:
         self.side_bar_frame.pack(side='left',fill = 'y' )
 
         # for clock image
-        clock_image = ImageTk.PhotoImage(Image.open("Customer/Images/clock.png"))
+        clock_image = ImageTk.PhotoImage(PILImage.open("Images/clock.png"))
         self.clock_image_label = Label(self.side_bar_frame, image=clock_image, bg='#3c3c3c', justify=CENTER)
         self.clock_image_label.image = clock_image
         self.clock_image_label.place(x=90, y=20)
@@ -56,7 +62,7 @@ class CustomerDashboard:
         # for profile option
         self.myprofile_label = Label(self.side_bar_frame, text = "Profile",font=(self.font, 17), fg='white', bg='#3c3c3c', cursor='hand2')
         self.myprofile_label.place(x=100, y=205)
-        self.myprofile_label.bind('<Button-1>', lambda event:self.indicator(self.profile_indicator_lbl, self.profile_frame))
+        self.myprofile_label.bind('<Button-1>', lambda event:self.indicator(self.profile_indicator_lbl, self.my_profile_frame))
 
         self.profile_indicator_lbl = Label(self.side_bar_frame, bg="#90EE90", width=0, height=2)
         self.profile_indicator_lbl.place(x=88, y=205)
@@ -73,7 +79,7 @@ class CustomerDashboard:
         # for driver option
         self.driver_label = Label(self.side_bar_frame, text="Driver", font=(self.font, 17), fg='white', bg='#3c3c3c', cursor='hand2')
         self.driver_label.place(x=100, y=365)
-        self.driver_label.bind("<Button-1>", lambda event:self.indicator(self.driver_indicator_lbl))
+        self.driver_label.bind("<Button-1>", lambda event:self.indicator(self.driver_indicator_lbl, self.driver_frame))
 
         self.driver_indicator_lbl = Label(self.side_bar_frame, bg="#3c3c3c", width=0, height=2)
         self.driver_indicator_lbl.place(x=88, y=365)
@@ -81,7 +87,7 @@ class CustomerDashboard:
         # for payment option
         self.payment_label = Label(self.side_bar_frame, text="Payment", font=(self.font, 17), fg='white',bg='#3c3c3c', cursor='hand2')
         self.payment_label.place(x=100, y=445)
-        self.payment_label.bind("<Button-1>", lambda event:self.indicator(self.payment_indicator_lbl))
+        self.payment_label.bind("<Button-1>", lambda event:self.indicator(self.payment_indicator_lbl, self.payment_frame))
 
         self.payment_indicator_lbl = Label(self.side_bar_frame, bg="#3c3c3c", width=0, height=2)
         self.payment_indicator_lbl.place(x=88, y=445)
@@ -89,7 +95,7 @@ class CustomerDashboard:
         # for account Activity
         self.account_activity_label = Label(self.side_bar_frame, text="Activity", font=(self.font, 17), fg='white',bg='#3c3c3c', cursor='hand2')
         self.account_activity_label.place(x=100, y=525)
-        self.account_activity_label.bind("<Button-1>", lambda event:self.indicator(self.account_indicator_lbl))
+        self.account_activity_label.bind("<Button-1>", lambda event:self.indicator(self.account_indicator_lbl, self.login_activity_frame))
 
         self.account_indicator_lbl = Label(self.side_bar_frame, bg="#3c3c3c", width=0, height=2)
         self.account_indicator_lbl.place(x=88, y=525)
@@ -97,7 +103,8 @@ class CustomerDashboard:
         # for logout option
         self.logout_label = Label(self.side_bar_frame, text="Log Out", font=(self.font, 17), fg='white',bg='#3c3c3c', cursor='hand2')
         self.logout_label.place(x=100, y=605)
-        self.logout_label.bind("<Button-1>", lambda event:self.indicator(self.logout_indicator_lbl))
+        self.logout_label.bind("<Button-1>", self.logout)
+
 
         self.logout_indicator_lbl = Label(self.side_bar_frame, bg="#3c3c3c", width=0, height=2)
         self.logout_indicator_lbl.place(x=88, y=605)
@@ -106,7 +113,7 @@ class CustomerDashboard:
         self.main_frame = Frame(self.window, bg="black", width=1240)
         self.main_frame.pack(side='right',fill = 'y')
 
-        self.main_bg_frame = Image.open("Customer/Images/login_background.jpg")
+        self.main_bg_frame = PILImage.open("Images/login_background.jpg")
         photo = ImageTk.PhotoImage(self.main_bg_frame)
 
         self.main_panel = Label(self.main_frame, image=photo)
@@ -124,7 +131,7 @@ class CustomerDashboard:
         self.profile_frame.place(x=0, y=0)
 
     # to place the profile icon image
-        photo = ImageTk.PhotoImage(Image.open("Customer/Images/user_profile.png"))
+        photo = ImageTk.PhotoImage(PILImage.open("Images/user_profile.png"))
 
         self.user_profile_image_label = Label(self.profile_frame, image=photo, bg='black')
         self.user_profile_image_label.image = photo
@@ -138,7 +145,7 @@ class CustomerDashboard:
         self.total_booking_frame = customtkinter.CTkFrame(master = self.profile_frame,  corner_radius=30, height=90, width=190)
         self.total_booking_frame.place(x=240, y=200)
 
-        self.booking_number_label = Label(self.total_booking_frame, font=(self.font, 13), text="Total Booking", bg="#2c2c2c", fg="white")
+        self.booking_number_label = Label(self.total_booking_frame, font=(self.font, 14), text="Total Booking", bg="#2c2c2c", fg="white")
         self.booking_number_label.place(relx=0.5, rely=0.25, anchor = "center")
 
         self.booking_count_label = Label(self.total_booking_frame, font=(self.font, 20), text="0", bg="#2c2c2c", fg="#90EE90")
@@ -150,7 +157,7 @@ class CustomerDashboard:
                                                           width=190)
         self.booking_requested_frame.place(x=460, y=200)
 
-        self.booking_requested_label = Label(self.booking_requested_frame, font=(self.font, 13), text="Requested Booking",bg="#2c2c2c", fg="white")
+        self.booking_requested_label = Label(self.booking_requested_frame, font=(self.font, 14), text="Pending Booking",bg="#2c2c2c", fg="white")
         self.booking_requested_label.place(x=10, y=10)
 
         self.booking_count_label = Label(self.booking_requested_frame, font=(self.font, 20), text="0", bg="#2c2c2c",fg="#90EE90")
@@ -228,7 +235,19 @@ class CustomerDashboard:
     def booking_frame(self):
         # to show the booking frame inside inner_main_frame
         booking_frame = BookingFrame(self.innner_main_frame)
-        booking_frame.pack(fill = BOTH, expand = True)
+        booking_frame.place(x=0, y=0)
+
+    def driver_frame(self):
+        driver_frame = DriverFrame(self.innner_main_frame)
+        driver_frame.place(x=0, y=0)
+
+    def payment_frame(self):
+        payment_frame = PaymentFrame(self.innner_main_frame)
+        payment_frame.place(x=0, y=0)
+
+    def login_activity_frame(self):
+        login_activity_frame = LoginActivityFrame(self.innner_main_frame)
+        login_activity_frame.place(x=0, y=0)
 
     def update_time(self):
         current_time = datetime.now().strftime("%Y-%m-%d  %H:%M:%S")
@@ -247,11 +266,19 @@ class CustomerDashboard:
         self.hide_indicator()
         label.config(bg="#90EE90")
         self.clear_frame()
-        # frame()
+        frame()
 
     def clear_frame(self):
         for widget in self.innner_main_frame.winfo_children():
             widget.destroy()
+
+    def logout(self, event):
+        confirmed = messagebox.askyesno("Logout", "Do You Want To Logout ?")
+        if confirmed:
+            self.window.destroy()
+            main_dashboard_window = Tk()
+            main_dashboard = MainPage(main_dashboard_window)
+            main_dashboard_window.mainloop()
 
 def main_window():
     window = Tk()
