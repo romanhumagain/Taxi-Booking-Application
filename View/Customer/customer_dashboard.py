@@ -2,13 +2,18 @@ from tkinter import *
 import customtkinter
 from PIL import Image as PILImage, ImageTk
 from datetime import datetime
+from tkinter import simpledialog
 
 from booking_frame import *
 from driver_frame import *
 from payment_frame import *
 from login_activity_frame import *
+from update_profile import *
+from change_password import *
+
 from tkinter import messagebox
-from main_page import *
+
+
 
 class CustomerDashboard:
     def __init__(self, window):
@@ -220,18 +225,34 @@ class CustomerDashboard:
         self.payment_line.place(x=552, y=475, width=145)
 
     #     to show the button for more functionality of the application
-        self.update_button = customtkinter.CTkButton(master = self.profile_frame, text="Update Profile", font=(self.font, 15), corner_radius=8)
+        self.update_button = customtkinter.CTkButton(master = self.profile_frame, text="Update Profile", font=(self.font, 15), corner_radius=8,height=30, command=self.update_profile)
         self.update_button.place(x=90, y=550)
 
-        self.delete_button = customtkinter.CTkButton(master=self.profile_frame, text="Delete Profile",font=(self.font, 15), corner_radius=8)
+        self.delete_button = customtkinter.CTkButton(master=self.profile_frame, text="Delete Profile",font=(self.font, 15), corner_radius=8,  height=30, command=self.delete_account)
         self.delete_button.place(x=260, y=550)
 
-        self.change_password_button = customtkinter.CTkButton(master=self.profile_frame, text="Change Password",font=(self.font, 15), corner_radius=8)
+        self.change_password_button = customtkinter.CTkButton(master=self.profile_frame, text="Change Password",font=(self.font, 15), corner_radius=8,height=30, command=self.change_password)
         self.change_password_button.place(x=430, y=550)
 
-        self.login_info_button = customtkinter.CTkButton(master=self.profile_frame, text="Login Info", font=(self.font, 15), corner_radius=8)
+        self.login_info_button = customtkinter.CTkButton(master=self.profile_frame, text="Login Info", font=(self.font, 15), corner_radius=8,height=30)
         self.login_info_button.place(x=610, y=550)
 
+    def update_profile(self):
+        updateProfile = UpdateProfile(self.profile_frame)
+        updateProfile.show_update_profile_window()
+
+    def change_password(self):
+        changePasword = ChangePassword(self.profile_frame)
+        changePasword.show_change_password_window()
+
+    def delete_account(self):
+        user_input = simpledialog.askstring("Confirm Deletion",
+                                            "Are you sure you want to delete your account?\n\nType 'CONFIRMDELETE' and press OK to confirm.")
+
+        if user_input == 'CONFIRMDELETE':
+            print("Account deletion confirmed.")
+        else:
+            print("Account deletion canceled or confirmation failed.")
     def booking_frame(self):
         # to show the booking frame inside inner_main_frame
         booking_frame = BookingFrame(self.innner_main_frame)
@@ -273,6 +294,8 @@ class CustomerDashboard:
             widget.destroy()
 
     def logout(self, event):
+        from main_page import MainPage
+
         confirmed = messagebox.askyesno("Logout", "Do You Want To Logout ?")
         if confirmed:
             self.window.destroy()

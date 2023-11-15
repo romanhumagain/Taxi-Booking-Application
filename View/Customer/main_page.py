@@ -329,7 +329,6 @@ class MainPage:
 
             else:
                 messagebox.showwarning("Password ERROR", "Password Didn't Match !")
-
         else:
             messagebox.showwarning("Registration Incomplete", "Please Fill All The Details To Register Your Account !")
 
