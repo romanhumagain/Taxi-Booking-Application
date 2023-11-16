@@ -5,7 +5,7 @@ class UpdateProfile:
     def __init__(self, frame):
         self.frame = frame
         self.font = "Century Gothic"
-        customtkinter.set_default_color_theme("green")
+        # customtkinter.set_default_color_theme("green")
 
     def show_update_profile_window(self):
         update_profile_window = Toplevel(self.frame)
@@ -25,7 +25,7 @@ class UpdateProfile:
         update_profile_window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
 
 
-        self.heading_label = Label(update_profile_window, text="Update Your Profile", font=(self.font, 15,'bold'), bg="#2c2c2c", fg="white")
+        self.heading_label = Label(update_profile_window, text="Update Your Profile", font=(self.font, 17), bg="#2c2c2c", fg="white")
         self.heading_label.place(relx=0.5, rely=0.06, anchor="center")
 
         self.name_entry = customtkinter.CTkEntry(master=update_profile_window, font=(self.font, 15), width=170,placeholder_text="Full Name", height=38)

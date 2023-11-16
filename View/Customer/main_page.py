@@ -1,5 +1,5 @@
 from tkinter import *
-from PIL import Image, ImageTk
+from PIL import Image as PILImage, ImageTk
 from tkinter import ttk
 from tkcalendar import DateEntry
 import customtkinter
@@ -21,11 +21,11 @@ class MainPage:
 
         self.font = "Century Gothic"
 
-        self.bg_frame = Image.open("Images/login_background.jpg")
+        self.bg_frame = PILImage.open("Images/login_background.jpg")
         photo = ImageTk.PhotoImage(self.bg_frame)
 
         customtkinter.set_appearance_mode("System")
-        customtkinter.set_default_color_theme("green")
+        # customtkinter.set_default_color_theme("green")
 
 
         self.bg_panel = Label(self.window, image=photo)
@@ -35,7 +35,7 @@ class MainPage:
         self.navbar = Frame(self.bg_panel, bg="#2c2c2c", pady=25)
         self.navbar.pack(side="top", fill="x")
 
-        self.taxi_logo = Image.open("Images/taxi.png")
+        self.taxi_logo = PILImage.open("Images/taxi.png")
         photo = ImageTk.PhotoImage(self.taxi_logo)
 
         self.taxi_logo_label = Label(self.navbar, image=photo, bg='#2c2c2c')
@@ -54,7 +54,7 @@ class MainPage:
                              fg='white', bg='black')
         self.heading.place(x=350, y=30)
 
-        self.side_image = Image.open("Images/login_side_image.png")
+        self.side_image = PILImage.open("Images/login_side_image.png")
         side_photo = ImageTk.PhotoImage(self.side_image)
 
         self.side_image_label = Label(self.main_frame, image=side_photo, bg='#040405')
@@ -63,10 +63,11 @@ class MainPage:
 
         self.login_frame()
     def login_frame(self):
+
         self.inner_login_frame = Frame(self.main_frame, bg="#040405", width="440", height="500")
         self.inner_login_frame.place(x=450, y=80)
 
-        self.user_image = Image.open("Images/user.png")
+        self.user_image = PILImage.open("Images/user.png")
         photo = ImageTk.PhotoImage(self.user_image)
 
         self.user_image_label = Label(self.inner_login_frame, image=photo, bg='#040405')
@@ -77,7 +78,7 @@ class MainPage:
                                    font=(self.font, 18), justify=CENTER)
         self.sign_in_label.place(x=180, y=140)
 
-        self.username_image = Image.open("Images/username.png")
+        self.username_image = PILImage.open("Images/username.png")
         photo = ImageTk.PhotoImage(self.username_image)
 
         self.username_image_label = Label(self.inner_login_frame, image=photo, bg='#040405')
@@ -95,7 +96,7 @@ class MainPage:
         self.username_line = Canvas(self.inner_login_frame, width=250, height=2.0, bg='#bdb9b1', highlightthickness=0)
         self.username_line.place(x=115, y=262, width=250)
 
-        self.password_image = Image.open("Images/password1.png")
+        self.password_image = PILImage.open("Images/password1.png")
         photo = ImageTk.PhotoImage(self.password_image)
 
         self.password_image_label = Label(self.inner_login_frame, image=photo, bg='#040405')
@@ -106,33 +107,26 @@ class MainPage:
                                     font=(self.font, 14))
         self.password_label.place(x=90, y=280)
 
-        self.password_entry = Entry(self.inner_login_frame, show='*', relief=FLAT, bg='#040405',
+        self.password_entry = Entry(self.inner_login_frame, show='•', relief=FLAT, bg='#040405',
                                     fg='white', insertbackground="white", font=(self.font, 12))
 
         self.password_entry.place(x=115, y=315, width=220)
 
-        self.hide_password_image = Image.open("Images/hide.png")
-        hide_photo = ImageTk.PhotoImage(self.hide_password_image)
+        self.hide_icon = ImageTk.PhotoImage(PILImage.open("Images/hide.png"))
+        self.show_icon = ImageTk.PhotoImage(PILImage.open("Images/show.png"))
 
-        self.hide_password_image_label = Label(self.inner_login_frame, image=hide_photo, bg='white', cursor='hand2')
-        self.hide_password_image_label.image = hide_photo
-        self.hide_password_image_label.place(x=340, y=315)
-        self.hide_password_image_label.bind("<Button-1>", self.hide_password)
+        # self.show_hide_button = Button(self.inner_login_frame, image=self.show_icon,bd=0, relief="flat", highlightthickness=0)
+        # self.show_hide_button.place(x=340, y=312)
 
-
-        self.show_password_image = Image.open("Images/show.png")
-        show_photo = ImageTk.PhotoImage(self.show_password_image)
-
-        self.show_password_image_label = Label(self.inner_login_frame, image=show_photo, bg='white',cursor='hand2')
-        self.show_password_image_label.image = show_photo
-        self.show_password_image_label.place(x=340, y=315)
-        self.show_password_image_label.bind("<Button-1>", self.show_password)
+        self.show_hide_password_label = Label(self.inner_login_frame, image=self.show_icon, bg='black',cursor='hand2')
+        self.show_hide_password_label.place(x=340, y=310)
+        self.show_hide_password_label.bind("<Button-1>", self.show_hide_password)
 
 
         self.password_line = Canvas(self.inner_login_frame, width=300, height=2.0, bg='#bdb9b1', highlightthickness=0)
         self.password_line.place(x=115, y=342, width=250)
 
-        self.forgot_password_label = Label(self.inner_login_frame, text="forgot password ?", fg='blue', bg='black',
+        self.forgot_password_label = Label(self.inner_login_frame, text="forgot password ?", fg='white', bg='black',
                                            font=(self.font, 12), cursor="hand2")
         self.forgot_password_label.place(x=225, y=350)
         self.forgot_password_label.bind("<Button-1>")
@@ -166,7 +160,7 @@ class MainPage:
         self.inner_registration_frame = Frame(self.main_frame, bg="#040405", width="440", height="500")
         self.inner_registration_frame.place(x=450, y=80)
 
-        self.signup_image = Image.open("Images/signup.png")
+        self.signup_image = PILImage.open("Images/signup.png")
         photo = ImageTk.PhotoImage(self.signup_image)
 
         self.signup_image_label = Label(self.inner_registration_frame, image=photo, bg='#040405')
@@ -215,17 +209,6 @@ class MainPage:
         self.address_entry = customtkinter.CTkEntry(master=self.inner_registration_frame, font=(self.font, 15), width=170, placeholder_text="Current Address", height=38)
         self.address_entry.place(x=250, y=130)
 
-        self.dob_label = Label(self.inner_registration_frame, text="DOB", fg="white", bg="#040405",
-                               font=(self.font, 12))
-        self.dob_label.place(x=26, y=195)
-
-        self.dob_entry = DateEntry(self.inner_registration_frame, font=('yu gothic ui', 12), selectmode='day',
-                                   style='my.DateEntry', background="black",
-                                   bordercolor="white",
-                                   selectbackground="red", width=12, date_pattern='yyyy-mm-dd')
-
-        self.dob_entry.place(x=70, y=195)
-
         self.gender_label = Label(self.inner_registration_frame, text="Gender", fg="white", bg="#040405",
                                   font=(self.font, 13))
         # self.gender_label.place(x=250, y=195)
@@ -233,7 +216,11 @@ class MainPage:
         gender_var = customtkinter.StringVar(value = "Gender")
 
         self.gender_entry = customtkinter.CTkComboBox(master = self.inner_registration_frame, values=["Male", "Female", "Others"], variable=gender_var, width=170, height=40)
-        self.gender_entry.place(x=250, y=195)
+        self.gender_entry.place(x=35, y=195)
+
+        payment_methods = StringVar(value="Payment Method")
+        self.payment_entry = customtkinter.CTkComboBox(master = self.inner_registration_frame,values=["Online", "Cash"], variable=payment_methods, width=170, height=40)
+        self.payment_entry.place(x=250, y=195)
 
         self.password_label = Label(self.inner_registration_frame, text="Password", fg="white", bg="#040405",
                                     font=(self.font, 13))
@@ -248,6 +235,17 @@ class MainPage:
 
         self.co_password_entry = customtkinter.CTkEntry(master=self.inner_registration_frame, font=(self.font, 15),width=170, placeholder_text="Confirm Password", height=40)
         self.co_password_entry.place(x=35, y=315)
+
+        self.dob_label = Label(self.inner_registration_frame, text="DOB", fg="white", bg="#040405",
+                               font=(self.font, 12))
+        self.dob_label.place(x=239, y=260)
+
+        self.dob_entry = DateEntry(self.inner_registration_frame, font=('yu gothic ui', 12), selectmode='day',
+                                   style='my.DateEntry', background="black",
+                                   bordercolor="white",
+                                   selectbackground="red", width=12, date_pattern='yyyy-mm-dd')
+
+        self.dob_entry.place(x=284, y=260)
 
         self.signup_button = customtkinter.CTkButton(
             master=self.inner_registration_frame,
@@ -284,15 +282,13 @@ class MainPage:
         elif event.widget == self.signin_option_label:
             self.login_frame()
 
-    def show_password(self, event):
-        self.password_entry.configure(show='')
-        self.show_password_image_label.pack_forget()
-        self.hide_password_image_label.place(x=370, y=315)
-
-    def hide_password(self, event):
-        self.password_entry.configure(show='*')
-        self.hide_password_image_label.pack_forget()
-        self.show_password_image_label.place(x=370, y=315)
+    def show_hide_password(self, event):
+        if self.password_entry['show'] == '':
+            self.show_hide_password_label.config(image=self.show_icon)
+            self.password_entry.config(show="•")
+        else:
+            self.show_hide_password_label.config(image=self.hide_icon)
+            self.password_entry.config(show='')
 
     def signup(self, event):
         print("Signup option clicked !")

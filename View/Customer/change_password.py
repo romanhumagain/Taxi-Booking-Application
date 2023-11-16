@@ -7,7 +7,7 @@ class ChangePassword:
         self.font = "Century Gothic"
 
         customtkinter.set_appearance_mode("System")
-        customtkinter.set_default_color_theme("green")
+        # customtkinter.set_default_color_theme("green")
 
     def show_change_password_window(self):
         self.change_password_window = Toplevel(self.frame, bg="#2c2c2c")
@@ -26,7 +26,7 @@ class ChangePassword:
         self.change_password_window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
 
 
-        self.heading_label = Label(self.change_password_window, text="Change Your Password", font=(self.font, 15, 'bold'), bg="#2c2c2c",fg="white")
+        self.heading_label = Label(self.change_password_window, text="Change Your Password", font=(self.font, 17), bg="#2c2c2c",fg="white")
         self.heading_label.place(relx=0.5, rely=0.08, anchor="center")
 
         self.password_label = Label(self.change_password_window, text="Password", fg="white", bg="#2c2c2c",
