@@ -2,7 +2,12 @@ from tkinter import *
 from tkinter import Frame, Label
 import customtkinter as ctk
 from tkcalendar import  DateEntry
+
 from update_booking import *
+from cancel_booking import *
+from approved_booking import *
+from booking_history import BookingHistory
+
 from tkinter import messagebox
 from Model.booking import Booking
 from Controller.booking_dbms import booking_taxi
@@ -63,19 +68,33 @@ class BookingFrame(Frame):
         self.update_booking_button = ctk.CTkButton(master=self, text="Update Booking", font=(font, 17, 'bold'),corner_radius=8, height=35, width=170, command=self.update_booking)
         self.update_booking_button.place(x=600, y=210)
 
-        self.approved_booking_button = ctk.CTkButton(master=self, text="Approved Booking", font=(font, 17, 'bold'),
-                                               corner_radius=8, height=35, width=170)
-        self.approved_booking_button.place(x=600, y=280)
+        self.cancel_booking_button = ctk.CTkButton(master=self, text="Cancel Booking", font=(font, 17, 'bold'),
+                                                   corner_radius=8, height=35, width=170, command=self.cancel_booking)
+        self.cancel_booking_button.place(x=600, y=270)
 
-        self.booking_history_button = ctk.CTkButton(master=self, text="Booking History", font=(font, 17, 'bold'),corner_radius=8, height=35, width=170)
-        self.booking_history_button.place(x=600, y=350)
+        self.approved_booking_button = ctk.CTkButton(master=self, text="Approved Booking", font=(font, 17, 'bold'),
+                                               corner_radius=8, height=35, width=170, command=self.approved_booking)
+        self.approved_booking_button.place(x=600, y=330)
+
+        self.booking_history_button = ctk.CTkButton(master=self, text="Booking History", font=(font, 17, 'bold'),corner_radius=8, height=35, width=170, command=self.booking_history)
+        self.booking_history_button.place(x=600, y=390)
 
     def update_booking(self):
             updateBooking = UpdateBooking(self)
             updateBooking.show_update_booking_window()
+    def cancel_booking(self):
+        cancelBooking = CancelBooking(self)
+        cancelBooking.show_cancel_booking_window()
+
+    def approved_booking(self):
+        approvedBooking = ApprovedBooking(self)
+        approvedBooking.show_approved_booking_window()
+
+    def booking_history(self):
+        bookingHistory = BookingHistory(self)
+        bookingHistory.show_booking_history_window()
 
     def booking_taxi(self):
-
         if Global.logged_in_customer is not None:  # Check if logged_in_customer is not None
             if not (
                     self.pickUpAddress.get() == "" or self.pickUpDate.get() == "" or self.pickUpTime.get() == "" or self.dropOffAddress.get() == ""):
@@ -108,6 +127,7 @@ class BookingFrame(Frame):
         self.pickup_date_entry.delete(0, END)
         self.pickup_time_entry.delete(0, END)
         self.dropff_address_entry.delete(0, END)
+
 
 
 

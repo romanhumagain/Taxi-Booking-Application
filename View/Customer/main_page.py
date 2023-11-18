@@ -44,8 +44,8 @@ class MainPage:
         self.taxi_logo_label.image = photo
         self.taxi_logo_label.place(x=20, y=0)
 
-        self.slogan_label = Label(self.navbar, text="Ride Easy, Arrive Happy: Your Taxi, Your Way !",
-                                  fg='white', bg='#2c2c2c', font=(self.font, 25, 'bold'))
+        self.slogan_label = Label(self.navbar, text="Taxi Booking System",
+                                  fg='white', bg='#2c2c2c', font=(self.font, 35))
         self.slogan_label.pack()
 
         self.main_frame = Frame(self.window, bg='#040405', width='900', height='600')
@@ -54,7 +54,7 @@ class MainPage:
         self.text = "Taxi Booking System"
         self.heading = Label(self.main_frame, text=self.text, font=('Century Gothic', 20),
                              fg='white', bg='black')
-        self.heading.place(x=350, y=30)
+        # self.heading.place(x=350, y=30)
 
         self.side_image = PILImage.open("Images/login_side_image.png")
         side_photo = ImageTk.PhotoImage(self.side_image)

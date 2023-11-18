@@ -40,7 +40,7 @@ class CustomerDashboard:
         self.taxi_logo_label.place(x=20, y=0)
 
         self.slogan_label = Label(self.navbar, text="Taxi Booking System",
-                                  fg='white', bg='#2c2c2c', font=(self.font, 30))
+                                  fg='white', bg='#2c2c2c', font=(self.font, 35))
         self.slogan_label.pack()
 
         # ===== creating a side bar =====
@@ -364,7 +364,7 @@ class CustomerDashboard:
     def count_total_booking(self):
         total_booking_count = 0
         booking_instance = Booking(customer_id=Global.logged_in_customer[0])
-        booking_records = fetch_all_booking(booking_instance)
+        booking_records = select_all_booking(booking_instance)
         for booking_record in booking_records:
             total_booking_count += 1
 

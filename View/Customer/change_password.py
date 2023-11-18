@@ -60,9 +60,9 @@ class ChangePassword:
                                                      font=(self.font, 15), corner_radius=8, height=35, command=self.change_password)
         self.change_button.place(x=70, y=330)
 
-        self.cancel_button = customtkinter.CTkButton(master=self.change_password_window, text="Cancel", font=(self.font, 15),
+        self.exit_button = customtkinter.CTkButton(master=self.change_password_window, text="Exit", font=(self.font, 16),
                                                      corner_radius=8,  height=35, command=self.cancel_window)
-        self.cancel_button.place(x=260, y=330)
+        self.exit_button.place(x=260, y=330)
 
     def cancel_window(self):
         self.change_password_window.destroy()

@@ -101,8 +101,8 @@ class UpdateProfile:
         self.update_button = customtkinter.CTkButton(master = self.update_profile_window, text="Update Profile", font=(self.font, 15), corner_radius=10,height=35, command=self.update_profile)
         self.update_button.place(x=70, y=390)
 
-        self.cancel_button = customtkinter.CTkButton(master=self.update_profile_window, text="Cancel", font=(self.font, 15),height=35,corner_radius=10, command=self.cancel_window)
-        self.cancel_button.place(x=260, y=390)
+        self.exit_button = customtkinter.CTkButton(master=self.update_profile_window, text="Exit", font=(self.font, 16),height=35,corner_radius=10, command=self.cancel_window)
+        self.exit_button.place(x=260, y=390)
 
         self.set_profile_details()
 
@@ -154,6 +154,7 @@ class UpdateProfile:
             if profile_isupdated:
                 messagebox.showinfo("Profile Update Success","Your Profile Has Been Successfully Updated.", parent = self.update_profile_window)
                 self.set_profile_details()
+                self.update_profile_window.destroy()
                 if self.profile_update_callback:
                     self.profile_update_callback()
             else:

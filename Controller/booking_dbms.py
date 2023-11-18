@@ -29,13 +29,37 @@ def booking_taxi(booking):
         cursor.close()
         connection.close()
 
+# ================= TO SELECT ALL BOOKING OF A SPECIFIC CUSTOMER ===============
+def select_all_booking(booking):
+    result = None
+    try:
+        connection = mysql_connection()
+        if connection is not None:
+            cursor = connection.cursor()
+            query  = "SELECT * FROM booking WHERE customer_id = %s ORDER BY booking_id DESC"
+            values =(booking.get_customer_id(),)
+
+            cursor.execute(query, values)
+            result = cursor.fetchall()
+
+    except Exception as error:
+        print(f"ERROR:- {error}")
+
+    finally:
+        cursor.close()
+        connection.close()
+        return result
+
+
+
+
 # ================== TO SELECT THE PENDING BOOKING =====================
 def select_pending_booking(booking):
     try:
         connection = mysql_connection()
         if connection is not None:
             cursor = connection.cursor()
-            query  = "SELECT * FROM booking WHERE customer_id = %s and booking_status = %s"
+            query  = "SELECT * FROM booking WHERE customer_id = %s and booking_status = %s ORDER BY booking_id DESC"
             values =(booking.get_customer_id(), "Pending")
 
             cursor.execute(query, values)
@@ -49,6 +73,29 @@ def select_pending_booking(booking):
     finally:
         cursor.close()
         connection.close()
+
+
+# ================== TO SELECT THE APPROVED BOOKING =====================
+def select_approved_booking(booking):
+    try:
+        connection = mysql_connection()
+        if connection is not None:
+            cursor = connection.cursor()
+            query  = "SELECT * FROM booking WHERE customer_id = %s and booking_status = %s ORDER BY booking_id DESC"
+            values =(booking.get_customer_id(), "Approved")
+
+            cursor.execute(query, values)
+            result = cursor.fetchall()
+
+            return result
+
+    except Exception as error:
+        print(f"ERROR:- {error}")
+
+    finally:
+        cursor.close()
+        connection.close()
+
 
 # ================== TO UPDATE THE BOOKING =========================
 def update_booking(booking):
@@ -81,29 +128,28 @@ def update_booking(booking):
         connection.close()
 
 
-# =================== TO SELECT ALL THE BOOKING DONE BY THE CUSTOMER ===============
-def fetch_all_booking(booking):
+# =================== TO CANCEL THE BOOKING =========================
+def cancel_booking(booking):
     try:
         connection = mysql_connection()
         if connection is not None:
             cursor = connection.cursor()
-            query = "SELECT * FROM booking WHERE customer_id = %s "
-            values = (booking.get_customer_id(),)
 
+            # Query to update the booking
+            query = " DELETE FROM booking WHERE booking_id = %s "
+            values = (
+                booking.get_booking_id(),
+            )
+
+            # To execute the query
             cursor.execute(query, values)
-            result = cursor.fetchall()
 
-            return result
+            connection.commit()
+            return True
 
     except Exception as error:
         print(f"ERROR:- {error}")
-
+        return False
     finally:
         cursor.close()
         connection.close()
-
-
-
-
-
-
