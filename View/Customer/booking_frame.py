@@ -6,6 +6,9 @@ from update_booking import *
 from tkinter import messagebox
 from Model.booking import Booking
 from Controller.booking_dbms import booking_taxi
+from PIL import Image, ImageTk
+
+from Model import Global
 class BookingFrame(Frame):
     def __init__(self, master=None):
         super().__init__(master)
@@ -19,8 +22,13 @@ class BookingFrame(Frame):
         self.pickUpTime = StringVar()
         self.dropOffAddress = StringVar()
 
+        heading_icon = ImageTk.PhotoImage(Image.open("Images/details.png"))
+        self.heading_icon_label = Label(self, image=heading_icon, bg='black')
+        self.heading_icon_label.image = heading_icon
+        self.heading_icon_label.place(x=240, y=15)
+
         self.heading_label = Label(self, text="Book Your Rides !", font=(font, 26), bg="black", fg="white")
-        self.heading_label.place(relx=0.5, rely=0.08, anchor="center")
+        self.heading_label.place(relx=0.53, rely=0.08, anchor="center")
 
         self.pickup_address_label = Label(self, text="Pick Up Address", font=(font,14), bg="black", fg="white")
         self.pickup_address_label.place(x=30, y=140)
@@ -67,21 +75,33 @@ class BookingFrame(Frame):
             updateBooking.show_update_booking_window()
 
     def booking_taxi(self):
-        if not (self.pickUpAddress.get() == "" or self.pickUpDate.get() == "" or self.pickUpTime.get() == "" or self.dropOffAddress.get() == ""):
-            booking = Booking(pickup_address= self.pickUpAddress.get(), pickup_date=self.pickUpDate.get(), pickup_time=self.pickUpTime.get(), dropoff_address=self.dropOffAddress.get(), booking_status="Pending")
-            is_booked = booking_taxi(booking)
-            if is_booked:
-                message_content = (
-                    "Your booking request was successful!\n\n"
-                    "Thank you for choosing our service. Your booking is now pending approval. "
-                    "Our team will review your request, and you can expect a confirmation within 24 hours.\n\n"
+
+        if Global.logged_in_customer is not None:  # Check if logged_in_customer is not None
+            if not (
+                    self.pickUpAddress.get() == "" or self.pickUpDate.get() == "" or self.pickUpTime.get() == "" or self.dropOffAddress.get() == ""):
+                booking = Booking(
+                    pickup_address=self.pickUpAddress.get(),
+                    pickup_date=self.pickUpDate.get(),
+                    pickup_time=self.pickUpTime.get(),
+                    dropoff_address=self.dropOffAddress.get(),
+                    booking_status="Pending",
+                    customer_id=Global.logged_in_customer[0]
                 )
-                messagebox.showinfo("Booking Success",message_content)
-                self.clear_field()
+                is_booked = booking_taxi(booking)
+                if is_booked:
+                    message_content = (
+                        "Your booking request was successful!\n\n"
+                        "Thank you for choosing our service. Your booking is now pending approval. "
+                        "Our team will review your request, and you can expect a confirmation within 24 hours.\n\n"
+                    )
+                    messagebox.showinfo("Booking Success", message_content)
+                    self.clear_field()
+                else:
+                    messagebox.showerror("Booking Failed!", "Sorry, Couldn't Book Your Request!")
             else:
-                messagebox.showerror("Booking Failed !", "Sorry, Could't Book Your Request !")
+                messagebox.showerror("Booking Failed!", "Please Provide All The Required Details !")
         else:
-            messagebox.showerror("Booking Failed !", "Please Provide All The Required Details !")
+            messagebox.showerror("Booking Failed!", "User not logged in!")
 
     def clear_field(self):
         self.pickup_address_entry.delete(0, END)

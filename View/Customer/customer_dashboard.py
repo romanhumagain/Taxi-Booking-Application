@@ -12,6 +12,7 @@ from update_profile import *
 from change_password import *
 
 from tkinter import messagebox
+from Controller.profile_dbms import *
 
 
 
@@ -162,8 +163,10 @@ class CustomerDashboard:
         self.innner_main_frame.place(x=190, y=50)
 
         self.my_profile_frame()
+        self.set_profile_details()
 
     def my_profile_frame(self):
+
         self.profile_frame = Frame(self.innner_main_frame, bg="black", width=850, height=600)
         self.profile_frame.place(x=0, y=0)
 
@@ -175,7 +178,7 @@ class CustomerDashboard:
         self.user_profile_image_label.place(relx=0.5, rely=0.14, anchor='center')
 
     # to show the Customer Name
-        self.user_name = Label(self.profile_frame, text="Roman Humagain", font=(self.font, 22), fg='white', bg='black')
+        self.user_name = Label(self.profile_frame, text="", font=(self.font, 22), fg='white', bg='black')
         self.user_name.place(relx=0.5, rely=0.26, anchor = 'center')
 
     #  simple card to show the total booking number
@@ -185,9 +188,11 @@ class CustomerDashboard:
         self.booking_number_label = Label(self.total_booking_frame, font=(self.font, 14), text="Total Booking", bg="#2c2c2c", fg="white")
         self.booking_number_label.place(relx=0.5, rely=0.25, anchor = "center")
 
-        self.booking_count_label = Label(self.total_booking_frame, font=(self.font, 20), text="0", bg="#2c2c2c", fg="#90EE90")
-        self.booking_count_label.place(relx=0.5, rely=0.6, anchor = "center")
+        self.total_booking_count_label = Label(self.total_booking_frame, font=(self.font, 20), text="", bg="#2c2c2c", fg="#90EE90")
+        self.total_booking_count_label.place(relx=0.5, rely=0.6, anchor = "center")
 
+        # ================== TO SET THE TOTAL BOOKING COUNT =======================
+        self.count_total_booking()
 
         #  simple card to show the total requested booking number
         self.booking_requested_frame = customtkinter.CTkFrame(master=self.profile_frame, corner_radius=30, height=90,
@@ -197,14 +202,17 @@ class CustomerDashboard:
         self.booking_requested_label = Label(self.booking_requested_frame, font=(self.font, 14), text="Pending Booking",bg="#2c2c2c", fg="white")
         self.booking_requested_label.place(x=10, y=10)
 
-        self.booking_count_label = Label(self.booking_requested_frame, font=(self.font, 20), text="0", bg="#2c2c2c",fg="#90EE90")
-        self.booking_count_label.place(relx=0.5, rely=0.6, anchor="center")
+        self.pending_booking_count_label = Label(self.booking_requested_frame, font=(self.font, 20), text="", bg="#2c2c2c",fg="#90EE90")
+        self.pending_booking_count_label.place(relx=0.5, rely=0.6, anchor="center")
+
+        # ================== TO SET THE TOTAL PENDING BOOKING COUNT =======================
+        self.count_pending_booking()
 
     #     to show the personal information
         self.email_label = Label(self.profile_frame, font=(self.font, 9), text="Email", bg="black", fg="white")
         self.email_label.place(x=110, y=325)
 
-        self.user_email_label = Label(self.profile_frame, text="romanhumagain@gmail.com", fg="white", bg="black", font=(self.font, 12))
+        self.user_email_label = Label(self.profile_frame, text="", fg="white", bg="black", font=(self.font, 12))
         self.user_email_label.place(x=110, y=350)
 
         self.email_line = Canvas(self.profile_frame, height=2.0, bg='#bdb9b1', highlightthickness=0)
@@ -214,7 +222,7 @@ class CustomerDashboard:
         self.mobile_label = Label(self.profile_frame, font=(self.font, 9), text="Phone No", bg="black", fg="white")
         self.mobile_label.place(x=375, y=325)
 
-        self.user_mobile_label = Label(self.profile_frame, text="+977 9840617106", fg="white", bg="black",font=(self.font, 12))
+        self.user_mobile_label = Label(self.profile_frame, text="", fg="white", bg="black",font=(self.font, 12))
         self.user_mobile_label.place(x=375, y=350)
 
         self.mobile_line = Canvas(self.profile_frame, height=2.0, bg='#bdb9b1', highlightthickness=0)
@@ -223,7 +231,7 @@ class CustomerDashboard:
         self.address_label = Label(self.profile_frame, font=(self.font, 9), text="Address", bg="black", fg="white")
         self.address_label.place(x=565, y=325)
 
-        self.user_address_label = Label(self.profile_frame, text="Panauti, Kavre", fg="white", bg="black",font=(self.font, 12))
+        self.user_address_label = Label(self.profile_frame, text="", fg="white", bg="black",font=(self.font, 12))
         self.user_address_label.place(x=565, y=350)
 
         self.address_line = Canvas(self.profile_frame, height=2.0, bg='#bdb9b1', highlightthickness=0)
@@ -232,7 +240,7 @@ class CustomerDashboard:
         self.gender_label = Label(self.profile_frame, font=(self.font, 9), text="Gender", bg="black", fg="white")
         self.gender_label.place(x=110, y=420)
 
-        self.user_gender_label = Label(self.profile_frame, text="Male", fg="white", bg="black", font=(self.font, 12))
+        self.user_gender_label = Label(self.profile_frame, text="", fg="white", bg="black", font=(self.font, 12))
         self.user_gender_label.place(x=110, y=445)
 
         self.gender_line = Canvas(self.profile_frame, height=2.0, bg='#bdb9b1', highlightthickness=0)
@@ -241,7 +249,7 @@ class CustomerDashboard:
         self.dob_label = Label(self.profile_frame, font=(self.font, 9), text="D.O.B", bg="black", fg="white")
         self.dob_label.place(x=375, y=420)
 
-        self.user_dob_label = Label(self.profile_frame, text="2003-03-29", fg="white", bg="black", font=(self.font, 12))
+        self.user_dob_label = Label(self.profile_frame, text="", fg="white", bg="black", font=(self.font, 12))
         self.user_dob_label.place(x=375, y=445)
 
         self.dob_line = Canvas(self.profile_frame, height=2.0, bg='#bdb9b1', highlightthickness=0)
@@ -250,7 +258,7 @@ class CustomerDashboard:
         self.payment_label = Label(self.profile_frame, font=(self.font, 9), text="Payment Method", bg="black", fg="white")
         self.payment_label.place(x=565, y=420)
 
-        self.user_payment_label = Label(self.profile_frame, text="Online", fg="white", bg="black", font=(self.font, 12))
+        self.user_payment_label = Label(self.profile_frame, text="", fg="white", bg="black", font=(self.font, 12))
         self.user_payment_label.place(x=565, y=445)
 
         self.payment_line = Canvas(self.profile_frame, height=2.0, bg='#bdb9b1', highlightthickness=0)
@@ -269,12 +277,17 @@ class CustomerDashboard:
         self.login_info_button = customtkinter.CTkButton(master=self.profile_frame, text="Login Info", font=(self.font, 15), corner_radius=8,height=30)
         self.login_info_button.place(x=610, y=550)
 
+        # ============ SETTING THE DETAILS IN THE PROFILE FRAME =================
+
+        self.set_profile_details()
+
+
     def update_profile(self):
-        updateProfile = UpdateProfile(self.profile_frame)
+        updateProfile = UpdateProfile(self.profile_frame, self.set_profile_details)
         updateProfile.show_update_profile_window()
 
     def change_password(self):
-        changePasword = ChangePassword(self.profile_frame)
+        changePasword = ChangePassword(self.profile_frame, self.window)
         changePasword.show_change_password_window()
 
     def delete_account(self):
@@ -335,10 +348,43 @@ class CustomerDashboard:
             main_dashboard = MainPage(main_dashboard_window)
             main_dashboard_window.mainloop()
 
-def main_window():
-    window = Tk()
-    CustomerDashboard(window)
-    window.mainloop()
 
-if __name__ == '__main__':
-    main_window()
+    def set_profile_details(self):
+        customer = Customer(customer_id=Global.logged_in_customer[0])
+        customer_profile_info, user = profile_details(customer)
+        if customer_profile_info is not None:
+            self.user_name.config(text=customer_profile_info[1])
+            self.user_email_label.config(text=user[1])
+            self.user_mobile_label.config(text=customer_profile_info[2])
+            self.user_address_label.config(text=customer_profile_info[4])
+            self.user_gender_label.config(text=customer_profile_info[6])
+            self.user_dob_label.config(text = customer_profile_info[5])
+            self.user_payment_label.config(text=customer_profile_info[3])
+
+    def count_total_booking(self):
+        total_booking_count = 0
+        booking_instance = Booking(customer_id=Global.logged_in_customer[0])
+        booking_records = fetch_all_booking(booking_instance)
+        for booking_record in booking_records:
+            total_booking_count += 1
+
+        self.total_booking_count_label.config(text=str(total_booking_count))
+
+    def count_pending_booking(self):
+        total_pending_count = 0
+        booking_instance = Booking(customer_id=Global.logged_in_customer[0])
+        booking_records = select_pending_booking(booking_instance)
+
+        for booking in booking_records:
+            total_pending_count += 1
+
+        self.pending_booking_count_label.config(text=total_pending_count)
+
+
+# def main_window():
+#     window = Tk()
+#     CustomerDashboard(window)
+#     window.mainloop()
+
+# if __name__ == '__main__':
+#     main_window()

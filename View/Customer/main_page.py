@@ -9,7 +9,9 @@ from Model.user import *
 
 from Controller.customer_registration_dbms import *
 from Controller.login_dbms import *
-from customer_dashboard import CustomerDashboard
+# from customer_dashboard import CustomerDashboard
+
+from Model import Global
 
 class MainPage:
     def __init__(self, window):
@@ -330,13 +332,16 @@ class MainPage:
 
     # to check the login credentials
     def login_user(self):
+        from customer_dashboard import CustomerDashboard
         email = self.username_entry.get()
         password = self.password_entry.get()
 
         if not(email == "" or password == ""):
-            user_is_authenticated = validate_credentials(email, password)
+            user, customer = validate_credentials(email, password)
 
-            if user_is_authenticated:
+            if user is not None:
+                Global.current_user = user
+                Global.logged_in_customer = customer
                 messagebox.showinfo("Login Success" , "Successfully Logged In.")
                 self.window.destroy()
 

@@ -3,6 +3,9 @@ from tkinter import *
 from tkcalendar import DateEntry
 import customtkinter
 from Controller.booking_dbms import *
+from PIL import Image, ImageTk
+from tkinter import  messagebox
+from Model import Global
 class UpdateBooking:
     def __init__(self, frame):
         self.frame = frame
@@ -26,13 +29,21 @@ class UpdateBooking:
 
         # creating a frame to show the booking form content
 
+        self.update_booking_window.focus_force()
+        self.update_booking_window.attributes('-topmost', True)
+        self.update_booking_window.attributes('-topmost', False)
+
         self.update_frame = Frame(self.update_booking_window, bg="#2c2c2c", height=273)
         self.update_frame.pack(side="top", fill="x")
 
         self.heading_label = Label(self.update_frame, text="Update Booking Details !",
-                                   font=(self.font, 16), bg="#2c2c2c", fg="white")
-        self.heading_label.place(relx=0.5, rely=0.08, anchor="center")
+                                   font=(self.font, 17), bg="#2c2c2c", fg="white")
+        self.heading_label.place(relx=0.53, rely=0.085, anchor="center")
 
+        heading_icon = ImageTk.PhotoImage(Image.open("Images/update1.png"))
+        self.heading_icon_label = Label(self.update_frame, image=heading_icon, bg='#2c2c2c')
+        self.heading_icon_label.image = heading_icon
+        self.heading_icon_label.place(x=200, y=0)
         # Creating a textvariable for the entry box
         self.bookingId = StringVar()
         self.pickUpAddress = StringVar()
@@ -42,11 +53,11 @@ class UpdateBooking:
 
 
         self.bookingid_label = Label(self.update_frame, text="ID", fg="white", bg="#2c2c2c",
-                                    font=(self.font, 10))
+                                    font=(self.font, 10), )
         self.bookingid_label.place(x=360, y=49)
 
         self.bookingid_entry = customtkinter.CTkEntry(master=self.update_frame, font=(self.font, 15),
-                                                     width=100, placeholder_text="Booking ID", height=40, textvariable=self.bookingId)
+                                                     width=100, placeholder_text="Booking ID", height=40, textvariable=self.bookingId, state="readonly")
         self.bookingid_entry.place(relx=0.5, rely=0.36, anchor="center")
 
         self.address_label = Label(self.update_frame, text="Pick Up Address", fg="white", bg="#2c2c2c",
@@ -82,7 +93,7 @@ class UpdateBooking:
         self.dropoff_address_entry.place(x=560, y=150)
 
         self.update_button = customtkinter.CTkButton(master=self.update_frame, text="Update Booking",
-                                                     font=(self.font, 15), corner_radius=8, height=35)
+                                                     font=(self.font, 15), corner_radius=8, height=35, command=self.update_booking)
         self.update_button.place(x=213, y=220)
 
         self.clear_button = customtkinter.CTkButton(master=self.update_frame, text="Clear", font=(self.font, 15),
@@ -91,17 +102,13 @@ class UpdateBooking:
         self.clear_button.place(x=382, y=220)
 
 
-        # To create a frame to place the table
-        self.table_frame = Frame(self.update_booking_window, bg="green", height=220)
-        self.table_frame.pack(side = "bottom", fill = "x")
-
         style1 = tkinter.ttk.Style()
         style1.theme_use("default")
         style1.configure("Treeview",
-                         background="#FAF9F6",
+                         background="#9c9c9c",
                          foreground="black",
                          rowheight=25,
-                         fieldbackground="#FAF9F6",
+                         fieldbackground="#9c9c9c",
                          bordercolor="black",
                          borderwidth=0,
                          font=(self.font, 12))
@@ -120,12 +127,15 @@ class UpdateBooking:
                    background=[('active', '#7EC8E3')],
                    foreground = [('active', 'black')])
 
+        self.table_frame = Frame(self.update_booking_window, bg="#2c2c2c", height=273)
+        self.table_frame.pack(side="bottom", fill="x")
+
         # To show the table in the window
         # To show the vertical scroll bar in the table
-        scroll_y = Scrollbar(self.table_frame, orient=VERTICAL)
-
-        self.booking_records_table = tkinter.ttk.Treeview(self.table_frame, height=10, columns=("bookingid", "pickupaddress", "pickupdate", "pickuptime","pickoffaddress"), show="headings", yscrollcommand=scroll_y.set)
-        scroll_y.pack(side="right", fill="y")
+        # scroll_y = Scrollbar(self.table_frame, orient=VERTICAL)
+        #
+        self.booking_records_table = tkinter.ttk.Treeview(self.table_frame, height=10, columns=("bookingid", "pickupaddress", "pickupdate", "pickuptime","pickoffaddress"), show="headings")
+        # scroll_y.pack(side="right", fill="y")
 
 
         # for the heading section
@@ -153,16 +163,22 @@ class UpdateBooking:
         self.display_data()
 
     def display_data(self):
-        result = select_pending_booking()
+        booking =Booking(customer_id=Global.logged_in_customer[0])
+        result = select_pending_booking(booking)
+
         if result is not None:
+            self.booking_records_table.delete(*self.booking_records_table.get_children())
+
             for row in result:
-                self.booking_records_table.delete(*self.booking_records_table.get_children())
                 self.booking_records_table.insert('', END, values=row)
+
     def fill_data(self,event):
         view_info = self.booking_records_table.focus()
         customer_info = self.booking_records_table.item(view_info)
 
         row = customer_info.get('values')
+
+        self.clear_field()
 
         self.bookingId.set(row[0])
         self.pickUpAddress.set(row[1])
@@ -171,11 +187,33 @@ class UpdateBooking:
         self.dropOffAddress.set(row[4])
 
     def clear_field(self):
+        self.bookingid_entry.configure(state="normal")
         self.bookingid_entry.delete(0, END)
         self.address_entry.delete(0, END)
         self.date_entry.delete(0, END)
         self.time_entry.delete(0, END)
         self.dropoff_address_entry.delete(0, END)
+
+    def update_booking(self):
+        bookingID = self.bookingid_entry.get()
+        pickup_address = self.address_entry.get()
+        pickup_date = self.date_entry.get()
+        pickup_time = self.time_entry.get()
+        dropoff_address = self.dropoff_address_entry.get()
+
+        if not (bookingID == "" or pickup_address == "" or pickup_date == "" or pickup_time == "" or dropoff_address == ""):
+            booking = Booking(booking_id=bookingID,pickup_address = pickup_address, pickup_date=pickup_date, pickup_time= pickup_time, dropoff_address = dropoff_address)
+            is_updated = update_booking(booking)
+            if is_updated:
+                self.display_data()
+                messagebox.showinfo("Update Success", "Successfully Updated Booking Details.",parent=self.update_booking_window)
+                print("updated")
+            else:
+                messagebox.showerror("Update Failed", "Sorry, Could't Update Your Booking Details !")
+        else:
+            messagebox.showerror("Update Failed !", "Please Fill All The Details Properly!")
+
+
 
 
 
