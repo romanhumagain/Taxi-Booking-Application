@@ -32,10 +32,10 @@ class ChangePassword:
 
         self.change_password_window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
 
-        heading_icon = ImageTk.PhotoImage(Image.open("Images/change-password.png"))
+        heading_icon = ImageTk.PhotoImage(Image.open("Images/change_password.png"))
         self.heading_icon_label = Label(self.change_password_window, image=heading_icon, bg='#2c2c2c')
         self.heading_icon_label.image = heading_icon
-        self.heading_icon_label.place(x=40, y=5)
+        self.heading_icon_label.place(x=60, y=5)
 
         self.heading_label = Label(self.change_password_window, text="Change Your Password", font=(self.font, 17), bg="#2c2c2c",fg="white")
         self.heading_label.place(relx=0.56, rely=0.08, anchor="center")

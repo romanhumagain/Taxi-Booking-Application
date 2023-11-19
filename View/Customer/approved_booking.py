@@ -119,7 +119,7 @@ class ApprovedBooking:
                          background="#4c4c4c",
                          foreground="white",
                          relief="flat",
-                         font=('Helvetica', 12),
+                         font=('Century Gothic', 12),
                          padding=(0, 6)
                          )
 

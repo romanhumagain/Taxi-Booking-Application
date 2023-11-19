@@ -54,8 +54,8 @@ class BookingHistory():
                          background="#4c4c4c",
                          foreground="white",
                          relief="flat",
-                         font=('Helvetica', 12),
-                         padding=(0, 10)
+                         font=('Century Gothic', 12),
+                         padding=(0, 8)
                          )
 
 
@@ -63,7 +63,7 @@ class BookingHistory():
                    background=[('active', '#3c3c3c')],
                    foreground = [('active', 'white')])
 
-        self.table_frame = Frame(self.booking_history_window, bg='red', width=850, height=350)
+        self.table_frame = Frame(self.booking_history_window, bg='white', width=850, height=350)
         self.table_frame.pack(side= "bottom", fill ="x")
 
         # ========== CREATE A SCROLLBAR FOR THE TABLE ============

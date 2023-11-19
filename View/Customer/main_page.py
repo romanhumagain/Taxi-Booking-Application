@@ -9,6 +9,8 @@ from Model.user import *
 
 from Controller.customer_registration_dbms import *
 from Controller.login_dbms import *
+
+from signals import login_device_details
 # from customer_dashboard import CustomerDashboard
 
 from Model import Global
@@ -48,50 +50,50 @@ class MainPage:
                                   fg='white', bg='#2c2c2c', font=(self.font, 35))
         self.slogan_label.pack()
 
-        self.main_frame = Frame(self.window, bg='#040405', width='900', height='600')
-        self.main_frame.place(x=310, y=120)
+        self.main_frame = Frame(self.window, bg='#111111', width='900', height='600')
+        self.main_frame.place(x=320, y=120)
 
         self.text = "Taxi Booking System"
         self.heading = Label(self.main_frame, text=self.text, font=('Century Gothic', 20),
-                             fg='white', bg='black')
+                             fg='white', bg='#111111')
         # self.heading.place(x=350, y=30)
 
         self.side_image = PILImage.open("Images/login_side_image.png")
         side_photo = ImageTk.PhotoImage(self.side_image)
 
-        self.side_image_label = Label(self.main_frame, image=side_photo, bg='#040405')
+        self.side_image_label = Label(self.main_frame, image=side_photo, bg='#111111')
         self.side_image_label.image = side_photo
         self.side_image_label.place(x=4, y=160)
 
         self.login_frame()
     def login_frame(self):
 
-        self.inner_login_frame = Frame(self.main_frame, bg="#040405", width="440", height="500")
+        self.inner_login_frame = Frame(self.main_frame, bg="#111111", width="440", height="500")
         self.inner_login_frame.place(x=450, y=80)
 
         self.user_image = PILImage.open("Images/user.png")
         photo = ImageTk.PhotoImage(self.user_image)
 
-        self.user_image_label = Label(self.inner_login_frame, image=photo, bg='#040405')
+        self.user_image_label = Label(self.inner_login_frame, image=photo, bg='#111111')
         self.user_image_label.image = photo
         self.user_image_label.place(x=180, y=50)
 
-        self.sign_in_label = Label(self.inner_login_frame, text="Sign In", bg='#040405', fg='white',
+        self.sign_in_label = Label(self.inner_login_frame, text="Sign In", bg='#111111', fg='white',
                                    font=(self.font, 18), justify=CENTER)
         self.sign_in_label.place(x=180, y=140)
 
         self.username_image = PILImage.open("Images/username.png")
         photo = ImageTk.PhotoImage(self.username_image)
 
-        self.username_image_label = Label(self.inner_login_frame, image=photo, bg='#040405')
+        self.username_image_label = Label(self.inner_login_frame, image=photo, bg='#111111')
         self.username_image_label.image = photo
         self.username_image_label.place(x=87, y=240)
 
-        self.username_label = Label(self.inner_login_frame, text="Username", bg='#040405', fg='white',
+        self.username_label = Label(self.inner_login_frame, text="Username", bg='#111111', fg='white',
                                     font=(self.font, 14))
         self.username_label.place(x=90, y=200)
 
-        self.username_entry = Entry(self.inner_login_frame, highlightthickness=0, relief=FLAT, bg='#040404',
+        self.username_entry = Entry(self.inner_login_frame, highlightthickness=0, relief=FLAT, bg='#111111',
                                     fg='white',insertbackground="white", font=(self.font, 12))
         self.username_entry.place(x=115, y=235, width=250)
 
@@ -101,15 +103,15 @@ class MainPage:
         self.password_image = PILImage.open("Images/password1.png")
         photo = ImageTk.PhotoImage(self.password_image)
 
-        self.password_image_label = Label(self.inner_login_frame, image=photo, bg='#040405')
+        self.password_image_label = Label(self.inner_login_frame, image=photo, bg='#111111')
         self.password_image_label.image = photo
         self.password_image_label.place(x=87, y=315)
 
-        self.password_label = Label(self.inner_login_frame, text="Password", bg='#040405', fg='white',
+        self.password_label = Label(self.inner_login_frame, text="Password", bg='#111111', fg='white',
                                     font=(self.font, 14))
         self.password_label.place(x=90, y=280)
 
-        self.password_entry = Entry(self.inner_login_frame, show='•', relief=FLAT, bg='#040405',
+        self.password_entry = Entry(self.inner_login_frame, show='•', relief=FLAT, bg='#111111',
                                     fg='white', insertbackground="white", font=(self.font, 12))
 
         self.password_entry.place(x=115, y=315, width=220)
@@ -120,7 +122,7 @@ class MainPage:
         # self.show_hide_button = Button(self.inner_login_frame, image=self.show_icon,bd=0, relief="flat", highlightthickness=0)
         # self.show_hide_button.place(x=340, y=312)
 
-        self.show_hide_password_label = Label(self.inner_login_frame, image=self.show_icon, bg='black',cursor='hand2')
+        self.show_hide_password_label = Label(self.inner_login_frame, image=self.show_icon, bg='#111111',cursor='hand2')
         self.show_hide_password_label.place(x=340, y=310)
         self.show_hide_password_label.bind("<Button-1>", self.show_hide_password)
 
@@ -128,7 +130,7 @@ class MainPage:
         self.password_line = Canvas(self.inner_login_frame, width=300, height=2.0, bg='#bdb9b1', highlightthickness=0)
         self.password_line.place(x=115, y=342, width=250)
 
-        self.forgot_password_label = Label(self.inner_login_frame, text="forgot password ?", fg='white', bg='black',
+        self.forgot_password_label = Label(self.inner_login_frame, text="forgot password ?", fg='white', bg='#111111',
                                            font=(self.font, 12), cursor="hand2")
         self.forgot_password_label.place(x=225, y=350)
         self.forgot_password_label.bind("<Button-1>")
@@ -146,11 +148,11 @@ class MainPage:
 
         self.new_account_label = Label(self.inner_login_frame, text="Create A New Account ?",
                                        font=(self.font, 12),
-                                       fg="white", bg='black')
+                                       fg="white", bg='#111111')
         self.new_account_label.place(x=106, y=460)
 
-        self.signup_option_label = Label(self.inner_login_frame, text="Sign Up", fg="blue", bg="black",
-                                         font=(self.font, 12))
+        self.signup_option_label = Label(self.inner_login_frame, text="Sign Up", fg="blue", bg="#111111",
+                                         font=(self.font, 12), cursor="hand2")
         self.signup_option_label.place(x=316, y=460)
 
         self.signup_option_label.bind("<Button-1>", self.toggle_frames)
@@ -159,20 +161,20 @@ class MainPage:
         style = ttk.Style()
         style.configure("TEntry", padding=3, relief="flat")
 
-        self.inner_registration_frame = Frame(self.main_frame, bg="#040405", width="440", height="500")
+        self.inner_registration_frame = Frame(self.main_frame, bg="#111111", width="440", height="500")
         self.inner_registration_frame.place(x=450, y=80)
 
         self.signup_image = PILImage.open("Images/signup.png")
         photo = ImageTk.PhotoImage(self.signup_image)
 
-        self.signup_image_label = Label(self.inner_registration_frame, image=photo, bg='#040405')
+        self.signup_image_label = Label(self.inner_registration_frame, image=photo, bg='#111111')
         self.signup_image_label.image = photo
         self.signup_image_label.place(x=145, y=10)
 
         self.text = "Sign Up"
 
         self.heading = Label(self.inner_registration_frame, text=self.text, font=(self.font, 18),
-                             fg='white', bg='black')
+                             fg='white', bg='#111111')
         self.heading.place(x=190, y=10)
 
         self.heading_line = Canvas(self.inner_registration_frame, width=80, height=3.0, bg='#bdb9b1',
@@ -182,14 +184,14 @@ class MainPage:
         # setting the background image
 
         # for the registratin form
-        self.name_label = Label(self.inner_registration_frame, text="Name", fg="white", bg="#040405",
+        self.name_label = Label(self.inner_registration_frame, text="Name", fg="white", bg="#111111",
                                 font=(self.font, 13))
         # self.name_label.place(x=10, y=70)
 
         self.name_entry = customtkinter.CTkEntry(master=self.inner_registration_frame, font = (self.font, 15), width=170, placeholder_text="Full Name", height=38)
         self.name_entry.place(x=35, y=70)
 
-        self.mobile_label = Label(self.inner_registration_frame, text="Phone", fg="white", bg="#040405",
+        self.mobile_label = Label(self.inner_registration_frame, text="Phone", fg="white", bg="#111111",
                                   font=(self.font, 13))
         # self.mobile_label.place(x=250, y=70)
 
@@ -197,21 +199,21 @@ class MainPage:
                                       )
         self.mobile_entry.place(x=250, y=70)
 
-        self.email_label = Label(self.inner_registration_frame, text="Email", fg="white", bg="#040405",
+        self.email_label = Label(self.inner_registration_frame, text="Email", fg="white", bg="#111111",
                                  font=(self.font, 13))
         # self.email_label.place(x=10, y=130)
 
         self.email_entry = customtkinter.CTkEntry(master=self.inner_registration_frame, font=(self.font, 13), width=170, placeholder_text="example@gmail.com", height=38)
         self.email_entry.place(x=35, y=130)
 
-        self.address_label = Label(self.inner_registration_frame, text="Address", fg="white", bg="#040405",
+        self.address_label = Label(self.inner_registration_frame, text="Address", fg="white", bg="#111111",
                                    font=(self.font, 13))
         # self.address_label.place(x=250, y=130)
 
         self.address_entry = customtkinter.CTkEntry(master=self.inner_registration_frame, font=(self.font, 15), width=170, placeholder_text="Current Address", height=38)
         self.address_entry.place(x=250, y=130)
 
-        self.gender_label = Label(self.inner_registration_frame, text="Gender", fg="white", bg="#040405",
+        self.gender_label = Label(self.inner_registration_frame, text="Gender", fg="white", bg="#111111",
                                   font=(self.font, 13))
         # self.gender_label.place(x=250, y=195)
 
@@ -224,26 +226,26 @@ class MainPage:
         self.payment_entry = customtkinter.CTkComboBox(master = self.inner_registration_frame,values=["Online", "Cash"], variable=payment_methods, width=170, height=40)
         self.payment_entry.place(x=250, y=195)
 
-        self.password_label = Label(self.inner_registration_frame, text="Password", fg="white", bg="#040405",
+        self.password_label = Label(self.inner_registration_frame, text="Password", fg="white", bg="#111111",
                                     font=(self.font, 13))
         # self.password_label.place(x=10, y=260)
 
         self.password_entry = customtkinter.CTkEntry(master=self.inner_registration_frame, font=(self.font, 15), width=170, placeholder_text="Password", height=40)
         self.password_entry.place(x=35, y=260)
 
-        self.co_password_label = Label(self.inner_registration_frame, text="Confirm Password", fg="white", bg="#040405",
+        self.co_password_label = Label(self.inner_registration_frame, text="Confirm Password", fg="white", bg="#111111",
                                        font=(self.font, 13))
         # self.co_password_label.place(x=10, y=315)
 
         self.co_password_entry = customtkinter.CTkEntry(master=self.inner_registration_frame, font=(self.font, 15),width=170, placeholder_text="Confirm Password", height=40)
         self.co_password_entry.place(x=35, y=315)
 
-        self.dob_label = Label(self.inner_registration_frame, text="DOB", fg="white", bg="#040405",
+        self.dob_label = Label(self.inner_registration_frame, text="DOB", fg="white", bg="#111111",
                                font=(self.font, 12))
         self.dob_label.place(x=239, y=260)
 
         self.dob_entry = DateEntry(self.inner_registration_frame, font=('yu gothic ui', 12), selectmode='day',
-                                   style='my.DateEntry', background="black",
+                                   style='my.DateEntry', background="#111111",
                                    bordercolor="white",
                                    selectbackground="red", width=12, date_pattern='yyyy-mm-dd')
 
@@ -263,12 +265,12 @@ class MainPage:
 
         #         new account label
         self.signin_label = Label(self.inner_registration_frame, text="Already Have Account ?",
-                                  font=(self.font, 13), fg="white", bg='black')
+                                  font=(self.font, 13), fg="white", bg='#111111')
         self.signin_label.place(x=100, y=460)
 
         #         for signup option
-        self.signin_option_label = Label(self.inner_registration_frame, text="Sign In", fg="blue", bg="black",
-                                         font=(self.font, 13))
+        self.signin_option_label = Label(self.inner_registration_frame, text="Sign In", fg="blue", bg="#111111",
+                                         font=(self.font, 13), cursor="hand2")
         self.signin_option_label.place(x=320, y=460)
 
         self.signin_option_label.bind("<Button-1>", self.toggle_frames)
@@ -342,13 +344,18 @@ class MainPage:
             if user is not None:
                 Global.current_user = user
                 Global.logged_in_customer = customer
-                messagebox.showinfo("Login Success" , "Successfully Logged In.")
-                self.window.destroy()
 
-                # Create a new Toplevel window for the CustomerDashboard
-                customer_dashboard_window = Tk()
-                customer_dashboard = CustomerDashboard(customer_dashboard_window)
-                customer_dashboard_window.mainloop()
+                login_details_stored = login_device_details()
+                if login_details_stored:
+                    self.window.destroy()
+
+                    # Create a new Toplevel window for the CustomerDashboard
+                    customer_dashboard_window = Tk()
+                    customer_dashboard = CustomerDashboard(customer_dashboard_window)
+                    customer_dashboard_window.mainloop()
+                else:
+                    messagebox.showerror("Login Failed", "Sorry, Something Went Wrong!")
+
 
             else:
                 messagebox.showerror("Invalid Credentials", "Invalid Credentials !")
