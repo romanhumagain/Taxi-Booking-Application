@@ -305,7 +305,7 @@ class CustomerDashboard:
 
     def driver_frame(self):
         driver_frame = DriverFrame(self.innner_main_frame)
-        driver_frame.place(x=0, y=0)
+        driver_frame.show_driver_frame()
 
     def payment_frame(self):
         payment_frame = PaymentFrame(self.innner_main_frame)

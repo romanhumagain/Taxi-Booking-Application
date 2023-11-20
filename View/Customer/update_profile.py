@@ -5,8 +5,12 @@ from PIL import  Image, ImageTk
 from Model import Global
 from Model.customer import Customer
 from Model.user import User
+from Model.account_activity import AccountActivity
 from Controller.profile_dbms import profile_details, update_customer_profile
+from Controller.account_activity_dbms import insert_account_activity_details
 from tkinter import messagebox
+from datetime import datetime
+
 # from customer_dashboard
 
 class UpdateProfile:
@@ -152,11 +156,27 @@ class UpdateProfile:
             profile_isupdated = update_customer_profile(customer, user)
 
             if profile_isupdated:
-                messagebox.showinfo("Profile Update Success","Your Profile Has Been Successfully Updated.", parent = self.update_profile_window)
-                self.set_profile_details()
-                self.update_profile_window.destroy()
-                if self.profile_update_callback:
-                    self.profile_update_callback()
+
+                # TO INSERT RECORDS TO THE ACCOUNT ACTIVITY TABLE
+                current_date_time = datetime.now()
+                current_date = current_date_time.date()
+                current_time = current_date_time.time()
+
+                activity_related = "Profile Updated"
+                description = f"Your Profile was updated."
+
+                accountActivity = AccountActivity(activity_related=activity_related, description=description,
+                                                  date=current_date, time=current_time, user_id=Global.current_user[0])
+                account_activity_stored = insert_account_activity_details(accountActivity)
+
+                if account_activity_stored:
+                    messagebox.showinfo("Profile Update Success","Your Profile Has Been Successfully Updated.", parent = self.update_profile_window)
+                    self.set_profile_details()
+                    self.update_profile_window.destroy()
+                    if self.profile_update_callback:
+                        self.profile_update_callback()
+                else:
+                    messagebox.showerror("ERROR!", "Account Activity Couldn't Store.",parent =self.update_profile_window )
             else:
                 messagebox.showerror("Update Failed", "Sorry, Your Profile Couldn't Update !", parent = self.update_profile_window)
         else:

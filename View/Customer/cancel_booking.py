@@ -6,7 +6,10 @@ from Controller.booking_dbms import *
 from PIL import Image, ImageTk
 from tkinter import  messagebox
 from Model import Global
+from Model.account_activity import AccountActivity
 from Controller.booking_dbms import cancel_booking
+from Controller.account_activity_dbms import insert_account_activity_details
+from datetime import datetime
 class CancelBooking:
     def __init__(self, frame):
         self.frame = frame
@@ -190,10 +193,26 @@ class CancelBooking:
         if not booking_id == "":
             booking = Booking(booking_id=booking_id)
             is_cancelled = cancel_booking(booking)
+
             if is_cancelled:
-                self.display_data()
-                self.clear_field()
-                messagebox.showinfo("Booking Cancelled ", "Your booking has been successfully cancelled!", parent =self.cancel_booking_window)
+                # TO INSERT RECORDS TO THE ACCOUNT ACTIVITY TABLE
+                current_date_time = datetime.now()
+                current_date = current_date_time.date()
+                current_time = current_date_time.time()
+
+                activity_related = "Booking Cancelled"
+                description = f"Your Booking was Cancelled for the trip of {self.pickUpAddress.get()} to {self.dropOffAddress.get()}"
+
+                accountActivity = AccountActivity(activity_related=activity_related, description=description,
+                                                  date=current_date, time=current_time, user_id=Global.current_user[0])
+                account_activity_stored = insert_account_activity_details(accountActivity)
+
+                if account_activity_stored:
+                    self.display_data()
+                    self.clear_field()
+                    messagebox.showinfo("Booking Cancelled ", "Your booking has been successfully cancelled!", parent =self.cancel_booking_window)
+                else:
+                    messagebox.showerror("ERROR!", "Account Activity Couldn't Store.",parent =self.cancel_booking_window )
             else:
                 messagebox.showerror("Cancel Failed !", "Sorry, could't cancel your booking.",
                                      parent=self.cancel_booking_window)

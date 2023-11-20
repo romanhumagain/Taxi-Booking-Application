@@ -18,7 +18,7 @@ class LoginActivity():
         screen_height = self.login_activity_window.winfo_screenheight()
 
         window_width = 870
-        window_height = 580
+        window_height = 600
 
         x_position = (screen_width-window_width) // 2 + 140
         y_position = (screen_height-window_height) // 2 +25

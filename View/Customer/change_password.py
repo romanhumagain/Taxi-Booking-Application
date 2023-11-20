@@ -3,9 +3,13 @@ import customtkinter
 from PIL import Image, ImageTk
 from tkinter import messagebox
 from Controller.user_dbms import change_user_password
+from Controller.account_activity_dbms import insert_account_activity_details
 from Model.user import User
+from Model.account_activity import AccountActivity
 from Model import Global
 from main_page import MainPage
+from datetime import datetime
+
 
 class ChangePassword:
     def __init__(self, frame, main_dashboard):
@@ -77,15 +81,26 @@ class ChangePassword:
                 password_changed = change_user_password(user)
                 if password_changed:
                     messagebox.showinfo("Password Changed Successfully", "Your password has been changed successfully.\n\n Please RE-LOGIN your account.", parent = self.change_password_window)
-                    self.cancel_window()
-                    self.main_dashboard.destroy()
+                    # TO INSERT RECORDS TO THE ACCOUNT ACTIVITY TABLE
+                    current_date_time = datetime.now()
+                    current_date = current_date_time.date()
+                    current_time = current_date_time.time()
 
-                    login_page_window = Tk()
-                    login_page = MainPage(login_page_window)
-                    login_page_window.mainloop()
+                    activity_related = "Password Changed"
+                    description="Your account password was successfully updated. If you did not initiate this change, please contact support immediately."
 
+                    accountActivity = AccountActivity(activity_related=activity_related, description=description, date= current_date, time=current_time, user_id = Global.current_user[0])
+                    account_activity_stored = insert_account_activity_details(accountActivity)
 
+                    if account_activity_stored:
+                        self.cancel_window()
+                        self.main_dashboard.destroy()
 
+                        login_page_window = Tk()
+                        login_page = MainPage(login_page_window)
+                        login_page_window.mainloop()
+                    else:
+                        messagebox.showerror("ERROR!", "Account Activity Couldn't Store.",parent=self.change_password_window)
                 else:
                     messagebox.showerror("Password Changed Failed", "Sorry, could't change your password !")
             else:
