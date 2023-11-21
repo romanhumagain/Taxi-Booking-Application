@@ -159,7 +159,7 @@ class CustomerDashboard:
         self.main_panel.pack(fill="both", expand="yes")
 
     #     creating a inner main frame above the main panel
-        self.innner_main_frame = Frame(self.main_panel, bg='#0E0E0E', width=850, height=600)
+        self.innner_main_frame = Frame(self.main_panel, bg='#0E0E0E', width=900, height=600)
         self.innner_main_frame.place(x=190, y=50)
 
         self.my_profile_frame()
@@ -167,7 +167,7 @@ class CustomerDashboard:
 
     def my_profile_frame(self):
 
-        self.profile_frame = Frame(self.innner_main_frame, bg="#0E0E0E", width=850, height=600)
+        self.profile_frame = Frame(self.innner_main_frame, bg="#0E0E0E", width=900, height=600)
         self.profile_frame.place(x=0, y=0)
 
     # to place the profile icon image
@@ -183,7 +183,7 @@ class CustomerDashboard:
 
     #  simple card to show the total booking number
         self.total_booking_frame = customtkinter.CTkFrame(master = self.profile_frame,  corner_radius=30, height=90, width=190)
-        self.total_booking_frame.place(x=230, y=200)
+        self.total_booking_frame.place(x=245, y=200)
 
         self.booking_number_label = Label(self.total_booking_frame, font=(self.font, 14), text="Total Booking", bg="#2c2c2c", fg="white")
         self.booking_number_label.place(relx=0.5, rely=0.25, anchor = "center")
@@ -197,7 +197,7 @@ class CustomerDashboard:
         #  simple card to show the total requested booking number
         self.booking_requested_frame = customtkinter.CTkFrame(master=self.profile_frame, corner_radius=30, height=90,
                                                           width=190)
-        self.booking_requested_frame.place(x=450, y=200)
+        self.booking_requested_frame.place(x=455, y=200)
 
         self.booking_requested_label = Label(self.booking_requested_frame, font=(self.font, 14), text="Pending Booking",bg="#2c2c2c", fg="white")
         self.booking_requested_label.place(x=10, y=10)
@@ -210,72 +210,72 @@ class CustomerDashboard:
 
     #     to show the personal information
         self.email_label = Label(self.profile_frame, font=(self.font, 9), text="Email", bg="#0E0E0E", fg="white")
-        self.email_label.place(x=110, y=325)
+        self.email_label.place(x=130, y=325)
 
         self.user_email_label = Label(self.profile_frame, text="", fg="white", bg="#0E0E0E", font=(self.font, 12))
-        self.user_email_label.place(x=110, y=350)
+        self.user_email_label.place(x=130, y=350)
 
         self.email_line = Canvas(self.profile_frame, height=2.0, bg='#bdb9b1', highlightthickness=0)
-        self.email_line.place(x=112, y=375, width=230)
+        self.email_line.place(x=132, y=375, width=230)
 
 
         self.mobile_label = Label(self.profile_frame, font=(self.font, 9), text="Phone No", bg="#0E0E0E", fg="white")
-        self.mobile_label.place(x=375, y=325)
+        self.mobile_label.place(x=435, y=325)
 
         self.user_mobile_label = Label(self.profile_frame, text="", fg="white", bg="#0E0E0E",font=(self.font, 12))
-        self.user_mobile_label.place(x=375, y=350)
+        self.user_mobile_label.place(x=435, y=350)
 
         self.mobile_line = Canvas(self.profile_frame, height=2.0, bg='#bdb9b1', highlightthickness=0)
-        self.mobile_line.place(x=377, y=375, width=135)
+        self.mobile_line.place(x=437, y=375, width=135)
 
         self.address_label = Label(self.profile_frame, font=(self.font, 9), text="Address", bg="#0E0E0E", fg="white")
-        self.address_label.place(x=565, y=325)
+        self.address_label.place(x=625, y=325)
 
         self.user_address_label = Label(self.profile_frame, text="", fg="white", bg="#0E0E0E",font=(self.font, 12))
-        self.user_address_label.place(x=565, y=350)
+        self.user_address_label.place(x=625, y=350)
 
         self.address_line = Canvas(self.profile_frame, height=2.0, bg='#bdb9b1', highlightthickness=0)
-        self.address_line.place(x=567, y=375, width=145)
+        self.address_line.place(x=627, y=375, width=145)
 
         self.gender_label = Label(self.profile_frame, font=(self.font, 9), text="Gender", bg="#0E0E0E", fg="white")
-        self.gender_label.place(x=110, y=420)
+        self.gender_label.place(x=130, y=420)
 
         self.user_gender_label = Label(self.profile_frame, text="", fg="white", bg="#0E0E0E", font=(self.font, 12))
-        self.user_gender_label.place(x=110, y=445)
+        self.user_gender_label.place(x=130, y=445)
 
         self.gender_line = Canvas(self.profile_frame, height=2.0, bg='#bdb9b1', highlightthickness=0)
-        self.gender_line.place(x=112, y=475, width=90)
+        self.gender_line.place(x=132, y=475, width=90)
 
         self.dob_label = Label(self.profile_frame, font=(self.font, 9), text="D.O.B", bg="#0E0E0E", fg="white")
-        self.dob_label.place(x=375, y=420)
+        self.dob_label.place(x=435, y=420)
 
         self.user_dob_label = Label(self.profile_frame, text="", fg="white", bg="#0E0E0E", font=(self.font, 12))
-        self.user_dob_label.place(x=375, y=445)
+        self.user_dob_label.place(x=435, y=445)
 
         self.dob_line = Canvas(self.profile_frame, height=2.0, bg='#bdb9b1', highlightthickness=0)
-        self.dob_line.place(x=377, y=475, width=135)
+        self.dob_line.place(x=437, y=475, width=135)
 
         self.payment_label = Label(self.profile_frame, font=(self.font, 9), text="Payment Method", bg="#0E0E0E", fg="white")
-        self.payment_label.place(x=565, y=420)
+        self.payment_label.place(x=625, y=420)
 
         self.user_payment_label = Label(self.profile_frame, text="", fg="white", bg="#0E0E0E", font=(self.font, 12))
-        self.user_payment_label.place(x=565, y=445)
+        self.user_payment_label.place(x=625, y=445)
 
         self.payment_line = Canvas(self.profile_frame, height=2.0, bg='#bdb9b1', highlightthickness=0)
-        self.payment_line.place(x=567, y=475, width=145)
+        self.payment_line.place(x=627, y=475, width=145)
 
     #     to show the button for more functionality of the application
         self.update_button = customtkinter.CTkButton(master = self.profile_frame, text="Update Profile", font=(self.font, 15), corner_radius=8,height=30, command=self.update_profile)
-        self.update_button.place(x=90, y=550)
+        self.update_button.place(x=95, y=550)
 
         self.delete_button = customtkinter.CTkButton(master=self.profile_frame, text="Delete Profile",font=(self.font, 15), corner_radius=8,  height=30, command=self.delete_account)
-        self.delete_button.place(x=260, y=550)
+        self.delete_button.place(x=290, y=550)
 
         self.change_password_button = customtkinter.CTkButton(master=self.profile_frame, text="Change Password",font=(self.font, 15), corner_radius=8,height=30, command=self.change_password)
-        self.change_password_button.place(x=430, y=550)
+        self.change_password_button.place(x=475, y=550)
 
         self.login_info_button = customtkinter.CTkButton(master=self.profile_frame, text="Login Info", font=(self.font, 15), corner_radius=8,height=30, command=self.login_activity_frame)
-        self.login_info_button.place(x=610, y=550)
+        self.login_info_button.place(x=685, y=550)
 
         # ============ SETTING THE DETAILS IN THE PROFILE FRAME =================
 

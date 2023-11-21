@@ -23,11 +23,11 @@ class CancelBooking:
         screen_width = self.cancel_booking_window.winfo_screenwidth()
         screen_height = self.cancel_booking_window.winfo_screenheight()
 
-        window_width = 850
-        window_height = 520
+        window_width = 900
+        window_height = 600
 
-        x_position = (screen_width - window_width) // 2 + 140
-        y_position = (screen_height - window_height) // 2
+        x_position = (screen_width - window_width) // 2 + 165
+        y_position = (screen_height - window_height) // 2 +25
 
         self.cancel_booking_window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
 
@@ -70,40 +70,40 @@ class CancelBooking:
         self.address_label.place(x=30, y=128)
 
         self.address_entry = customtkinter.CTkEntry(master=self.cancel_frame, font=(self.font, 16),
-                                                    width=170, placeholder_text="Drop Up Address", height=40,
+                                                    width=220, placeholder_text="Drop Up Address", height=40,
                                                     textvariable=self.pickUpAddress)
         self.address_entry.place(x=30, y=150)
 
         self.date_label = Label(self.cancel_frame, text="Pick Up Date", fg="white", bg="#2c2c2c",
                                 font=(self.font, 10))
-        self.date_label.place(x=240, y=128)
+        self.date_label.place(x=270, y=128)
 
         self.date_entry = customtkinter.CTkEntry(master=self.cancel_frame, font=(self.font, 16),
                                                  width=170, placeholder_text="Drop Up Date", height=40,
                                                  textvariable=self.pickUpDate)
-        self.date_entry.place(x=240, y=150)
+        self.date_entry.place(x=270, y=150)
 
         self.time_label = Label(self.cancel_frame, text="Pick Up Time", fg="white", bg="#2c2c2c",
                                 font=(self.font, 10))
-        self.time_label.place(x=450, y=128)
+        self.time_label.place(x=470, y=128)
 
         self.time_entry = customtkinter.CTkEntry(master=self.cancel_frame, font=(self.font, 16),
                                                  width=170, placeholder_text="Drop Up Time", height=40,
                                                  textvariable=self.pickUpTime)
-        self.time_entry.place(x=450, y=150)
+        self.time_entry.place(x=470, y=150)
 
         self.dropoff_address_label = Label(self.cancel_frame, text="Drop Off Address", fg="white", bg="#2c2c2c",
                                            font=(self.font, 10))
         self.dropoff_address_label.place(x=660, y=128)
 
         self.dropoff_address_entry = customtkinter.CTkEntry(master=self.cancel_frame, font=(self.font, 16),
-                                                            width=170, placeholder_text="Drop Off Address", height=40,
+                                                            width=220, placeholder_text="Drop Off Address", height=40,
                                                             textvariable=self.dropOffAddress)
         self.dropoff_address_entry.place(x=660, y=150)
 
         self.cancel_button = customtkinter.CTkButton(master=self.cancel_frame, text="Cancel Booking",
                                                      font=(self.font, 15), corner_radius=10, height=40, command=self.cancel_booking)
-        self.cancel_button.place(x=355, y=220)
+        self.cancel_button.place(x=380, y=220)
 
         style1 = tkinter.ttk.Style()
         style1.theme_use("default")
@@ -131,14 +131,14 @@ class CancelBooking:
                    background=[('active', '#3c3c3c')],
                    foreground=[('active', 'white')])
 
-        self.table_frame = Frame(self.cancel_booking_window, bg="#2c2c2c", height=273)
+        self.table_frame = Frame(self.cancel_booking_window, bg="#2c2c2c", height=293)
         self.table_frame.pack(side="bottom", fill="x")
 
         # To show the table in the window
         # To show the vertical scroll bar in the table
         # scroll_y = Scrollbar(self.table_frame, orient=VERTICAL)
         #
-        self.booking_records_table = tkinter.ttk.Treeview(self.table_frame, height=10, columns=("bookingid", "pickupaddress", "pickupdate", "pickuptime","pickoffaddress"), show="headings")
+        self.booking_records_table = tkinter.ttk.Treeview(self.table_frame, height=15, columns=("bookingid", "pickupaddress", "pickupdate", "pickuptime","pickoffaddress"), show="headings")
         # scroll_y.pack(side="right", fill="y")
 
 

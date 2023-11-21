@@ -20,10 +20,10 @@ class LoginActivity():
         screen_width = self.login_activity_window.winfo_screenwidth()
         screen_height = self.login_activity_window.winfo_screenheight()
 
-        window_width = 870
+        window_width = 900
         window_height = 600
 
-        x_position = (screen_width-window_width) // 2 + 140
+        x_position = (screen_width-window_width) // 2 + 165
         y_position = (screen_height-window_height) // 2 +25
 
         self.login_activity_window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")

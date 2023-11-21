@@ -20,11 +20,11 @@ class ApprovedBooking:
         screen_width = self.approved_booking_window.winfo_screenwidth()
         screen_height = self.approved_booking_window.winfo_screenheight()
 
-        window_width = 850
-        window_height = 500
+        window_width = 900
+        window_height = 600
 
-        x_position = (screen_width - window_width) // 2 + 140
-        y_position = (screen_height - window_height) // 2
+        x_position = (screen_width - window_width) // 2 + 165
+        y_position = (screen_height - window_height) // 2 +25
 
         self.approved_booking_window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
 
@@ -58,44 +58,44 @@ class ApprovedBooking:
 
         self.address_label = Label(self.approved_frame, text="Pick Up Address", fg="white", bg="#2c2c2c",
                                      font=(self.font, 8))
-        self.address_label.place(x=20, y=70)
+        self.address_label.place(x=25, y=70)
 
         self.address_entry = customtkinter.CTkEntry(master=self.approved_frame, font=(self.font, 15),
-                                                      width=150, placeholder_text="Drop Up Address", height=40, textvariable=self.pickUpAddress, state="readonly")
-        self.address_entry.place(x=20, y=90)
+                                                      width=170, placeholder_text="Drop Up Address", height=40, textvariable=self.pickUpAddress, state="readonly")
+        self.address_entry.place(x=25, y=90)
 
         self.date_label = Label(self.approved_frame, text="Pick Up Date", fg="white", bg="#2c2c2c",
                                    font=(self.font, 8))
-        self.date_label.place(x=200, y=70)
+        self.date_label.place(x=230, y=70)
 
         self.date_entry = customtkinter.CTkEntry(master=self.approved_frame, font=(self.font, 15),
                                                     width=150, placeholder_text="Drop Up Date", height=40, textvariable=self.pickUpDate, state="readonly")
-        self.date_entry.place(x=200, y=90)
+        self.date_entry.place(x=230, y=90)
 
         self.time_label = Label(self.approved_frame, text="Pick Up Time", fg="white", bg="#2c2c2c",
                                 font=(self.font, 8))
-        self.time_label.place(x=380, y=70)
+        self.time_label.place(x=410, y=70)
 
         self.time_entry = customtkinter.CTkEntry(master=self.approved_frame, font=(self.font, 15),
                                                  width=150, placeholder_text="Drop Up Time", height=40, state="readonly", textvariable=self.pickUpTime)
-        self.time_entry.place(x=380, y=90)
+        self.time_entry.place(x=410, y=90)
 
         self.dropoff_address_label = Label(self.approved_frame, text="Drop Off Address", fg="white", bg="#2c2c2c",
                                 font=(self.font, 8))
-        self.dropoff_address_label.place(x=560, y=70)
+        self.dropoff_address_label.place(x=590, y=70)
 
         self.dropoff_address_entry = customtkinter.CTkEntry(master=self.approved_frame, font=(self.font, 15),
-                                                 width=150, placeholder_text="Drop Off Address", height=40, textvariable=self.dropOffAddress, state="readonly")
-        self.dropoff_address_entry.place(x=560, y=90)
+                                                 width=170, placeholder_text="Drop Off Address", height=40, textvariable=self.dropOffAddress, state="readonly")
+        self.dropoff_address_entry.place(x=590, y=90)
 
         self.driverid_label = Label(self.approved_frame, text="Driver ID", fg="white", bg="#2c2c2c",
                                            font=(self.font, 8))
-        self.driverid_label.place(x=740, y=70)
+        self.driverid_label.place(x=790, y=70)
 
         self.driverid_entry = customtkinter.CTkEntry(master=self.approved_frame, font=(self.font, 15),
                                                             width=80, placeholder_text="Driver ID", height=40,
                                                             textvariable=self.driverId, state="readonly")
-        self.driverid_entry.place(x=740, y=90)
+        self.driverid_entry.place(x=790, y=90)
 
         self.exit_button = customtkinter.CTkButton(master=self.approved_frame, text="Exit",
                                                      font=(self.font, 16), corner_radius=10, height=40, command=self.exit)
@@ -128,14 +128,14 @@ class ApprovedBooking:
                    foreground=[('active', 'white')])
 
 
-        self.table_frame = Frame(self.approved_booking_window, bg="#2c2c2c", height=273)
+        self.table_frame = Frame(self.approved_booking_window, bg="#2c2c2c", height=293)
         self.table_frame.pack(side="bottom", fill="x")
 
         # To show the table in the window
         # To show the vertical scroll bar in the table
         scroll_y = Scrollbar(self.table_frame, orient=VERTICAL)
         #
-        self.booking_records_table = tkinter.ttk.Treeview(self.table_frame, height=12, columns=("bookingid", "pickupaddress", "pickupdate", "pickuptime","dropoffaddress","driverid"), show="headings", yscrollcommand=scroll_y)
+        self.booking_records_table = tkinter.ttk.Treeview(self.table_frame, height=15, columns=("bookingid", "pickupaddress", "pickupdate", "pickuptime","dropoffaddress","driverid"), show="headings", yscrollcommand=scroll_y)
         scroll_y.pack(side="right", fill="y")
 
 

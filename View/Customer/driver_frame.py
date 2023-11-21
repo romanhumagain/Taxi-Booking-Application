@@ -7,7 +7,7 @@ class DriverFrame(Frame):
         self.font = "Century Gothic"
 
     def show_driver_frame(self):
-        self.driver_frame = Frame(self.frame, bg="white", width=850, height=600)
+        self.driver_frame = Frame(self.frame, bg="white", width=900, height=600)
         self.driver_frame.place(x=0, y=0)
 
         self.top_frame = Frame(self.driver_frame, bg="#2c2c2c")
@@ -46,7 +46,7 @@ class DriverFrame(Frame):
                    foreground=[('active', 'white')])
 
 
-        self.table_frame = Frame(self.driver_frame, bg="white", width=850, height=504)
+        self.table_frame = Frame(self.driver_frame, bg="white", width=900, height=504)
         self.table_frame.place(x=0, y=110)
 
         self.driver_Detals_table = tkinter.ttk.Treeview(self.table_frame, height=24, show="headings", columns=("driver_id","name","phone_no", "address","pickupaddress", "dropoffaddress","date", "time"))
@@ -62,13 +62,13 @@ class DriverFrame(Frame):
 
 
         self.driver_Detals_table.column("driver_id", width=50, anchor=CENTER)
-        self.driver_Detals_table.column("name",  width=100, anchor=CENTER)
+        self.driver_Detals_table.column("name",  width=120, anchor=CENTER)
         self.driver_Detals_table.column("phone_no",  width=100, anchor=CENTER)
-        self.driver_Detals_table.column("address",  width=100, anchor=CENTER)
-        self.driver_Detals_table.column("pickupaddress",  width=175, anchor=CENTER)
-        self.driver_Detals_table.column("dropoffaddress",  width=175, anchor=CENTER)
+        self.driver_Detals_table.column("address",  width=115, anchor=CENTER)
+        self.driver_Detals_table.column("pickupaddress",  width=185, anchor=CENTER)
+        self.driver_Detals_table.column("dropoffaddress",  width=185, anchor=CENTER)
         self.driver_Detals_table.column("date",  width=75, anchor=CENTER)
-        self.driver_Detals_table.column("time",  width=75, anchor=CENTER)
+        self.driver_Detals_table.column("time",  width=70, anchor=CENTER)
 
 
         self.driver_Detals_table.pack(fill="both", expand=True)

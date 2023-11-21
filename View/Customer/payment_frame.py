@@ -8,7 +8,7 @@ class PaymentFrame():
         self.font = "Century Gothic"
 
     def show_payment_frame(self):
-        self.payment_frame = Frame(self.frame, bg="white", width=850, height=600)
+        self.payment_frame = Frame(self.frame, bg="white", width=900, height=600)
         self.payment_frame.place(x=0, y=0)
 
         self.top_frame = Frame(self.payment_frame, bg="#2c2c2c")
@@ -20,7 +20,7 @@ class PaymentFrame():
 
         self.download_button = customtkinter.CTkButton(master=self.top_frame, text="Download Receipt",
                                                     font=(self.font, 15), corner_radius=10, height=34, width=40)
-        self.download_button.place(x=350, y=100)
+        self.download_button.place(x=370, y=100)
 
         # table to show the driver details
 
@@ -51,13 +51,13 @@ class PaymentFrame():
                    foreground=[('active', 'white')])
 
 
-        self.table_frame = Frame(self.payment_frame, bg="white", width=850, height=450)
+        self.table_frame = Frame(self.payment_frame, bg="white", width=900, height=450)
         self.table_frame.place(x=0, y=160)
 
         self.payment_detals_table = tkinter.ttk.Treeview(self.table_frame, height= 16, show="headings", columns=("payment_id","booking_id","pickupaddreess", "dropoffaddress","distance", "unit","total_amount", "date"))
 
         self.payment_detals_table.heading("payment_id", text="Invoice_no", anchor=CENTER)
-        self.payment_detals_table.heading("booking_id", text="B_ID", anchor=CENTER)
+        self.payment_detals_table.heading("booking_id", text="Booking ID", anchor=CENTER)
         self.payment_detals_table.heading("pickupaddreess", text="Pickup Address", anchor=CENTER)
         self.payment_detals_table.heading("dropoffaddress", text="Dropoff Address", anchor=CENTER)
         self.payment_detals_table.heading("distance", text="Distance", anchor=CENTER)
@@ -67,13 +67,13 @@ class PaymentFrame():
 
 
         self.payment_detals_table.column("payment_id", width=100, anchor=CENTER)
-        self.payment_detals_table.column("booking_id",  width=50, anchor=CENTER)
+        self.payment_detals_table.column("booking_id",  width=80, anchor=CENTER)
         self.payment_detals_table.column("pickupaddreess",  width=190, anchor=CENTER)
         self.payment_detals_table.column("dropoffaddress",  width=190, anchor=CENTER)
         self.payment_detals_table.column("distance",  width=90, anchor=CENTER)
         self.payment_detals_table.column("unit",  width=60, anchor=CENTER)
         self.payment_detals_table.column("total_amount",  width=120, anchor=CENTER)
-        self.payment_detals_table.column("date",  width=50, anchor=CENTER)
+        self.payment_detals_table.column("date",  width=70, anchor=CENTER)
 
 
         self.payment_detals_table.pack(fill="both", expand=True)

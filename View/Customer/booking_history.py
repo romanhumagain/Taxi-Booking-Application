@@ -18,13 +18,13 @@ class BookingHistory():
         screen_width = self.booking_history_window.winfo_screenwidth()
         screen_height = self.booking_history_window.winfo_screenheight()
 
-        window_width = 850
-        window_height = 500
+        window_width = 900
+        window_height = 600
 
-        x_position = (screen_width - window_width) // 2 + 140
-        y_position = (screen_height - window_height) // 2
+        x_position = (screen_width - window_width) // 2 + 165
+        y_position = (screen_height - window_height) // 2 +25
 
-        self.top_frame = Frame(self.booking_history_window, bg="#2c2c2c", height=80)
+        self.top_frame = Frame(self.booking_history_window, bg="#2c2c2c", height=135)
         self.top_frame.pack(side="top", fill = "x")
 
         self.booking_history_window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
@@ -63,7 +63,7 @@ class BookingHistory():
                    background=[('active', '#3c3c3c')],
                    foreground = [('active', 'white')])
 
-        self.table_frame = Frame(self.booking_history_window, bg='white', width=850, height=350)
+        self.table_frame = Frame(self.booking_history_window, bg='white', width=850, height=400)
         self.table_frame.pack(side= "bottom", fill ="x")
 
         # ========== CREATE A SCROLLBAR FOR THE TABLE ============
