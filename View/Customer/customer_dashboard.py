@@ -309,7 +309,7 @@ class CustomerDashboard:
 
     def payment_frame(self):
         payment_frame = PaymentFrame(self.innner_main_frame)
-        payment_frame.place(x=0, y=0)
+        payment_frame.show_payment_frame()
 
     def login_activity_frame(self):
         login_activity_frame = LoginActivity(self.innner_main_frame)

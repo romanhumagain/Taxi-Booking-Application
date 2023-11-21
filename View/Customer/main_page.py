@@ -259,7 +259,6 @@ class MainPage:
             height=36,
             width=290,
             corner_radius=7
-
         )
         self.signup_button.place(x=90, y=400)
 

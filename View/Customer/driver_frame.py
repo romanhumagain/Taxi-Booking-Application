@@ -46,7 +46,7 @@ class DriverFrame(Frame):
                    foreground=[('active', 'white')])
 
 
-        self.table_frame = Frame(self.driver_frame, bg="red", width=850, height=504)
+        self.table_frame = Frame(self.driver_frame, bg="white", width=850, height=504)
         self.table_frame.place(x=0, y=110)
 
         self.driver_Detals_table = tkinter.ttk.Treeview(self.table_frame, height=24, show="headings", columns=("driver_id","name","phone_no", "address","pickupaddress", "dropoffaddress","date", "time"))

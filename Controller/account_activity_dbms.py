@@ -30,3 +30,25 @@ def insert_account_activity_details(accountActivity):
     finally:
         cursor.close()
         connection.close()
+
+
+# =============== TO FETCH THE ACCOUNT DETAILS FROM THE DATABASE =========================
+def fetch_account_activity_details(accountActivity):
+    result = None
+    try:
+        connection = mysql_connection()
+        if connection is not None:
+            cursor = connection.cursor()
+            query  = "SELECT * FROM account_activity WHERE user_id = %s ORDER BY activity_id DESC"
+            values =(accountActivity.get_user_id(),)
+
+            cursor.execute(query, values)
+            result = cursor.fetchall()
+
+    except Exception as error:
+        print(f"ERROR:- {error}")
+
+    finally:
+        cursor.close()
+        connection.close()
+        return result
