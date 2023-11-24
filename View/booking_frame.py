@@ -4,11 +4,6 @@ import customtkinter as ctk
 import tkintermapview
 from tkcalendar import  DateEntry
 
-from update_booking import *
-from cancel_booking import *
-from approved_booking import *
-from booking_history import BookingHistory
-
 from tkinter import messagebox
 from Model.booking import Booking
 from Model.account_activity import AccountActivity
@@ -19,6 +14,12 @@ from datetime import datetime
 
 
 from Model import Global
+from View.approved_booking import ApprovedBooking
+from View.booking_history import BookingHistory
+from View.cancel_booking import CancelBooking
+from View.update_booking import UpdateBooking
+
+
 class BookingFrame(Frame):
     def __init__(self, master=None):
         super().__init__(master)
@@ -40,25 +41,25 @@ class BookingFrame(Frame):
         self.heading_label = Label(self, text="Book Your Rides !", font=(font, 26), bg="#0E0E0E", fg="white")
         self.heading_label.place(relx=0.53, rely=0.08, anchor="center")
 
-        self.pickup_address_label = Label(self, text="Pick Up Address", font=(font,13), bg="#0E0E0E", fg="white")
+        self.pickup_address_label = Label(self, text="Pick Up Address", font=(font,14), bg="#0E0E0E", fg="white")
         self.pickup_address_label.place(x=30, y=150)
 
         self.pickup_address_entry = ctk.CTkEntry(self,font=(font, 15),width=180, height=38,textvariable=self.pickUpAddress)
         self.pickup_address_entry.place(x=195,y= 145)
 
-        self.pickup_date_label = Label(self, text="Pick Up Date", font=(font, 13), bg="#0E0E0E", fg="white")
+        self.pickup_date_label = Label(self, text="Pick Up Date", font=(font, 14), bg="#0E0E0E", fg="white")
         self.pickup_date_label.place(x=30, y=230)
 
         self.pickup_date_entry = DateEntry(self, font=(font, 15), width=14, height=38,textvariable=self.pickUpDate)
         self.pickup_date_entry.place(x=195, y=230)
 
-        self.pickup_time_label = Label(self, text="Pick Up Time", font=(font, 13), bg="#0E0E0E", fg="white")
+        self.pickup_time_label = Label(self, text="Pick Up Time", font=(font, 14), bg="#0E0E0E", fg="white")
         self.pickup_time_label.place(x=30, y=310)
 
         self.pickup_time_entry = ctk.CTkEntry(self, font=(font, 15), width=180, height=38,textvariable=self.pickUpTime)
         self.pickup_time_entry.place(x=195, y=310)
 
-        self.dropoff_address_label = Label(self, text="Drop Off Address", font=(font, 13), bg="#0E0E0E", fg="white")
+        self.dropoff_address_label = Label(self, text="Drop Off Address", font=(font, 14), bg="#0E0E0E", fg="white")
         self.dropoff_address_label.place(x=30, y=390)
 
         self.dropff_address_entry = ctk.CTkEntry(self, font=(font, 15), width=180, height=38,textvariable=self.dropOffAddress)

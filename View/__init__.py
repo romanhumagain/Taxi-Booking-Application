@@ -2,7 +2,6 @@ from tkinter import *
 import customtkinter
 from PIL import Image, ImageTk
 from datetime import datetime
-from View.Customer.booking_frame import *
 
 class CustomerDashboard:
     def __init__(self, window):

@@ -13,7 +13,7 @@ class LoginActivity():
         self.font ="Century Gothic"
 
     def show_login_activity_window(self):
-        self.login_activity_window = Toplevel(self.window, width=850, height=600, bg="#3c3c3c")
+        self.login_activity_window = Toplevel(self.window, width=850, height=580, bg="#3c3c3c")
         self.login_activity_window.title("Login Details ")
         self.login_activity_window.resizable(0,0)
 
@@ -21,10 +21,10 @@ class LoginActivity():
         screen_height = self.login_activity_window.winfo_screenheight()
 
         window_width = 900
-        window_height = 600
+        window_height = 580
 
-        x_position = (screen_width-window_width) // 2 + 165
-        y_position = (screen_height-window_height) // 2 +25
+        x_position = (screen_width-window_width) // 2 + 135
+        y_position = (screen_height-window_height) // 2 +55
 
         self.login_activity_window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
 
@@ -50,7 +50,7 @@ class LoginActivity():
 
         # ================= CREATING A TABLE TO DISPLAY THE LOGIN DETAILS ====================
 #
-        self.table_frame = Frame(self.login_activity_window, bg="white", height=450)
+        self.table_frame = Frame(self.login_activity_window, bg="white", height=400)
         self.table_frame.pack(side="bottom", fill="x")
 
         style1 = tkinter.ttk.Style()
@@ -58,7 +58,7 @@ class LoginActivity():
         style1.configure("Treeview",
                          background="#F4F4F4",
                          foreground="black",
-                         rowheight=35,
+                         rowheight=25,
                          fieldbackground="#F5F5F5",
                          bordercolor="black",
                          borderwidth=0,

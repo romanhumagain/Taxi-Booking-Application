@@ -19,12 +19,12 @@ class BookingHistory():
         screen_height = self.booking_history_window.winfo_screenheight()
 
         window_width = 900
-        window_height = 600
+        window_height = 560
 
-        x_position = (screen_width - window_width) // 2 + 165
-        y_position = (screen_height - window_height) // 2 +25
+        x_position = (screen_width - window_width) // 2 + 140
+        y_position = (screen_height - window_height) // 2 + 45
 
-        self.top_frame = Frame(self.booking_history_window, bg="#2c2c2c", height=135)
+        self.top_frame = Frame(self.booking_history_window, bg="#2c2c2c", height=110)
         self.top_frame.pack(side="top", fill = "x")
 
         self.booking_history_window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")

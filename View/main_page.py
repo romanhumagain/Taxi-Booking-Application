@@ -9,11 +9,9 @@ from Model.user import *
 
 from Controller.customer_registration_dbms import *
 from Controller.login_dbms import *
-
 from signals import login_device_details
-# from customer_dashboard import CustomerDashboard
-
 from Model import Global
+from admin_dashboard import AdminDashboard
 
 class MainPage:
     def __init__(self, window):
@@ -51,7 +49,7 @@ class MainPage:
         self.slogan_label.pack()
 
         self.main_frame = Frame(self.window, bg='#111111', width='900', height='600')
-        self.main_frame.place(x=320, y=120)
+        self.main_frame.place(x=320, y=150)
 
         self.text = "Taxi Booking System"
         self.heading = Label(self.main_frame, text=self.text, font=('Century Gothic', 20),
@@ -63,7 +61,7 @@ class MainPage:
 
         self.side_image_label = Label(self.main_frame, image=side_photo, bg='#111111')
         self.side_image_label.image = side_photo
-        self.side_image_label.place(x=4, y=160)
+        self.side_image_label.place(x=4, y=100)
 
         self.login_frame()
     def login_frame(self):
@@ -76,45 +74,45 @@ class MainPage:
 
         self.user_image_label = Label(self.inner_login_frame, image=photo, bg='#111111')
         self.user_image_label.image = photo
-        self.user_image_label.place(x=180, y=50)
+        self.user_image_label.place(x=180, y=30)
 
         self.sign_in_label = Label(self.inner_login_frame, text="Sign In", bg='#111111', fg='white',
                                    font=(self.font, 18), justify=CENTER)
-        self.sign_in_label.place(x=180, y=140)
+        self.sign_in_label.place(x=180, y=120)
 
         self.username_image = PILImage.open("Images/username.png")
         photo = ImageTk.PhotoImage(self.username_image)
 
         self.username_image_label = Label(self.inner_login_frame, image=photo, bg='#111111')
         self.username_image_label.image = photo
-        self.username_image_label.place(x=87, y=240)
+        self.username_image_label.place(x=87, y=210)
 
         self.username_label = Label(self.inner_login_frame, text="Username", bg='#111111', fg='white',
                                     font=(self.font, 14))
-        self.username_label.place(x=90, y=200)
+        self.username_label.place(x=90, y=170)
 
         self.username_entry = Entry(self.inner_login_frame, highlightthickness=0, relief=FLAT, bg='#111111',
                                     fg='white',insertbackground="white", font=(self.font, 12))
-        self.username_entry.place(x=115, y=235, width=250)
+        self.username_entry.place(x=115, y=215, width=250)
 
         self.username_line = Canvas(self.inner_login_frame, width=250, height=2.0, bg='#bdb9b1', highlightthickness=0)
-        self.username_line.place(x=115, y=262, width=250)
+        self.username_line.place(x=115, y=242, width=250)
 
         self.password_image = PILImage.open("Images/password1.png")
         photo = ImageTk.PhotoImage(self.password_image)
 
         self.password_image_label = Label(self.inner_login_frame, image=photo, bg='#111111')
         self.password_image_label.image = photo
-        self.password_image_label.place(x=87, y=315)
+        self.password_image_label.place(x=87, y=295)
 
         self.password_label = Label(self.inner_login_frame, text="Password", bg='#111111', fg='white',
                                     font=(self.font, 14))
-        self.password_label.place(x=90, y=280)
+        self.password_label.place(x=90, y=260)
 
         self.password_entry = Entry(self.inner_login_frame, show='•', relief=FLAT, bg='#111111',
                                     fg='white', insertbackground="white", font=(self.font, 12))
 
-        self.password_entry.place(x=115, y=315, width=220)
+        self.password_entry.place(x=115, y=295, width=220)
 
         self.hide_icon = ImageTk.PhotoImage(PILImage.open("Images/hide.png"))
         self.show_icon = ImageTk.PhotoImage(PILImage.open("Images/show.png"))
@@ -123,16 +121,16 @@ class MainPage:
         # self.show_hide_button.place(x=340, y=312)
 
         self.show_hide_password_label = Label(self.inner_login_frame, image=self.show_icon, bg='#111111',cursor='hand2')
-        self.show_hide_password_label.place(x=340, y=310)
+        self.show_hide_password_label.place(x=340, y=290)
         self.show_hide_password_label.bind("<Button-1>", self.show_hide_password)
 
 
         self.password_line = Canvas(self.inner_login_frame, width=300, height=2.0, bg='#bdb9b1', highlightthickness=0)
-        self.password_line.place(x=115, y=342, width=250)
+        self.password_line.place(x=115, y=322, width=250)
 
         self.forgot_password_label = Label(self.inner_login_frame, text="forgot password ?", fg='white', bg='#111111',
                                            font=(self.font, 12), cursor="hand2")
-        self.forgot_password_label.place(x=225, y=350)
+        self.forgot_password_label.place(x=225, y=330)
         self.forgot_password_label.bind("<Button-1>")
 
         self.login_button = customtkinter.CTkButton(
@@ -347,15 +345,19 @@ class MainPage:
                 login_details_stored = login_device_details()
                 if login_details_stored:
                     self.window.destroy()
+                    dashboard_window = Tk()
 
-                    # Create a new Toplevel window for the CustomerDashboard
-                    customer_dashboard_window = Tk()
-                    customer_dashboard = CustomerDashboard(customer_dashboard_window)
-                    customer_dashboard_window.mainloop()
+                    if user[3] == "customer":
+                        customer_dashboard = CustomerDashboard(dashboard_window)
+                    elif user[3] == "admin":
+                        adminDashboard = AdminDashboard(dashboard_window)
+                    else:
+                        pass
+
+                    dashboard_window.mainloop()
+
                 else:
                     messagebox.showerror("Login Failed", "Sorry, Something Went Wrong!")
-
-
             else:
                 messagebox.showerror("Invalid Credentials", "Invalid Credentials !")
         else:

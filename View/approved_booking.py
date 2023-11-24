@@ -21,10 +21,10 @@ class ApprovedBooking:
         screen_height = self.approved_booking_window.winfo_screenheight()
 
         window_width = 900
-        window_height = 600
+        window_height = 560
 
-        x_position = (screen_width - window_width) // 2 + 165
-        y_position = (screen_height - window_height) // 2 +25
+        x_position = (screen_width - window_width) // 2 + 140
+        y_position = (screen_height - window_height) // 2 +45
 
         self.approved_booking_window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
 
@@ -38,8 +38,8 @@ class ApprovedBooking:
         self.approved_frame.pack(side="top", fill="x")
 
         self.heading_label = Label(self.approved_frame, text="Approved Booking !",
-                                   font=(self.font, 17), bg="#2c2c2c", fg="white")
-        self.heading_label.place(relx=0.5, rely=0.085, anchor="center")
+                                   font=(self.font, 20), bg="#2c2c2c", fg="white")
+        self.heading_label.place(relx=0.5, rely=0.1, anchor="center")
 
         heading_icon = ImageTk.PhotoImage(Image.open("Images/approved.png"))
         self.heading_icon_label = Label(self.approved_frame, image=heading_icon, bg='#2c2c2c')
@@ -135,7 +135,7 @@ class ApprovedBooking:
         # To show the vertical scroll bar in the table
         scroll_y = Scrollbar(self.table_frame, orient=VERTICAL)
         #
-        self.booking_records_table = tkinter.ttk.Treeview(self.table_frame, height=15, columns=("bookingid", "pickupaddress", "pickupdate", "pickuptime","dropoffaddress","driverid"), show="headings", yscrollcommand=scroll_y)
+        self.booking_records_table = tkinter.ttk.Treeview(self.table_frame, height=13, columns=("bookingid", "pickupaddress", "pickupdate", "pickuptime","dropoffaddress","driverid"), show="headings", yscrollcommand=scroll_y)
         scroll_y.pack(side="right", fill="y")
 
 

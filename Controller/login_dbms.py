@@ -28,3 +28,5 @@ def validate_credentials(email, password):
         connection.close()
         return user, customer
 
+
+
