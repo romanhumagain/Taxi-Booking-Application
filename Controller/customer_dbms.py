@@ -21,3 +21,24 @@ def fetch_all_customer():
             cursor.close()
             connection.close()
             return result
+
+# ==================== TO FETCH SPECIFIC CUSTOMER DETAILS FOR THE ADMIN DASHBOARD ======================
+def search_customer(customer):
+    connection = mysql_connection()
+    cursor = None
+    result = None
+    if connection is not None:
+        try:
+            cursor = connection.cursor()
+            query = "SELECT * FROM customer WHERE customer_id = %s "
+            values = (customer.get_customer_id(),)
+            cursor.execute(query, values)
+            result = cursor.fetchall()
+
+        except Exception as error:
+            messagebox.showerror("ERROR", f"{error}")
+            print(f"ERROR: {error}")
+        finally:
+            cursor.close()
+            connection.close()
+            return result

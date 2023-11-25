@@ -177,12 +177,12 @@ class CustomerDashboard:
     # to place the profile icon image
         photo = ImageTk.PhotoImage(PILImage.open("Images/user_profile1.png"))
 
-        self.user_profile_image_label = Label(self.profile_frame, image=photo, bg='#0E0E0E')
+        self.user_profile_image_label = Label(self.profile_frame, image=photo, bg='#111111')
         self.user_profile_image_label.image = photo
         self.user_profile_image_label.place(relx=0.5, rely=0.12, anchor='center')
 
     # to show the Customer Name
-        self.user_name = Label(self.profile_frame, text="", font=(self.font, 22), fg='white', bg='#0E0E0E')
+        self.user_name = Label(self.profile_frame, text="", font=(self.font, 22), fg='white', bg='#111111')
         self.user_name.place(relx=0.5, rely=0.24, anchor = 'center')
 
     #  simple card to show the total booking number

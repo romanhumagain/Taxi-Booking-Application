@@ -3,8 +3,10 @@ from tkinter import *
 from tkinter.ttk import Treeview
 
 from PIL import Image, ImageTk
-from Controller.customer_dbms import fetch_all_customer
+from Controller.customer_dbms import fetch_all_customer, search_customer
 import customtkinter
+from Model.customer import Customer
+from tkinter import messagebox
 
 class CustomerDetails:
     def __init__(self, window):
@@ -38,11 +40,11 @@ class CustomerDetails:
         self.heading_label.place(relx=0.5, rely=0.5, anchor = CENTER)
 
         #  for search entry
-        search_entry = customtkinter.CTkEntry(master=self.main_frame, width=150, height=36, placeholder_text="Customer ID")
-        search_entry.place(x=30, y=90)
+        self.search_entry = customtkinter.CTkEntry(master=self.main_frame, width=150, height=36, placeholder_text="Customer ID")
+        self.search_entry.place(x=30, y=90)
 
         search_button = customtkinter.CTkButton(master=self.main_frame, width=80, height=35, text="search",
-                                                corner_radius=15)
+                                                corner_radius=15, command=self.search_customer)
         search_button.place(x=190, y=92)
 
         # ======= CREATING A FRAME TO SHOW THE CUSTOMER DETAILS TABLE =============
@@ -125,6 +127,24 @@ class CustomerDetails:
 
         for row in fetched_result:
             self.customer_details_table.insert('', END, values=row)
+
+    def search_customer(self):
+        customer_id = self.search_entry.get()
+        if not customer_id == "":
+            customer = Customer(customer_id=customer_id)
+
+            searched_data = search_customer(customer)
+            if len(searched_data) != 0 :
+                for item in self.customer_details_table.get_children():
+                    self.customer_details_table.delete(item)
+
+                for row in searched_data:
+                    self.customer_details_table.insert('', END, values=row)
+            else:
+                messagebox.showerror("ERROR", f"Customer with customer ID {customer_id} doesn't exists.")
+
+        else:
+            messagebox.showerror("ERROR", "Please Provide Customer ID")
 
 if __name__ == '__main__':
     window = Tk()

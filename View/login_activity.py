@@ -7,7 +7,7 @@ from Model.account_activity import AccountActivity
 from Model import Global
 from Controller.account_activity_dbms import fetch_account_activity_details
 import customtkinter
-class LoginActivity():
+class LoginActivity:
     def __init__(self, window):
         self.window = window
         self.font ="Century Gothic"

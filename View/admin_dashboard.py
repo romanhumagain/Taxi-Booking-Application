@@ -4,8 +4,11 @@ import customtkinter
 from PIL import Image as PILImage, ImageTk
 from datetime import datetime
 from customer_details_admin import CustomerDetails
-
+from booking_details_admin import BookingDetails
+from View.login_activity import LoginActivity
 from tkinter import messagebox
+
+from Controller.customer_dbms import fetch_all_customer
 
 class AdminDashboard:
     def __init__(self, window):
@@ -16,6 +19,36 @@ class AdminDashboard:
         self.window.resizable(0, 0)
 
         self.font = "Century Gothic"
+
+        customtkinter.set_default_color_theme("green")
+
+
+        style1 = tkinter.ttk.Style()
+        style1.theme_use("default")
+        style1.configure("Treeview",
+                         background="#F4F4F4",
+                         foreground="black",
+                         rowheight=25,
+                         fieldbackground="#F5F5F5",
+                         bordercolor="black",
+                         borderwidth=0,
+                         font=(self.font, 12))
+        style1.map('Treeview', background=[('selected', '#7EC8E3')],
+                   foreground=[('active', 'black')])
+
+        #
+        style1.configure("Treeview.Heading",
+                         background="#4c4c4c",
+                         foreground="white",
+                         relief="flat",
+                         font=('Century Gothic', 12),
+                         padding=(0, 6)
+                         )
+
+        style1.map("Treeview.Heading",
+                   background=[('active', '#3c3c3c')],
+                   foreground=[('active', 'white')])
+
 
         customtkinter.set_appearance_mode("System")
         # customtkinter.set_default_color_theme("green")
@@ -73,7 +106,7 @@ class AdminDashboard:
         # for booking option
         self.customer_label = Label(self.side_bar_frame, text="Customer", font=(self.font, 17), fg='white',bg='#3c3c3c', cursor='hand2')
         self.customer_label.place(x=130, y=275)
-        self.customer_label.bind("<Button-1>", lambda event:self.window_indicator(self.customer_indicator_lbl, self.main_frame))
+        self.customer_label.bind("<Button-1>", lambda event:self.window_indicator(self.customer_indicator_lbl, self.customer_details_window))
 
         self.customer_indicator_lbl = Label(self.side_bar_frame, bg="#3c3c3c", width=0, height=2)
         self.customer_indicator_lbl.place(x=80, y=275)
@@ -87,7 +120,7 @@ class AdminDashboard:
         # for booking option
         self.booking_label = Label(self.side_bar_frame, text="Booking", font=(self.font, 17), fg='white',bg='#3c3c3c', cursor='hand2')
         self.booking_label.place(x=130, y=345)
-        # self.booking_label.bind("<Button-1>", lambda event:self.indicator(self.booking_indicator_lbl, self.booking_frame))
+        self.booking_label.bind("<Button-1>", lambda event:self.window_indicator(self.booking_indicator_lbl, self.booking_details_window))
 
         self.booking_indicator_lbl = Label(self.side_bar_frame, bg="#3c3c3c", width=0, height=2)
         self.booking_indicator_lbl.place(x=80, y=345)
@@ -126,7 +159,7 @@ class AdminDashboard:
         # for account Activity
         self.account_activity_label = Label(self.side_bar_frame, text="Activity", font=(self.font, 17), fg='white',bg='#3c3c3c', cursor='hand2')
         self.account_activity_label.place(x=130, y=555)
-        # self.account_activity_label.bind("<Button-1>", lambda event:self.activity_indicator(self.account_indicator_lbl, self.login_activity_frame))
+        self.account_activity_label.bind("<Button-1>", lambda event:self.window_indicator(self.account_indicator_lbl, self.activity_log_window))
 
         self.account_indicator_lbl = Label(self.side_bar_frame, bg="#3c3c3c", width=0, height=2)
         self.account_indicator_lbl.place(x=80, y=555)
@@ -170,14 +203,19 @@ class AdminDashboard:
                                           bg="#2c2c2c", fg="white")
         self.customer_number_label.place(relx=0.5, rely=0.25, anchor="center")
 
-        self.total_customer_count_label = Label(self.total_customer_frame, font=(self.font, 28), text="0", bg="#2c2c2c",
+        self.total_customer_count_label = Label(self.total_customer_frame, font=(self.font, 28), text="", bg="#2c2c2c",
                                                fg="#90EE90")
         self.total_customer_count_label.place(relx=0.5, rely=0.6, anchor="center")
+
+        self.count_customer()
 
         # ============= FOR TOTAL BOOKING FRAME ==========================
         self.total_booking_frame = customtkinter.CTkFrame(master=self.inner_top_frame, corner_radius=30, height=150,
                                                            width=190)
-        self.total_booking_frame.place(x=375, y=25)
+        self.total_booking_frame.place(x=355, y=25)
+
+        self.bc_line = Canvas(self.inner_top_frame, bg="white", highlightthickness=0, height=3, width=65)
+        self.bc_line.place(x= 290, y= 100)
 
         self.booking_number_label = Label(self.total_booking_frame, font=(self.font, 16), text="Total Booking",
                                            bg="#2c2c2c", fg="white")
@@ -190,7 +228,10 @@ class AdminDashboard:
         # ============= FOR TOTAL PENDING BOOKING FRAME ==========================
         self.total_pending_booking_frame = customtkinter.CTkFrame(master=self.inner_top_frame, corner_radius=30, height=150,
                                                           width=190)
-        self.total_pending_booking_frame.place(x=625, y=25)
+        self.total_pending_booking_frame.place(x=605, y=25)
+
+        self.pb_line = Canvas(self.inner_top_frame, bg="white", highlightthickness=0, height=3, width=60)
+        self.pb_line.place(x=545, y=100)
 
         self.pending_booking_number_label = Label(self.total_pending_booking_frame, font=(self.font, 16), text="Pending Booking",
                                           bg="#2c2c2c", fg="white")
@@ -203,7 +244,10 @@ class AdminDashboard:
         # ============= FOR TOTAL DRIVER FRAME ==========================
         self.total_driver_frame = customtkinter.CTkFrame(master=self.inner_top_frame, corner_radius=30, height=150,
                                                           width=190)
-        self.total_driver_frame.place(x=900, y=25)
+        self.total_driver_frame.place(x=860, y=25)
+
+        self.dp_line = Canvas(self.inner_top_frame, bg="white", highlightthickness=0, height=3, width=65)
+        self.dp_line.place(x=795, y=100)
 
         self.driver_number_label = Label(self.total_driver_frame, font=(self.font, 16), text="Total Driver",
                                           bg="#2c2c2c", fg="white")
@@ -219,7 +263,7 @@ class AdminDashboard:
         pending_label.place(x=440, y=240)
 
     #  for search entry
-        search_entry = customtkinter.CTkEntry(master=self.innner_main_frame, width=150, height=36)
+        search_entry = customtkinter.CTkEntry(master=self.innner_main_frame, width=150, height=36, placeholder_text="Booking ID")
         search_entry.place(x=30, y=270)
 
         search_button = customtkinter.CTkButton(master=self.innner_main_frame, width=80, height=35, text="search", corner_radius=15)
@@ -272,10 +316,35 @@ class AdminDashboard:
                                                             corner_radius=20)
         self.cancel_booking_button.place(x=600, y=655)
 
+    # ========= SHOWING THE COUNT DETAILS IN THE ADMIN DASHBOARD =============
+    def count_customer(self):
+        count = 0
+        result = fetch_all_customer()
+        for data in result:
+            count += 1
+        self.total_customer_count_label.config(text=count)
+
+    def count_total_booking(self):
+        pass
+
+    def count_pending_booking(self):
+        pass
+
+    def count_driver(self):
+        pass
+
     # =========== TO SHOW THE CUSTOMER DETAILS WINDOW ================
     def customer_details_window(self):
         customerDetails = CustomerDetails(self.main_frame)
         customerDetails.show_customer_details_window()
+
+    def booking_details_window(self):
+        bookingDetails = BookingDetails(self.main_frame)
+        bookingDetails.show_booking_details_window()
+
+    def activity_log_window(self):
+        accountActivity = LoginActivity(self.main_frame)
+        accountActivity.show_login_activity_window()
 
     def update_time(self):
         current_time = datetime.now().strftime("%Y-%m-%d  %H:%M:%S")
@@ -299,7 +368,8 @@ class AdminDashboard:
     def window_indicator(self, label, frame):
         self.hide_indicator()
         label.config(bg="white")
-        self.customer_details_window()
+        frame()
+        # self.customer_details_window()
 
     def clear_frame(self):
         for widget in self.innner_main_frame.winfo_children():
