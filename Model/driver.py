@@ -1,5 +1,5 @@
 class Driver:
-    def __init__(self, driver_id=0, name=None, phone_no=None, address=None, gender=None, license=None, user_id=0):
+    def __init__(self, driver_id=0, name=None, phone_no=None, address=None, gender=None, license=None,driver_status = None, user_id=0):
         self._driver_id = driver_id
         self._name = name
         self._phone_no = phone_no
@@ -7,6 +7,7 @@ class Driver:
         self._gender = gender
         self._license = license
         self._user_id = user_id
+        self._driver_status = driver_status
 
     # Getter Methods
     def get_driver_id(self):
@@ -26,6 +27,9 @@ class Driver:
 
     def get_gender(self):
         return self._gender
+
+    def get_driver_status(self):
+        return self._driver_status
 
     def get_user_id(self):
         return self._user_id
@@ -48,6 +52,9 @@ class Driver:
 
     def set_gender(self, gender):
         self._gender = gender
+
+    def set_driver_status(self, driver_status):
+        self._driver_status = driver_status
 
     def set_user_id(self, user_id):
         self._user_id = user_id

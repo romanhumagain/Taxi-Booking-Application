@@ -6,6 +6,7 @@ from datetime import datetime
 from customer_details_admin import CustomerDetails
 from booking_details_admin import BookingDetails
 from View.login_activity import LoginActivity
+from driver_frame_admin import DriverWindow
 from tkinter import messagebox
 
 from Controller.customer_dbms import fetch_all_customer
@@ -133,7 +134,7 @@ class AdminDashboard:
         # for driver option
         self.driver_label = Label(self.side_bar_frame, text="Driver", font=(self.font, 17), fg='white', bg='#3c3c3c', cursor='hand2')
         self.driver_label.place(x=130, y=415)
-        # self.driver_label.bind("<Button-1>", lambda event:self.indicator(self.driver_indicator_lbl, self.driver_frame))
+        self.driver_label.bind("<Button-1>", lambda event:self.window_indicator(self.driver_indicator_lbl, self.driver_details_window))
 
         self.driver_indicator_lbl = Label(self.side_bar_frame, bg="#3c3c3c", width=0, height=2)
         self.driver_indicator_lbl.place(x=80, y=415)
@@ -337,6 +338,10 @@ class AdminDashboard:
     def customer_details_window(self):
         customerDetails = CustomerDetails(self.main_frame)
         customerDetails.show_customer_details_window()
+
+    def driver_details_window(self):
+        driverWindow = DriverWindow(self.main_frame)
+        driverWindow.show_driver_window()
 
     def booking_details_window(self):
         bookingDetails = BookingDetails(self.main_frame)
