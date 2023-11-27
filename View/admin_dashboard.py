@@ -267,7 +267,10 @@ class AdminDashboard:
         search_entry = customtkinter.CTkEntry(master=self.innner_main_frame, width=150, height=36, placeholder_text="Booking ID")
         search_entry.place(x=30, y=270)
 
-        search_button = customtkinter.CTkButton(master=self.innner_main_frame, width=80, height=35, text="search", corner_radius=15)
+        search_btn_image = ImageTk.PhotoImage(PILImage.open("Images/search.png").resize((25,25), PILImage.ANTIALIAS))
+
+
+        search_button = customtkinter.CTkButton(master=self.innner_main_frame, width=80, height=35, text="search", corner_radius=15,font=(self.font, 16), image=search_btn_image)
         search_button.place(x=190, y=272)
 
 
@@ -309,12 +312,19 @@ class AdminDashboard:
         self.pending_booking_table.column("status",width=115, anchor=CENTER)
 
         # ======= SETTING BUTTONS FOR MORE FUNCTIONALITY ============
-        self.assign_driver_button = customtkinter.CTkButton(master = self.innner_main_frame, width=160,font=(self.font, 18),text="Assign Driver", height=36, corner_radius=20)
+        assign_btn_image = ImageTk.PhotoImage(PILImage.open("Images/assign_driver.png").resize((30,30), PILImage.ANTIALIAS))
+
+
+        self.assign_driver_button = customtkinter.CTkButton(master = self.innner_main_frame, width=160,font=(self.font, 18,'bold'),text="Assign Driver", height=36, corner_radius=20, image=assign_btn_image)
         self.assign_driver_button.place(x=400 , y=655 )
 
+
+        cancel_btn_image = ImageTk.PhotoImage(PILImage.open("Images/cancel.png").resize((30,30), PILImage.ANTIALIAS))
+
+
         self.cancel_booking_button = customtkinter.CTkButton(master=self.innner_main_frame, width=160,
-                                                            font=(self.font, 18), text="Cancel Booking", height=36,
-                                                            corner_radius=20)
+                                                            font=(self.font, 18, 'bold'), text="Cancel Booking", height=36,
+                                                            corner_radius=20, image=cancel_btn_image)
         self.cancel_booking_button.place(x=600, y=655)
 
     # ========= SHOWING THE COUNT DETAILS IN THE ADMIN DASHBOARD =============

@@ -43,7 +43,10 @@ class CustomerDetails:
         self.search_entry = customtkinter.CTkEntry(master=self.main_frame, width=150, height=36, placeholder_text="Customer ID")
         self.search_entry.place(x=30, y=90)
 
-        search_button = customtkinter.CTkButton(master=self.main_frame, width=80, height=35, text="search",
+        search_btn_image = ImageTk.PhotoImage(Image.open("Images/search.png").resize((25,25), Image.ANTIALIAS))
+
+
+        search_button = customtkinter.CTkButton(master=self.main_frame, width=80, height=35, text="search",image=search_btn_image,font=(self.font, 16),
                                                 corner_radius=15, command=self.search_customer)
         search_button.place(x=190, y=92)
 
@@ -112,10 +115,12 @@ class CustomerDetails:
         self.customer_details_table.column("gender", width=80, anchor=CENTER)
 
         # ======= SETTING BUTTONS FOR MORE FUNCTIONALITY ============
+        delete_btn_image = ImageTk.PhotoImage(Image.open("Images/delete.png").resize((30,30), Image.ANTIALIAS))
+
 
         self.delete_customer_button = customtkinter.CTkButton(master=self.main_frame, width=120,
-                                                             font=(self.font, 16), text="Delete User", height=36,
-                                                             corner_radius=20)
+                                                             font=(self.font, 17, 'bold'), text="Delete User", height=36,
+                                                             corner_radius=20, image=delete_btn_image)
         self.delete_customer_button.place(x=330, y=435)
 
         self.get_customer_details()

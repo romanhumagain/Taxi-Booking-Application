@@ -2,10 +2,11 @@ import tkinter.ttk
 from tkinter import *
 import customtkinter
 from tkinter import messagebox
-from Controller.driver_dbms import register_driver, search_driver, get_all_driver
+from Controller.driver_dbms import register_driver, search_driver, get_all_driver, get_available_driver, update_driver_details, delete_driver
 from Controller.customer_registration_dbms import register_user
 from Model.user import User
 from Model.driver import Driver
+from PIL import Image, ImageTk
 
 class DriverWindow:
     def __init__(self, window):
@@ -69,7 +70,10 @@ class DriverWindow:
                                               placeholder_text="Driver ID")
         self.search_entry.place(x=30, y=30)
 
-        self.search_button = customtkinter.CTkButton(master=self.driver_frame, width=60, height=35, text="search",
+        search_btn_image = ImageTk.PhotoImage(Image.open("Images/search.png").resize((25,25), Image.ANTIALIAS))
+
+
+        self.search_button = customtkinter.CTkButton(master=self.driver_frame, width=60, height=35, text="search",image=search_btn_image,
                                                 font=(self.font, 16),
                                                 corner_radius=15, command=self.search_driver)
         self.search_button.place(x=140, y=32)
@@ -119,16 +123,26 @@ class DriverWindow:
         self.button_frame.place(x=800, y=120)
 
         #======================= CREATING A BUTTON FOR MORE FUNCTIONALITY ===================
-        self.save_button = customtkinter.CTkButton(self.button_frame, text="Add Driver", width=150,
+
+        save_btn_image = ImageTk.PhotoImage(Image.open("Images/password.png").resize((30,30), Image.ANTIALIAS))
+
+
+        self.save_button = customtkinter.CTkButton(self.button_frame,image=save_btn_image, text="Register", width=150,
                                                      font=(self.font, 15,'bold'), height=35, corner_radius=10,command=self.register_driver)
         self.save_button.place(relx=0.5, rely=0.1, anchor = "center")
 
-        self.update_button = customtkinter.CTkButton(self.button_frame, text="Update", width=150, height=35,
-                                                       font=(self.font, 15,'bold'), corner_radius=10)
+        update_btn_image = ImageTk.PhotoImage(Image.open("Images/update.png").resize((30,30), Image.ANTIALIAS))
+
+
+        self.update_button = customtkinter.CTkButton(self.button_frame, text="Update", width=150, height=35,image=update_btn_image,
+                                                       font=(self.font, 15,'bold'), corner_radius=10, command=self.update_driver)
         self.update_button.place(relx=0.5, rely=0.24, anchor = "center")
 
-        self.delete_button = customtkinter.CTkButton(self.button_frame, text="Delete", width=150, height=35,
-                                                       font=(self.font, 15,'bold'), corner_radius=10)
+
+        delete_button_image = ImageTk.PhotoImage(Image.open("Images/delete.png").resize((30,30), Image.ANTIALIAS))
+
+        self.delete_button = customtkinter.CTkButton(self.button_frame, text="Delete", width=150, height=35,image=delete_button_image,
+                                                       font=(self.font, 15,'bold'), corner_radius=10, command=self.delete_driver)
         self.delete_button.place(relx=0.5, rely=0.38, anchor = "center")
 
         self.line = Canvas(self.button_frame, bg="white", highlightthickness=0, height=3, width=200)
@@ -141,7 +155,7 @@ class DriverWindow:
 
 
         self.available_button = customtkinter.CTkButton(self.button_frame, text="Available Driver", width=150, height=35,
-                                                     font=(self.font, 15,'bold'), corner_radius=10)
+                                                     font=(self.font, 15,'bold'), corner_radius=10, command=self.set_available_driver_details)
         self.available_button.place(relx=0.5, rely=0.69, anchor="center")
 
         self.reserved_button = customtkinter.CTkButton(self.button_frame, text="Reserved Driver", width=150,
@@ -161,9 +175,16 @@ class DriverWindow:
     def search_driver(self):
         driver_id = self.search_entry.get()
         if driver_id != "":
+            self.table_heading.configure(text="Driver Details")
             driver = Driver(driver_id=driver_id)
-            searched_result = search_driver(driver)
+            searched_result, table_result = search_driver(driver)
             if not searched_result is None:
+                for item in self.driver_details_table.get_children():
+                    self.driver_details_table.delete(item)
+
+                for row in table_result:
+                    self.driver_details_table.insert('', END, values=row)
+
                 self.clear_fields()
                 self.name_entry.insert(0, searched_result[1])
                 self.phone_entry.insert(0, searched_result[2])
@@ -172,11 +193,13 @@ class DriverWindow:
                 self.gender_value.set(searched_result[5])
                 self.password_entry.insert(0, "password")
                 self.password_entry.configure(show="*")
+
+
             else:
-                messagebox.showerror("INVALID ENTRY", f"Driver with driver ID {driver_id} doesn't exists!")
+                messagebox.showerror("INVALID ENTRY", f"Driver with driver ID {driver_id} doesn't exists!", parent=self.driver_window)
                 self.clear_fields()
         else:
-            messagebox.showerror("ERROR", "please provide driver ID to get driver details")
+            messagebox.showerror("ERROR", "please provide driver ID to get driver details", parent=self.driver_window)
 
 
     # ========= TO REGISTER THE DRIVER DETAILS =========
@@ -196,17 +219,68 @@ class DriverWindow:
                 driver_registered = register_driver(driver, user)
 
                 if driver_registered:
-                    messagebox.showinfo("Registration Success !", "Successfully Registered Driver")
+                    messagebox.showinfo("Registration Success !", "Successfully Registered Driver", parent=self.driver_window)
                     self.set_all_driver_details()
                     self.clear_fields()
                 else:
-                    messagebox.showerror("Registration Failed", "Sorry Could't Register Driver!")
+                    messagebox.showerror("Registration Failed", "Sorry Could't Register Driver!", parent=self.driver_window)
             else:
-                messagebox.showerror("Registration Failed", "Sorry Could't Register User!")
+                messagebox.showerror("Registration Failed", "Sorry Could't Register User!", parent=self.driver_window)
 
         else:
-            messagebox.showerror("Registration Failed", "Please Fill All The Details!")
+            messagebox.showerror("Registration Failed", "Please Fill All The Details!", parent=self.driver_window)
 
+
+    # =========== TO UPDATE THE DRIVER =================
+    def update_driver(self):
+        driver_id = self.search_entry.get()
+        if not ( driver_id== "" or self.name_entry.get() == "" or self.address_entry.get() == "" or self.phone_entry.get() == "" or self.license_entry.get() == "" or self.gender_value.get() == "Gender" ):
+
+            driver = Driver(driver_id=driver_id)
+            found_driver, _ = search_driver(driver)
+
+            if found_driver:
+                driver = Driver(name=self.name_entry.get(), address=self.address_entry.get(),
+                                    phone_no=self.phone_entry.get(), license=self.license_entry.get(),
+                                    gender=self.gender_value.get(), driver_id=self.search_entry.get())
+
+                driver_isupdated = update_driver_details(driver)
+
+                if driver_isupdated:
+                        messagebox.showinfo("Update Success !", "Successfully Updated Driver Details",
+                                            parent=self.driver_window)
+                        self.search_driver()
+                else:
+                    messagebox.showerror("Update Failed", "Sorry Could't Update Driver!", parent=self.driver_window)
+            else:
+                messagebox.showerror("Invalid ID", f"Driver With Driver ID {driver_id} Does't Exists", parent=self.driver_window)
+
+        else:
+            messagebox.showerror("Update Failed", "Please Fill All The Details!", parent=self.driver_window)
+
+    # ======== TO DELETE THE DRIVER===========
+    def delete_driver(self):
+        driver_id = self.search_entry.get()
+        if driver_id != "":
+            confirmed = messagebox.askyesno("Confirm Delete", f"Do You Want To Delete The Driver With Driver ID {driver_id}?", parent=self.driver_window)
+            if confirmed:
+                driver = Driver(driver_id=driver_id)
+                found_driver, _ = search_driver(driver)
+
+                if found_driver:
+                    driver = Driver(driver_id=driver_id, user_id=found_driver[7])
+                    driver_isdeleted = delete_driver(driver)
+                    if driver_isdeleted:
+                        messagebox.showinfo("Deletion Success", f"Successfully deleted driver having driver ID {driver_id}", parent=self.driver_window)
+                        self.set_all_driver_details()
+                        self.clear_fields()
+                        self.search_entry.delete(0, END)
+                    else:
+                        messagebox.showerror("ERROR", "Sorry Could't Delete Driver From The System.", parent=self.driver_window)
+                else:
+                    messagebox.showerror("Invalid ID", f"Driver With Driver ID {driver_id} Does't Exists", parent=self.driver_window)
+        else:
+            messagebox.showerror("ERROR", "please provide driver ID to delete Driver", parent=self.driver_window)
 
     # ======== TO GET THE ALL DRIVER DETAILS ===========
     def driver_details_table(self):
@@ -239,6 +313,15 @@ class DriverWindow:
 
     def set_all_driver_details(self):
         result = get_all_driver()
+        for item in self.driver_details_table.get_children():
+            self.driver_details_table.delete(item)
+
+        for row in result:
+            self.driver_details_table.insert('', END, values=row)
+
+    def set_available_driver_details(self):
+        self.table_heading.configure(text="Available Driver Details")
+        result = get_available_driver()
         for item in self.driver_details_table.get_children():
             self.driver_details_table.delete(item)
 

@@ -1,6 +1,8 @@
 import tkinter.ttk
 from tkinter import *
 import customtkinter
+from PIL import ImageTk, Image as PILImage
+
 
 class BookingDetails:
     def __init__(self, window):
@@ -36,15 +38,23 @@ class BookingDetails:
         self.button_frame = customtkinter.CTkFrame(self.booking_details_window, width=170, height=400, corner_radius=20)
         self.button_frame.place(x=820, y= 130)
 
-        self.active_button = customtkinter.CTkButton(self.button_frame,text="Active Booking", width=150, font=(self.font, 16), height=35,corner_radius=10, command=self.create_active_booking_table)
+        active_btn_image = ImageTk.PhotoImage(PILImage.open("Images/active.png").resize((30,30), PILImage.ANTIALIAS))
+
+        self.active_button = customtkinter.CTkButton(self.button_frame,text="Active ", width=150, font=(self.font, 16, 'bold'), height=35,corner_radius=10,image=active_btn_image, command=self.create_active_booking_table)
         self.active_button.place(x=10, y= 90)
 
-        self.pending_booking = customtkinter.CTkButton(self.button_frame, text="Pending Booking", width=150, height=35,
-                                                     font=(self.font, 16), corner_radius=10,command=self.create_pending_table)
+        pending_btn_image = ImageTk.PhotoImage(PILImage.open("Images/pending.png").resize((30,30), PILImage.ANTIALIAS))
+
+
+        self.pending_booking = customtkinter.CTkButton(self.button_frame, text="Pending", width=150, height=35,
+                                                     font=(self.font, 16, 'bold'), corner_radius=10, image=pending_btn_image,command=self.create_pending_table)
         self.pending_booking.place(x=10, y=160)
 
-        self.booking_history = customtkinter.CTkButton(self.button_frame, text="Booking history", width=150,height=35,
-                                                       font=(self.font, 16), corner_radius=10, command=self.create_booking_history_table)
+        history_btn_image = ImageTk.PhotoImage(PILImage.open("Images/history.png").resize((30,30), PILImage.ANTIALIAS))
+
+
+        self.booking_history = customtkinter.CTkButton(self.button_frame, text="History", width=150,height=35,image=history_btn_image,
+                                                       font=(self.font, 16, 'bold'), corner_radius=10, command=self.create_booking_history_table)
         self.booking_history.place(x=10, y=230)
 
 
@@ -122,7 +132,9 @@ class BookingDetails:
         self.clear_booking_table_frame()
         # creating a button to cancel the pending booking
         if self.cancel_booking is None:
-            self.cancel_booking = customtkinter.CTkButton(self.button_frame, text="Cancel Booking", width=150, height=35,font=(self.font, 16), corner_radius=10, )
+            cancel_btn_image = ImageTk.PhotoImage(PILImage.open("Images/cancel.png").resize((30, 30), PILImage.ANTIALIAS))
+
+            self.cancel_booking = customtkinter.CTkButton(self.button_frame, text="Cancel", width=150, height=35,font=(self.font, 16, 'bold'), corner_radius=10,image=cancel_btn_image )
             self.cancel_booking.place(x=10, y=300)
 
         self.scroll_y = Scrollbar(self.booking_table_frame, orient=VERTICAL)
