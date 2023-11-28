@@ -101,8 +101,11 @@ class CancelBooking:
                                                             textvariable=self.dropOffAddress)
         self.dropoff_address_entry.place(x=670, y=120)
 
-        self.cancel_button = customtkinter.CTkButton(master=self.cancel_frame, text="Cancel Booking",
-                                                     font=(self.font, 15), corner_radius=10, height=40, command=self.cancel_booking)
+        cancel_btn_image = ImageTk.PhotoImage(Image.open("Images/cancel.png").resize((20,20), Image.ANTIALIAS))
+
+
+        self.cancel_button = customtkinter.CTkButton(master=self.cancel_frame,image=cancel_btn_image, text="Cancel Booking",
+                                                     font=(self.font, 15, 'bold'), corner_radius=10, height=40, command=self.cancel_booking)
         self.cancel_button.place(x=380, y=200)
 
         style1 = tkinter.ttk.Style()

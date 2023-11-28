@@ -97,8 +97,10 @@ class ApprovedBooking:
                                                             textvariable=self.driverId, state="readonly")
         self.driverid_entry.place(x=790, y=90)
 
-        self.exit_button = customtkinter.CTkButton(master=self.approved_frame, text="Exit",
-                                                     font=(self.font, 16), corner_radius=10, height=40, command=self.exit)
+        exit_btn_image = ImageTk.PhotoImage(Image.open("Images/clear.png").resize((20,20), Image.ANTIALIAS))
+
+        self.exit_button = customtkinter.CTkButton(master=self.approved_frame, image=exit_btn_image, text="Exit",
+                                                     font=(self.font, 16, 'bold'), corner_radius=10, height=40, command=self.exit)
         self.exit_button.place(x=360, y=160)
 
         style1 = tkinter.ttk.Style()

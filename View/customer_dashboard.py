@@ -15,8 +15,6 @@ from change_password import *
 from tkinter import messagebox
 from Controller.profile_dbms import *
 
-
-
 class CustomerDashboard:
     def __init__(self, window):
         self.window = window
@@ -273,17 +271,25 @@ class CustomerDashboard:
         self.payment_line.place(x=520, y=155, width=145)
 
     #     to show the button for more functionality of the application
-        self.update_button = customtkinter.CTkButton(master = self.profile_frame, text="Update Profile", font=(self.font, 16), corner_radius=15,height=34,width=100, command=self.update_profile)
-        self.update_button.place(x=145, y=530)
+        update_btn_image = ImageTk.PhotoImage(Image.open("Images/update.png").resize((20,20), Image.ANTIALIAS))
 
-        self.delete_button = customtkinter.CTkButton(master=self.profile_frame, text="Delete Profile",font=(self.font, 16), corner_radius=15,  height=34,width=100, command=self.delete_account)
-        self.delete_button.place(x=310, y=530)
+        self.update_button = customtkinter.CTkButton(master = self.profile_frame,image=update_btn_image, text="Update Profile", font=(self.font, 16,'bold'), corner_radius=15,height=34,width=100, command=self.update_profile)
+        self.update_button.place(x=100, y=530)
 
-        self.change_password_button = customtkinter.CTkButton(master=self.profile_frame, text="Change Password",font=(self.font, 16), corner_radius=15,height=34,width=100, command=self.change_password)
+        delete_btn_image = ImageTk.PhotoImage(Image.open("Images/delete.png").resize((20,20), Image.ANTIALIAS))
+
+        self.delete_button = customtkinter.CTkButton(master=self.profile_frame,image=delete_btn_image, text="Delete Profile",font=(self.font, 16,'bold'), corner_radius=15,  height=34,width=100, command=self.delete_account)
+        self.delete_button.place(x=290, y=530)
+
+        password_btn_image = ImageTk.PhotoImage(Image.open("Images/password1.png").resize((20,20), Image.ANTIALIAS))
+
+        self.change_password_button = customtkinter.CTkButton(master=self.profile_frame,image=password_btn_image, text="Change Password",font=(self.font, 16,'bold'), corner_radius=15,height=34,width=100, command=self.change_password)
         self.change_password_button.place(x=465, y=530)
 
-        self.login_info_button = customtkinter.CTkButton(master=self.profile_frame, text="Login Info", font=(self.font, 16), corner_radius=15,height=34, width=100,command=self.login_activity_frame)
-        self.login_info_button.place(x=660, y=530)
+        login_btn_image = ImageTk.PhotoImage(Image.open("Images/login_info.png").resize((20,20), Image.ANTIALIAS))
+
+        self.login_info_button = customtkinter.CTkButton(master=self.profile_frame, image=login_btn_image, text="Activity", font=(self.font, 16,'bold'), corner_radius=15,height=34, width=100,command=self.login_activity_frame)
+        self.login_info_button.place(x=680, y=530)
 
         # ============ SETTING THE DETAILS IN THE PROFILE FRAME =================
 

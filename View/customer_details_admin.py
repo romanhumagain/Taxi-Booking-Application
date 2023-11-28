@@ -146,10 +146,10 @@ class CustomerDetails:
                 for row in searched_data:
                     self.customer_details_table.insert('', END, values=row)
             else:
-                messagebox.showerror("ERROR", f"Customer with customer ID {customer_id} doesn't exists.")
+                messagebox.showerror("ERROR", f"Customer with customer ID {customer_id} doesn't exists.", parent = self.customer_details_window)
 
         else:
-            messagebox.showerror("ERROR", "Please Provide Customer ID")
+            messagebox.showerror("ERROR", "Please Provide Customer ID", parent = self.customer_details_window)
 
 if __name__ == '__main__':
     window = Tk()

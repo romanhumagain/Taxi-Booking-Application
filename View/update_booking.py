@@ -96,14 +96,20 @@ class UpdateBooking:
                                                  width=170, placeholder_text="Drop Off Address", height=40, textvariable=self.dropOffAddress)
         self.dropoff_address_entry.place(x=670, y=120)
 
-        self.update_button = customtkinter.CTkButton(master=self.update_frame, text="Update Booking",
-                                                     font=(self.font, 15), corner_radius=8, height=35, command=self.update_booking)
+        update_btn_image = ImageTk.PhotoImage(Image.open("Images/update.png").resize((20,20), Image.ANTIALIAS))
+
+
+        self.update_button = customtkinter.CTkButton(master=self.update_frame, image=update_btn_image, text="Update Booking",
+                                                     font=(self.font, 15, 'bold'), corner_radius=8, height=35, command=self.update_booking)
         self.update_button.place(x=303, y=200)
 
-        self.clear_button = customtkinter.CTkButton(master=self.update_frame, text="Clear", font=(self.font, 15),
+        clear_btn_image = ImageTk.PhotoImage(Image.open("Images/clear.png").resize((20,20), Image.ANTIALIAS))
+
+
+        self.clear_button = customtkinter.CTkButton(master=self.update_frame,image=clear_btn_image, text="Clear", font=(self.font, 15),
                                                      height=35,
                                                      corner_radius=8, command=self.clear_field)
-        self.clear_button.place(x=470, y=200)
+        self.clear_button.place(x=490, y=200)
 
         style1 = tkinter.ttk.Style()
         style1.theme_use("default")

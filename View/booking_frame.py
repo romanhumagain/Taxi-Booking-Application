@@ -1,5 +1,7 @@
 from tkinter import *
 from tkinter import Frame, Label
+
+import customtkinter
 import customtkinter as ctk
 import tkintermapview
 from tkcalendar import  DateEntry
@@ -65,22 +67,42 @@ class BookingFrame(Frame):
         self.dropff_address_entry = ctk.CTkEntry(self, font=(font, 15), width=180, height=38,textvariable=self.dropOffAddress)
         self.dropff_address_entry.place(x=195, y=390)
 
-        self.request_booking_button = ctk.CTkButton(master=self, text="Request Booking",font=(font, 16), corner_radius=8, height=35, width=120, command=self.booking_taxi)
-        self.request_booking_button.place(x=30, y=530)
+        save_btn_image = ImageTk.PhotoImage(Image.open("Images/save.png").resize((20,20), Image.ANTIALIAS))
 
-        self.update_booking_button = ctk.CTkButton(master=self, text="Update Booking", font=(font, 16),corner_radius=8, height=35, width=150, command=self.update_booking)
-        self.update_booking_button.place(x=200, y=530)
 
-        self.cancel_booking_button = ctk.CTkButton(master=self, text="Cancel Booking", font=(font, 16),
+        self.request_booking_button = ctk.CTkButton(master=self, image=save_btn_image, text="Request Booking",font=(font, 16, 'bold'), corner_radius=8, height=35, width=120, command=self.booking_taxi)
+        self.request_booking_button.place(x=120, y=460)
+
+        self.clear_button = ctk.CTkButton(master=self, text="Clear", font=(font, 16),
+                                                    corner_radius=8, height=35, width=120, command=self.booking_taxi)
+        # self.clear_button.place(x=230, y=460)
+
+        # for creating a frame to place a button
+        self.button_frame = customtkinter.CTkFrame(master= self, width=870, height=70, corner_radius=20)
+        self.button_frame.place(x=15, y=520)
+
+        upodate_btn_image = ImageTk.PhotoImage(Image.open("Images/update.png").resize((20,20), Image.ANTIALIAS))
+
+        self.update_booking_button = ctk.CTkButton(master=self.button_frame, text="Update Booking",image = upodate_btn_image, font=(font, 16, 'bold'),corner_radius=8, height=35, width=150, command=self.update_booking)
+        self.update_booking_button.place(x=50, y=17)
+
+        cancel_btn_image = ImageTk.PhotoImage(Image.open("Images/cancel.png").resize((20,20), Image.ANTIALIAS))
+
+        self.cancel_booking_button = ctk.CTkButton(master=self.button_frame, text="Cancel Booking",image=cancel_btn_image, font=(font, 16, 'bold'),
                                                    corner_radius=8, height=35, width=150, command=self.cancel_booking)
-        self.cancel_booking_button.place(x=380, y=530)
+        self.cancel_booking_button.place(x=250, y=17)
 
-        self.approved_booking_button = ctk.CTkButton(master=self, text="Approved Booking", font=(font, 16),
+        approved_btn_image = ImageTk.PhotoImage(Image.open("Images/approved.png").resize((20,20), Image.ANTIALIAS))
+
+
+        self.approved_booking_button = ctk.CTkButton(master=self.button_frame, text="Approved Booking",image=approved_btn_image, font=(font, 16, 'bold'),
                                                corner_radius=8, height=35, width=150, command=self.approved_booking)
-        self.approved_booking_button.place(x=555, y=530)
+        self.approved_booking_button.place(x=450, y=17)
 
-        self.booking_history_button = ctk.CTkButton(master=self, text="Booking History", font=(font, 16),corner_radius=8, height=35, width=150, command=self.booking_history)
-        self.booking_history_button.place(x=735, y=530)
+        history_btn_image = ImageTk.PhotoImage(Image.open("Images/history.png").resize((20,20), Image.ANTIALIAS))
+
+        self.booking_history_button = ctk.CTkButton(master=self.button_frame, text="Booking History",image=history_btn_image, font=(font, 16, 'bold'),corner_radius=8, height=35, width=150, command=self.booking_history)
+        self.booking_history_button.place(x=670, y=17)
 
         self.map_frame = Frame(self, bg="red", width=480, height=400)
         self.map_frame.place(x=400, y=100)
