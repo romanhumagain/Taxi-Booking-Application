@@ -1,9 +1,14 @@
 import tkinter.ttk
+from datetime import datetime
 from tkinter import *
 import customtkinter
 from tkinter import messagebox
+
+from Controller.account_activity_dbms import insert_account_activity_details
 from Controller.driver_dbms import register_driver, search_driver, get_all_driver, get_available_driver, update_driver_details, delete_driver
 from Controller.customer_registration_dbms import register_user
+from Model import Global
+from Model.account_activity import AccountActivity
 from Model.user import User
 from Model.driver import Driver
 from PIL import Image, ImageTk
@@ -217,11 +222,26 @@ class DriverWindow:
             if user_registered:
                 driver = Driver(name=self.name_entry.get(), address=self.address_entry.get(), phone_no=self.phone_entry.get(), license=self.license_entry.get(), gender=self.gender_value.get(), driver_status="available")
                 driver_registered = register_driver(driver, user)
-
                 if driver_registered:
-                    messagebox.showinfo("Registration Success !", "Successfully Registered Driver", parent=self.driver_window)
-                    self.set_all_driver_details()
-                    self.clear_fields()
+                    # TO INSERT RECORDS TO THE ACCOUNT ACTIVITY TABLE
+                    current_date_time = datetime.now()
+                    current_date = current_date_time.date()
+                    current_time = current_date_time.time()
+
+                    activity_related = "Driver Registered"
+                    description = f"{self.name_entry.get()} was successfully registered as a driver"
+
+                    accountActivity = AccountActivity(activity_related=activity_related, description=description,
+                                                      date=current_date, time=current_time,
+                                                      user_id=Global.current_user[0])
+                    account_activity_stored = insert_account_activity_details(accountActivity)
+
+                    if account_activity_stored:
+                        messagebox.showinfo("Registration Success !", "Successfully Registered Driver", parent=self.driver_window)
+                        self.set_all_driver_details()
+                        self.clear_fields()
+                    else:
+                        messagebox.showerror("Activity Details Failed", "Activity Details Failed to Store.", parent= self.driver_window)
                 else:
                     messagebox.showerror("Registration Failed", "Sorry Could't Register Driver!", parent=self.driver_window)
             else:
@@ -247,9 +267,28 @@ class DriverWindow:
                 driver_isupdated = update_driver_details(driver)
 
                 if driver_isupdated:
+                    # TO INSERT RECORDS TO THE ACCOUNT ACTIVITY TABLE
+                    current_date_time = datetime.now()
+                    current_date = current_date_time.date()
+                    current_time = current_date_time.time()
+
+                    activity_related = "Driver Updated"
+                    description = f"Driver with driver ID {driver_id} was successfully updated."
+
+                    accountActivity = AccountActivity(activity_related=activity_related, description=description,
+                                                      date=current_date, time=current_time,
+                                                      user_id=Global.current_user[0])
+                    account_activity_stored = insert_account_activity_details(accountActivity)
+
+                    if account_activity_stored:
+
                         messagebox.showinfo("Update Success !", "Successfully Updated Driver Details",
-                                            parent=self.driver_window)
+                                                parent=self.driver_window)
                         self.search_driver()
+                    else:
+                        messagebox.showerror("Activity Details Failed", "Activity Details Failed to Store.",
+                                             parent=self.driver_window)
+
                 else:
                     messagebox.showerror("Update Failed", "Sorry Could't Update Driver!", parent=self.driver_window)
             else:
@@ -271,10 +310,26 @@ class DriverWindow:
                     driver = Driver(driver_id=driver_id, user_id=found_driver[7])
                     driver_isdeleted = delete_driver(driver)
                     if driver_isdeleted:
-                        messagebox.showinfo("Deletion Success", f"Successfully deleted driver having driver ID {driver_id}", parent=self.driver_window)
-                        self.set_all_driver_details()
-                        self.clear_fields()
-                        self.search_entry.delete(0, END)
+                        # TO INSERT RECORDS TO THE ACCOUNT ACTIVITY TABLE
+                        current_date_time = datetime.now()
+                        current_date = current_date_time.date()
+                        current_time = current_date_time.time()
+
+                        activity_related = "Driver Deleted"
+                        description = f"Driver with driver ID {driver_id} was successfully deleted."
+
+                        accountActivity = AccountActivity(activity_related=activity_related, description=description,
+                                                          date=current_date, time=current_time,
+                                                          user_id=Global.current_user[0])
+                        account_activity_stored = insert_account_activity_details(accountActivity)
+                        if account_activity_stored:
+                            messagebox.showinfo("Deletion Success", f"Successfully deleted driver having driver ID {driver_id}", parent=self.driver_window)
+                            self.set_all_driver_details()
+                            self.clear_fields()
+                            self.search_entry.delete(0, END)
+                        else:
+                            messagebox.showerror("Activity Details Failed", "Activity Details Failed to Store.",
+                                                 parent=self.driver_window)
                     else:
                         messagebox.showerror("ERROR", "Sorry Could't Delete Driver From The System.", parent=self.driver_window)
                 else:

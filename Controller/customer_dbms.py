@@ -42,3 +42,28 @@ def search_customer(customer):
             cursor.close()
             connection.close()
             return result
+
+def delete_customer(customer):
+    connection = mysql_connection()
+    cursor = None
+    if connection is not None:
+        try:
+            cursor = connection.cursor()
+            driver_delete_query = "DELETE from customer WHERE customer_id = %s "
+            values = (customer.get_customer_id(),)
+            cursor.execute(driver_delete_query, values)
+
+            user_delete_query = "DELETE FROM user WHERE user_id = %s"
+            values = (customer.get_user_id(),)
+            cursor.execute(user_delete_query, values)
+
+            connection.commit()
+            return True
+
+        except Exception as error:
+            messagebox.showerror("ERROR", f"{error}")
+            print(error)
+            return False
+        finally:
+            cursor.close()
+            connection.close()

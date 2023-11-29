@@ -1,10 +1,16 @@
 import tkinter
+from datetime import datetime
 from tkinter import *
 from tkinter.ttk import Treeview
 
 from PIL import Image, ImageTk
-from Controller.customer_dbms import fetch_all_customer, search_customer
+
+from Controller.account_activity_dbms import insert_account_activity_details
+from Controller.customer_dbms import fetch_all_customer, search_customer, delete_customer
 import customtkinter
+
+from Model import Global
+from Model.account_activity import AccountActivity
 from Model.customer import Customer
 from tkinter import messagebox
 
@@ -94,6 +100,7 @@ class CustomerDetails:
         scroll_y.place(x=140, y=0)
         # scroll_y.config(command=self.customer_details_table.yview)
         self.customer_details_table.place(x=0, y=0)
+        self.customer_details_table.bind("<ButtonRelease-1>", self.fill_table_detals)
 
 
         self.customer_details_table.heading("customer_id", text="C-ID", anchor=CENTER)
@@ -120,7 +127,7 @@ class CustomerDetails:
 
         self.delete_customer_button = customtkinter.CTkButton(master=self.main_frame, width=120,
                                                              font=(self.font, 17, 'bold'), text="Delete User", height=36,
-                                                             corner_radius=20, image=delete_btn_image)
+                                                             corner_radius=20, image=delete_btn_image, command=self.delete_customer)
         self.delete_customer_button.place(x=330, y=435)
 
         self.get_customer_details()
@@ -132,6 +139,13 @@ class CustomerDetails:
 
         for row in fetched_result:
             self.customer_details_table.insert('', END, values=row)
+    def fill_table_detals(self, event):
+        view_info= self.customer_details_table.focus()
+        customer_info = self.customer_details_table.item(view_info)
+
+        row = customer_info.get('values')
+        self.search_entry.delete(0, END)
+        self.search_entry.insert(0,row[0])
 
     def search_customer(self):
         customer_id = self.search_entry.get()
@@ -150,6 +164,49 @@ class CustomerDetails:
 
         else:
             messagebox.showerror("ERROR", "Please Provide Customer ID", parent = self.customer_details_window)
+
+    def delete_customer(self):
+        customer_id = self.search_entry.get()
+        if customer_id != "":
+            confirmed = messagebox.askyesno("Confirm Deletion", f"Are you sure you want to delete the customer with customer ID {customer_id}", parent = self.customer_details_window)
+            if confirmed:
+                # to search if the customer is available or not
+                customer = Customer(customer_id=customer_id)
+                searched_details = search_customer(customer)
+                if searched_details:
+                    print("getting the user_id while deleting the customer",searched_details[0][7])
+                    customer = Customer(customer_id=customer_id, user_id=searched_details[0][7])
+                    customer_deleted = delete_customer(customer)
+
+                    if customer_deleted:
+                        # TO INSERT RECORDS TO THE ACCOUNT ACTIVITY TABLE
+                        current_date_time = datetime.now()
+                        current_date = current_date_time.date()
+                        current_time = current_date_time.time()
+
+                        activity_related = "Customer Deleted"
+                        description = f"Customer with customer ID {customer_id} was successfully deleted"
+
+                        accountActivity = AccountActivity(activity_related=activity_related, description=description,
+                                                          date=current_date, time=current_time,
+                                                          user_id=Global.current_user[0])
+                        account_activity_stored = insert_account_activity_details(accountActivity)
+
+                        if account_activity_stored:
+                            messagebox.showinfo("Successfully Deleted", f"Customer With Customer ID {customer_id} was successfully deleted.", parent = self.customer_details_window)
+                            self.get_customer_details()
+                        else:
+                            messagebox.showerror("Activity Details Failed", "Activity Details Failed to Store.",
+                                                 parent=self.customer_details_window)
+
+                else:
+                    messagebox.showerror("ERROR", f"Sorry Customer with customer ID {customer_id} doesn't exists!",
+                                         parent=self.customer_details_window)
+            else:
+                pass
+        else:
+            messagebox.showerror("ERROR", "Please provide customer ID to delete the user.", parent = self.customer_details_window)
+
 
 if __name__ == '__main__':
     window = Tk()
