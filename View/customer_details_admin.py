@@ -15,8 +15,10 @@ from Model.customer import Customer
 from tkinter import messagebox
 
 class CustomerDetails:
-    def __init__(self, window):
+    def __init__(self, window, count_customer_callback):
         self.window = window
+        self.count_customer_callback = count_customer_callback
+
         self.font = "Century Gothic"
 
     def show_customer_details_window(self):
@@ -195,6 +197,7 @@ class CustomerDetails:
                         if account_activity_stored:
                             messagebox.showinfo("Successfully Deleted", f"Customer With Customer ID {customer_id} was successfully deleted.", parent = self.customer_details_window)
                             self.get_customer_details()
+                            self.count_customer_callback()
                         else:
                             messagebox.showerror("Activity Details Failed", "Activity Details Failed to Store.",
                                                  parent=self.customer_details_window)

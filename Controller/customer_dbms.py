@@ -10,7 +10,11 @@ def fetch_all_customer():
     if connection is not None:
         try:
             cursor = connection.cursor()
-            query = "SELECT * FROM customer ORDER BY customer_id DESC"
+            query = """ SELECT customer_id, name, email, phone_no, payment, address, date_of_birth, gender
+                        FROM user
+                        INNER JOIN customer
+                        ON user.user_id = customer.user_id
+                        ORDER BY customer_id DESC """
             cursor.execute(query)
             result = cursor.fetchall()
 
@@ -30,7 +34,11 @@ def search_customer(customer):
     if connection is not None:
         try:
             cursor = connection.cursor()
-            query = "SELECT * FROM customer WHERE customer_id = %s "
+            query = """SELECT customer_id, name, email, phone_no, payment, address, date_of_birth, gender
+                        FROM user
+                        INNER JOIN customer
+                        ON user.user_id = customer.user_id
+                        WHERE customer_id = %s """
             values = (customer.get_customer_id(),)
             cursor.execute(query, values)
             result = cursor.fetchall()

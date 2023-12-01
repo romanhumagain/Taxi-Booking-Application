@@ -3,13 +3,25 @@ from tkinter import *
 import customtkinter
 from PIL import Image as PILImage, ImageTk
 from datetime import datetime
+
+from Controller.admin_dashboard_dbms import fetch_customer_booking, fetch_pending_booking_details, search_booking_details
+from Controller.booking_dbms import cancel_booking
+from Model.booking import Booking
 from customer_details_admin import CustomerDetails
-from booking_details_admin import BookingDetails
 from View.login_activity import LoginActivity
 from driver_frame_admin import DriverWindow
+from booking_details_admin import BookingDetails
+from chart import BookingLineChart
 from tkinter import messagebox
 
 from Controller.customer_dbms import fetch_all_customer
+
+# for the chart
+import matplotlib.pyplot as plt
+import matplotlib.dates as dates
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
+import pandas as pd
 
 class AdminDashboard:
     def __init__(self, window):
@@ -19,7 +31,10 @@ class AdminDashboard:
         self.window.state("zoomed")
         self.window.resizable(0, 0)
 
+        self.booking_details_id = 0
         self.font = "Century Gothic"
+        self.table_frame = None
+        self.chart_frame = None
 
         customtkinter.set_default_color_theme("green")
 
@@ -193,12 +208,15 @@ class AdminDashboard:
         self.innner_main_frame.place(x=25, y=20)
 
         self.inner_top_frame = customtkinter.CTkFrame(master=self.innner_main_frame, width=1135, height=200, corner_radius=40)
-        self.inner_top_frame.place(x=30, y=20)
+        self.inner_top_frame.place(x=30, y=10)
 
         # simple card like structure to show the total customer, booking and the total driver
         self.total_customer_frame = customtkinter.CTkFrame(master=self.inner_top_frame, corner_radius=30, height=150,
-                                                          width=190)
+                                                          width=190,cursor="hand2")
         self.total_customer_frame.place(x=100, y=25)
+        self.total_customer_frame.bind("<Button-1>", self.customer_records)
+
+
 
         self.customer_number_label = Label(self.total_customer_frame, font=(self.font, 16), text="Total Customer",
                                           bg="#2c2c2c", fg="white")
@@ -219,7 +237,7 @@ class AdminDashboard:
         self.bc_line.place(x= 290, y= 100)
 
         self.booking_number_label = Label(self.total_booking_frame, font=(self.font, 16), text="Total Booking",
-                                           bg="#2c2c2c", fg="white")
+                                           bg="#2c2c2c", fg="white", cursor="hand2")
         self.booking_number_label.place(relx=0.5, rely=0.25, anchor="center")
 
         self.total_booking_count_label = Label(self.total_booking_frame, font=(self.font, 28), text="10", bg="#2c2c2c",
@@ -228,19 +246,25 @@ class AdminDashboard:
 
         # ============= FOR TOTAL PENDING BOOKING FRAME ==========================
         self.total_pending_booking_frame = customtkinter.CTkFrame(master=self.inner_top_frame, corner_radius=30, height=150,
-                                                          width=190)
+                                                          width=190, cursor="hand2")
         self.total_pending_booking_frame.place(x=605, y=25)
+        self.total_pending_booking_frame.bind("<Button-1>", self.display_pending_booking_records)
+
 
         self.pb_line = Canvas(self.inner_top_frame, bg="white", highlightthickness=0, height=3, width=60)
         self.pb_line.place(x=545, y=100)
 
         self.pending_booking_number_label = Label(self.total_pending_booking_frame, font=(self.font, 16), text="Pending Booking",
-                                          bg="#2c2c2c", fg="white")
+                                          bg="#2c2c2c", fg="white",cursor="hand2")
         self.pending_booking_number_label.place(relx=0.5, rely=0.25, anchor="center")
 
-        self.total_pending_booking_count_label = Label(self.total_pending_booking_frame, font=(self.font, 28), text="10", bg="#2c2c2c",
+
+        self.total_pending_booking_count_label = Label(self.total_pending_booking_frame, font=(self.font, 28), text="", bg="#2c2c2c",
                                                fg="#90EE90")
         self.total_pending_booking_count_label.place(relx=0.5, rely=0.6, anchor="center")
+
+        self.count_pending_booking()
+
 
         # ============= FOR TOTAL DRIVER FRAME ==========================
         self.total_driver_frame = customtkinter.CTkFrame(master=self.inner_top_frame, corner_radius=30, height=150,
@@ -258,74 +282,149 @@ class AdminDashboard:
                                                fg="#90EE90")
         self.total_driver_count_label.place(relx=0.5, rely=0.6, anchor="center")
 
+        self.tab_view = customtkinter.CTkTabview(self.innner_main_frame, width=1140, height=470, corner_radius=15, command=self.show_chart)
+        self.tab_view.place(x=30, y=220)
 
-    # ================ FOR THE PENDING BOOKING DETAILS =========================
-        pending_label = Label(self.innner_main_frame, text="Pending Booking Details",font=(self.font, 20), fg="white",bg="#2c2c2c")
-        pending_label.place(x=440, y=240)
+        self.table_tab = self.tab_view.add("Bookings")
+        self.graph_tab = self.tab_view.add("Graph")
 
-    #  for search entry
-        search_entry = customtkinter.CTkEntry(master=self.innner_main_frame, width=150, height=36, placeholder_text="Booking ID")
-        search_entry.place(x=30, y=270)
+        # to set the currently visible tab
+        self.tab_view.set("Bookings")
 
-        search_btn_image = ImageTk.PhotoImage(PILImage.open("Images/search.png").resize((25,25), PILImage.ANTIALIAS))
+        #======================== SHOWING THE CONTENT IN THE TABLE TAB VIEW================================
 
+        self.table_tab_frame = customtkinter.CTkFrame(self.table_tab, width=1160, height=460)
+        self.table_tab_frame.place(x=0, y=5)
 
-        search_button = customtkinter.CTkButton(master=self.innner_main_frame, width=80, height=35, text="search", corner_radius=15,font=(self.font, 16), image=search_btn_image)
-        search_button.place(x=190, y=272)
+        # ================ FOR THE PENDING BOOKING DETAILS =========================
+        pending_label = customtkinter.CTkLabel(self.table_tab_frame, text="Pending Booking Details", font=(self.font, 26))
+        pending_label.place(relx=0.5, rely=0.069, anchor="center")
 
+        #  for search entry
+        self.search_entry = customtkinter.CTkEntry(master=self.table_tab_frame, width=100, height=36,
+                                              placeholder_text="Booking ID")
+        self.search_entry.place(x=30, y=20)
 
-        # CREATING A FRAME TO SHOW THE TABLE
-        self.table_frame = Frame(self.innner_main_frame, bg="white", width=1140, height=300)
-        self.table_frame.place(x=30, y= 330)
+        search_btn_image = ImageTk.PhotoImage(PILImage.open("Images/search.png").resize((20, 20), PILImage.ANTIALIAS))
 
-        self.scroll_y = Scrollbar(self.table_frame, orient=VERTICAL)
+        self.search_button = customtkinter.CTkButton(master=self.table_tab_frame, width=60, height=35, text="search",
+                                                corner_radius=15, font=(self.font, 15), image=search_btn_image,
+                                                command=self.search_booking)
+        self.search_button.place(x=140, y=22)
+
+        self.scroll_y = Scrollbar(self.table_tab_frame, orient=VERTICAL)
 
         self.pending_booking_table = tkinter.ttk.Treeview(
-            self.table_frame,
+            self.table_tab_frame,
             columns=("booking_id", "customer_id", "customer_name", "pickup_address", "date", "time", "dropoff_address",
                      "status"),
             show="headings",
-            height=14,
+            height=9,
             yscrollcommand=self.scroll_y.set
         )
 
-        self.scroll_y.place(x=1120, y=0, height=300)
-        self.pending_booking_table.place(x=0, y=0)
+        self.scroll_y.place(x=1120, y=80, height=285)
+        self.pending_booking_table.place(x=0, y=80)
+        self.pending_booking_table.bind("<ButtonRelease-1>", self.select_booking)
+
 
         self.pending_booking_table.heading("booking_id", text="Booking ID", anchor=CENTER)
         self.pending_booking_table.heading("customer_id", text="Customer ID", anchor=CENTER)
-        self.pending_booking_table.heading("customer_name", text="Name ID", anchor=CENTER)
+        self.pending_booking_table.heading("customer_name", text="Name", anchor=CENTER)
         self.pending_booking_table.heading("pickup_address", text="Pickup Address", anchor=CENTER)
         self.pending_booking_table.heading("date", text="Date", anchor=CENTER)
         self.pending_booking_table.heading("time", text="Time", anchor=CENTER)
         self.pending_booking_table.heading("dropoff_address", text="Dropoff Address", anchor=CENTER)
         self.pending_booking_table.heading("status", text="Status", anchor=CENTER)
 
-
-        self.pending_booking_table.column("booking_id",width=100, anchor=CENTER)
-        self.pending_booking_table.column("customer_id",width=100, anchor=CENTER)
+        self.pending_booking_table.column("booking_id", width=100, anchor=CENTER)
+        self.pending_booking_table.column("customer_id", width=100, anchor=CENTER)
         self.pending_booking_table.column("customer_name", width=150, anchor=CENTER)
-        self.pending_booking_table.column("pickup_address",width=250, anchor=CENTER)
-        self.pending_booking_table.column("date",width=100, anchor=CENTER)
-        self.pending_booking_table.column("time",width=100, anchor=CENTER)
-        self.pending_booking_table.column("dropoff_address",width=205, anchor=CENTER)
-        self.pending_booking_table.column("status",width=115, anchor=CENTER)
+        self.pending_booking_table.column("pickup_address", width=250, anchor=CENTER)
+        self.pending_booking_table.column("date", width=100, anchor=CENTER)
+        self.pending_booking_table.column("time", width=100, anchor=CENTER)
+        self.pending_booking_table.column("dropoff_address", width=205, anchor=CENTER)
+        self.pending_booking_table.column("status", width=115, anchor=CENTER)
+
+        # ======= CALLING FUNCTION TO SET THE DETAILS IN THE TABLE ==========
+        self.display_pending_booking_details()
 
         # ======= SETTING BUTTONS FOR MORE FUNCTIONALITY ============
-        assign_btn_image = ImageTk.PhotoImage(PILImage.open("Images/assign_driver.png").resize((30,30), PILImage.ANTIALIAS))
+        assign_btn_image = ImageTk.PhotoImage(
+            PILImage.open("Images/assign_driver.png").resize((30, 30), PILImage.ANTIALIAS))
+
+        self.assign_driver_button = customtkinter.CTkButton(master=self.table_tab_frame, width=150,
+                                                            font=(self.font, 18, 'bold'), text="Assign Driver",
+                                                            height=35, corner_radius=20, image=assign_btn_image)
+        self.assign_driver_button.place(x=370, y=354)
+
+        cancel_btn_image = ImageTk.PhotoImage(PILImage.open("Images/cancel.png").resize((30, 30), PILImage.ANTIALIAS))
+
+        self.cancel_booking_button = customtkinter.CTkButton(master=self.table_tab_frame, width=150,
+                                                             font=(self.font, 18, 'bold'), text="Cancel Booking",
+                                                             height=35,
+                                                             corner_radius=20, image=cancel_btn_image, command=self.cancel_booking_details)
+        self.cancel_booking_button.place(x=570, y=354)
 
 
-        self.assign_driver_button = customtkinter.CTkButton(master = self.innner_main_frame, width=160,font=(self.font, 18,'bold'),text="Assign Driver", height=36, corner_radius=20, image=assign_btn_image)
-        self.assign_driver_button.place(x=400 , y=655 )
+    def show_chart(self):
+        # ========================  SHOWING THE CONTENT IN THE GRAPH TAB VIEW  ================================
+
+        self.chart_tab_frame = customtkinter.CTkFrame(self.graph_tab, width=1140, height=460)
+        self.chart_tab_frame.place(x=0, y=5)
+
+        # chart_label = customtkinter.CTkLabel(self.chart_tab_frame, text="Daily Booking Records Chart",
+        #                                      font=(self.font, 25))
+        # chart_label.place(relx=0.5, rely=0.056, anchor="center")
+
+        result = fetch_customer_booking()
+
+        result = [
+            ('2023-01-15', 2),
+            ('2023-02-28', 5),
+            ('2023-03-10', 18),
+            ('2023-04-05', 1),
+            ('2023-05-20', 4),
+            ('2023-06-08', 3),
+            ('2023-07-14', 7),
+            ('2023-08-29', 5),
+            ('2023-09-22', 1),
+            ('2023-10-18', 4)
+        ]
+
+        # preparing data for plotting
+        dates = []
+        bookings = []
+
+        for row in result:
+            dates.append(row[0])
+            bookings.append(row[1])
 
 
-        cancel_btn_image = ImageTk.PhotoImage(PILImage.open("Images/cancel.png").resize((30,30), PILImage.ANTIALIAS))
 
+        # creating a matplotlib figure
+        figure, ax = plt.subplots(figsize=(11.8, 4))
+        ax.set_facecolor('#f0f0f0')  # Set the background color of the chart
 
-        self.cancel_booking_button = customtkinter.CTkButton(master=self.innner_main_frame, width=160,
-                                                            font=(self.font, 18, 'bold'), text="Cancel Booking", height=36,
-                                                            corner_radius=20, image=cancel_btn_image)
-        self.cancel_booking_button.place(x=600, y=655)
+        # Plotting the line and getting the first element of the returned list
+        line, = ax.plot_date(dates, bookings, '-')
+
+        # to set the labels and the title for the chart
+        ax.set_xlabel("Date", fontsize=10)
+        ax.set_ylabel("Total Bookings", fontsize=12)
+        ax.set_title("Daily Booking Records Chart", fontsize = 15)
+
+        # Set font size for the line
+        ax.tick_params(axis='both', which='major', labelsize=9)
+
+        # Set the y-axis ticks with a step of 5
+        plt.yticks(range(0, max(bookings) + 5, 5))
+
+        # creating a canvas for the Matplotlib figure
+        canvas = FigureCanvasTkAgg(figure, master=self.chart_tab_frame)
+        canvas_widget = canvas.get_tk_widget()
+        canvas_widget.place(x=0, y=0)
+        canvas.draw()
 
     # ========= SHOWING THE COUNT DETAILS IN THE ADMIN DASHBOARD =============
     def count_customer(self):
@@ -339,22 +438,27 @@ class AdminDashboard:
         pass
 
     def count_pending_booking(self):
-        pass
+        count = 0
+        result = fetch_pending_booking_details()
+        for data in result:
+            count +=1
+        self.total_pending_booking_count_label.config(text=count)
+
 
     def count_driver(self):
         pass
 
     # =========== TO SHOW THE CUSTOMER DETAILS WINDOW ================
     def customer_details_window(self):
-        customerDetails = CustomerDetails(self.main_frame)
+        customerDetails = CustomerDetails(self.main_frame, self.count_customer)
         customerDetails.show_customer_details_window()
 
     def driver_details_window(self):
         driverWindow = DriverWindow(self.main_frame)
         driverWindow.show_driver_window()
 
-    def booking_details_window(self):
-        bookingDetails = BookingDetails(self.main_frame)
+    def booking_details_window(self, ):
+        bookingDetails = BookingDetails(self.main_frame, self.display_pending_booking_details,self.count_pending_booking)
         bookingDetails.show_booking_details_window()
 
     def activity_log_window(self):
@@ -368,6 +472,7 @@ class AdminDashboard:
 
     def hide_indicator(self):
         self.dashboard_indicator_lbl.config(bg="#3c3c3c")
+        self.customer_indicator_lbl.config(bg="#3c3c3c")
         self.booking_indicator_lbl.config(bg="#3c3c3c")
         self.payment_indicator_lbl.config(bg="#3c3c3c")
         self.driver_indicator_lbl.config(bg="#3c3c3c")
@@ -399,6 +504,64 @@ class AdminDashboard:
             main_dashboard_window = Tk()
             main_dashboard = MainPage(main_dashboard_window)
             main_dashboard_window.mainloop()
+    def search_booking(self):
+        booking_id = self.search_entry.get()
+        if not booking_id == "":
+            booking = Booking(booking_id=booking_id)
+            result = search_booking_details(booking)
+
+            if len(result) != 0:
+                for item in self.pending_booking_table.get_children():
+                    self.pending_booking_table.delete(item)
+
+                for row in result:
+                     self.pending_booking_table.insert('', END, values=row)
+            else:
+                messagebox.showerror("Records Not Found", f"Booking with Booking ID {booking_id} doesn't exists.")
+        else:
+            messagebox.showerror("ERROR", "Please provide Booking ID to search.")
+
+    # ================ TO SET THE PENDING BOOKING DETAILS IN THE ADMIN DASHBOARD ====================
+    def display_pending_booking_details(self):
+        result = fetch_pending_booking_details()
+        if result is not None:
+            for item in self.pending_booking_table.get_children():
+                self.pending_booking_table.delete(item)
+
+            for row in result:
+                self.pending_booking_table.insert('', END, values=row)
+
+    def select_booking(self, event):
+        view_info = self.pending_booking_table.focus()
+        booking_details = self.pending_booking_table.item(view_info)
+
+        row = booking_details.get("values")
+        self.booking_details_id = row[0]
+
+    def cancel_booking_details(self):
+        if not self.booking_details_id == 0:
+            confirmed = messagebox.askyesno("Confirm", f"Are you sure you want to cancel the booking of Booking ID {self.booking_details_id}?")
+            if confirmed:
+                booking = Booking(booking_id = self.booking_details_id)
+                canceled = cancel_booking(booking)
+                if canceled:
+                    messagebox.showinfo("SUCCESS", f"Successfully Canceled Booking of Booking ID {self.booking_details_id}")
+                    self.display_pending_booking_details()
+
+                    self.booking_details_id = 0
+
+                    self.count_pending_booking()
+        else:
+            messagebox.showerror("ERROR", "please select booking from the table.")
+
+    def display_pending_booking_records(self, event):
+        self.display_pending_booking_details()
+
+    def customer_records(self, event):
+        self.customer_details_window()
+
+
+
 
 def main_window():
     window = Tk()

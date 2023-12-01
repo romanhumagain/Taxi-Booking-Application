@@ -9,13 +9,14 @@ def booking_taxi(booking):
             cursor = connection.cursor()
 
             # query for insert
-            query = """INSERT INTO booking(pickup_address, pickup_date, pickup_time, dropoff_address,booking_status, customer_id) VALUES (%s, %s, %s, %s, %s, %s)"""
+            query = """INSERT INTO booking(pickup_address, pickup_date, pickup_time, dropoff_address,booking_status, booked_date, customer_id) VALUES (%s, %s, %s, %s,%s, %s, %s)"""
             values = (
                 booking.get_pickup_address(),
                 booking.get_pickup_date(),
                 booking.get_pickup_time(),
                 booking.get_dropoff_address(),
                 booking.get_booking_status(),
+                booking.get_booked_date(),
                 booking.get_customer_id()
             )
             cursor.execute(query, values)

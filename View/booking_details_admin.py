@@ -1,13 +1,23 @@
 import tkinter.ttk
 from tkinter import *
+from tkinter import messagebox
+
 import customtkinter
 from PIL import ImageTk, Image as PILImage
 
+from Controller.admin_dashboard_dbms import fetch_pending_booking_details
+from Controller.booking_dbms import cancel_booking
+from Model.booking import Booking
 
 class BookingDetails:
-    def __init__(self, window):
+    def __init__(self, window, cancel_booking_callback, count_booking_callback):
         self.window = window
+        self.cancel_booking_callback = cancel_booking_callback
+        self.count_booking_callback = count_booking_callback
+
         self.font = "Century Gothic"
+        self.booking_id = 0
+
     def show_booking_details_window(self):
         self.booking_details_window = Toplevel(self.window, bg="#3c3c3c")
         self.booking_details_window.title("Customer Booking Details")
@@ -134,7 +144,7 @@ class BookingDetails:
         if self.cancel_booking is None:
             cancel_btn_image = ImageTk.PhotoImage(PILImage.open("Images/cancel.png").resize((30, 30), PILImage.ANTIALIAS))
 
-            self.cancel_booking = customtkinter.CTkButton(self.button_frame, text="Cancel", width=150, height=35,font=(self.font, 16, 'bold'), corner_radius=10,image=cancel_btn_image )
+            self.cancel_booking = customtkinter.CTkButton(self.button_frame, text="Cancel", width=150, height=35,font=(self.font, 16, 'bold'), corner_radius=10,image=cancel_btn_image, command=self.cancel_booking_details )
             self.cancel_booking.place(x=10, y=300)
 
         self.scroll_y = Scrollbar(self.booking_table_frame, orient=VERTICAL)
@@ -149,6 +159,7 @@ class BookingDetails:
 
         # self.scroll_y.place(x=1120, y=0, height=300)
         self.pending_booking_table.place(x=0, y=0)
+        self.pending_booking_table.bind("<ButtonRelease-1>", self.select_booking)
 
         self.pending_booking_table.heading("booking_id", text="B-ID", anchor=CENTER)
         self.pending_booking_table.heading("customer_id", text="C-ID", anchor=CENTER)
@@ -167,6 +178,9 @@ class BookingDetails:
         self.pending_booking_table.column("time", width=60, anchor=CENTER)
         self.pending_booking_table.column("dropoff_address", width=180, anchor=CENTER)
         self.pending_booking_table.column("status", width=80, anchor=CENTER)
+
+
+        self.display_pending_booking()
 
 
     def create_booking_history_table(self):
@@ -199,6 +213,43 @@ class BookingDetails:
         self.booking_history_table.column("dropoff", width=170, anchor=CENTER)
         self.booking_history_table.column("driver_id", width=50, anchor=CENTER)
         self.booking_history_table.column("driver_name", width=180, anchor=CENTER)
+
+    def display_pending_booking(self):
+        result = fetch_pending_booking_details()
+        if result is not None:
+            for item in self.pending_booking_table.get_children():
+                self.pending_booking_table.delete(item)
+
+            for row in result:
+                self.pending_booking_table.insert('', END, values=row)
+
+    def select_booking(self, event):
+        view_info = self.pending_booking_table.focus()
+        booking_details = self.pending_booking_table.item(view_info)
+
+        row = booking_details.get("values")
+        self.booking_id = row[0]
+
+
+    def cancel_booking_details(self):
+        if not self.booking_id == 0:
+            confirmed = messagebox.askyesno("Confirm", f"Are you sure you want to cancel the booking of Booking ID {self.booking_id}?", parent = self.booking_details_window)
+            if confirmed:
+                booking = Booking(booking_id = self.booking_id)
+                canceled = cancel_booking(booking)
+                if canceled:
+                    messagebox.showinfo("SUCCESS", f"Successfully Canceled Booking of Booking ID {self.booking_id}", parent = self.booking_details_window)
+                    self.display_pending_booking()
+                    self.booking_id = 0
+
+                    self.cancel_booking_callback()
+                    self.count_booking_callback()
+
+
+        else:
+            messagebox.showerror("ERROR", "please select booking from the table.", parent = self.booking_details_window)
+
+
 
 
 if __name__ == '__main__':
