@@ -14,9 +14,11 @@ from Model.driver import Driver
 from PIL import Image, ImageTk
 
 class DriverWindow:
-    def __init__(self, window):
+    def __init__(self, window,top_level_list ):
         self.window = window
         self.font = "Century Gothic"
+        self.top_level_list = top_level_list
+
         customtkinter.set_default_color_theme("green")
 
         style1 = tkinter.ttk.Style()
@@ -49,6 +51,9 @@ class DriverWindow:
         self.driver_window = Toplevel(self.window, bg="#3c3c3c")
         self.driver_window.title("Driver Management System")
         self.driver_window.resizable(0, 0)
+
+        # to add toplevel window to the list in the AdminDashboard Class
+        self.top_level_list.append(self.driver_window)
 
         width = 1000
         height = 600

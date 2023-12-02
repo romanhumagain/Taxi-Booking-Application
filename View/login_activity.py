@@ -8,14 +8,20 @@ from Model import Global
 from Controller.account_activity_dbms import fetch_account_activity_details
 import customtkinter
 class LoginActivity:
-    def __init__(self, window):
+    # to add the toplevel window to the list in the AdminDashboard
+    def __init__(self, window, top_level_list = None):
         self.window = window
         self.font ="Century Gothic"
+
+        self.top_level_list = top_level_list
+
 
     def show_login_activity_window(self):
         self.login_activity_window = Toplevel(self.window, width=850, height=580, bg="#3c3c3c")
         self.login_activity_window.title("Login Details ")
         self.login_activity_window.resizable(0,0)
+
+        self.top_level_list.append(self.login_activity_window)
 
         screen_width = self.login_activity_window.winfo_screenwidth()
         screen_height = self.login_activity_window.winfo_screenheight()

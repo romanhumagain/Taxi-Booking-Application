@@ -141,3 +141,24 @@ def delete_driver(driver):
         finally:
             cursor.close()
             connection.close()
+
+# ====== GETTING THE AVAILABLE DRIVER WHILE ASSIGNING THE DRIVER TO THE BOOKING ======================
+def fetch_available_driver():
+    connection = mysql_connection()
+    cursor = None
+    result = None
+    if connection is not None:
+        try:
+            cursor = connection.cursor()
+            query = "SELECT driver_id, name, phone_no, license FROM driver WHERE driver_status = %s"
+            values = ("available",)
+            cursor.execute(query, values)
+            result = cursor.fetchall()
+
+        except Exception as error:
+            messagebox.showerror("ERROR", f"{error}")
+            print(error)
+        finally:
+            cursor.close()
+            connection.close()
+            return result

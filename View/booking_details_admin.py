@@ -10,10 +10,12 @@ from Controller.booking_dbms import cancel_booking
 from Model.booking import Booking
 
 class BookingDetails:
-    def __init__(self, window, cancel_booking_callback, count_booking_callback):
+    def __init__(self, window, cancel_booking_callback, count_booking_callback, top_level_list):
         self.window = window
         self.cancel_booking_callback = cancel_booking_callback
         self.count_booking_callback = count_booking_callback
+
+        self.top_level_list = top_level_list
 
         self.font = "Century Gothic"
         self.booking_id = 0
@@ -22,6 +24,9 @@ class BookingDetails:
         self.booking_details_window = Toplevel(self.window, bg="#3c3c3c")
         self.booking_details_window.title("Customer Booking Details")
         self.booking_details_window.resizable(0, 0)
+
+        # to add the toplevel window to the list in the AdminDashboard
+        self.top_level_list.append(self.booking_details_window)
 
         width = 1000
         height = 550

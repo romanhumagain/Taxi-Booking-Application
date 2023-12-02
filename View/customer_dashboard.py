@@ -26,7 +26,7 @@ class CustomerDashboard:
         self.font = "Century Gothic"
 
         customtkinter.set_appearance_mode("System")
-        # customtkinter.set_default_color_theme("green")
+        customtkinter.set_default_color_theme("blue")
 
         self.navbar = Frame(self.window, bg="#2c2c2c", pady=25)
         self.navbar.pack(side="top", fill="x")

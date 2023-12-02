@@ -15,16 +15,18 @@ from Model.customer import Customer
 from tkinter import messagebox
 
 class CustomerDetails:
-    def __init__(self, window, count_customer_callback):
+    def __init__(self, window, count_customer_callback, top_level_list):
         self.window = window
         self.count_customer_callback = count_customer_callback
-
+        self.top_level_list = top_level_list
         self.font = "Century Gothic"
 
     def show_customer_details_window(self):
         self.customer_details_window = Toplevel(self.window, bg="#2c2c2c")
         self.customer_details_window.title("Customer Details")
         self.customer_details_window.resizable(0,0)
+
+        self.top_level_list.append(self.customer_details_window)
 
         width = 820
         height = 490

@@ -7,6 +7,7 @@ from datetime import datetime
 from Controller.admin_dashboard_dbms import fetch_customer_booking, fetch_pending_booking_details, search_booking_details
 from Controller.booking_dbms import cancel_booking
 from Model.booking import Booking
+from View.assign_driver import AssignDriverPage
 from customer_details_admin import CustomerDetails
 from View.login_activity import LoginActivity
 from driver_frame_admin import DriverWindow
@@ -33,10 +34,18 @@ class AdminDashboard:
 
         self.booking_details_id = 0
         self.font = "Century Gothic"
+
         self.table_frame = None
         self.chart_frame = None
 
+        self.top_levels = []
+
+        self.selected_pending_booking_list = None
+        self.pending_bookings = None
+
+
         customtkinter.set_default_color_theme("green")
+
 
 
         style1 = tkinter.ttk.Style()
@@ -108,7 +117,7 @@ class AdminDashboard:
         # for profile option
         self.dashboard_label = Label(self.side_bar_frame, text = "Dashboard",font=(self.font, 17), fg='white', bg='#3c3c3c', cursor='hand2')
         self.dashboard_label.place(x=130, y=205)
-        # self.myprofile_label.bind('<Button-1>', lambda event:self.indicator(self.profile_indicator_lbl, self.my_profile_frame))
+        self.dashboard_label.bind('<Button-1>', lambda event:self.dashboard_indicator(self.dashboard_indicator_lbl))
 
         self.dashboard_indicator_lbl = Label(self.side_bar_frame, bg="white", width=0, height=2)
         self.dashboard_indicator_lbl.place(x=80, y=205)
@@ -355,7 +364,7 @@ class AdminDashboard:
 
         self.assign_driver_button = customtkinter.CTkButton(master=self.table_tab_frame, width=150,
                                                             font=(self.font, 18, 'bold'), text="Assign Driver",
-                                                            height=35, corner_radius=20, image=assign_btn_image)
+                                                            height=35, corner_radius=20, image=assign_btn_image, command=self.assign_driver)
         self.assign_driver_button.place(x=370, y=354)
 
         cancel_btn_image = ImageTk.PhotoImage(PILImage.open("Images/cancel.png").resize((30, 30), PILImage.ANTIALIAS))
@@ -450,19 +459,27 @@ class AdminDashboard:
 
     # =========== TO SHOW THE CUSTOMER DETAILS WINDOW ================
     def customer_details_window(self):
-        customerDetails = CustomerDetails(self.main_frame, self.count_customer)
+        self.destroy_toplevels()
+
+        customerDetails = CustomerDetails(self.main_frame, self.count_customer, self.top_levels)
         customerDetails.show_customer_details_window()
 
     def driver_details_window(self):
-        driverWindow = DriverWindow(self.main_frame)
+        self.destroy_toplevels()
+
+        driverWindow = DriverWindow(self.main_frame, self.top_levels)
         driverWindow.show_driver_window()
 
-    def booking_details_window(self, ):
-        bookingDetails = BookingDetails(self.main_frame, self.display_pending_booking_details,self.count_pending_booking)
+    def booking_details_window(self ):
+        self.destroy_toplevels()
+
+        bookingDetails = BookingDetails(self.main_frame, self.display_pending_booking_details,self.count_pending_booking, self.top_levels)
         bookingDetails.show_booking_details_window()
 
     def activity_log_window(self):
-        accountActivity = LoginActivity(self.main_frame)
+        self.destroy_toplevels()
+
+        accountActivity = LoginActivity(self.main_frame, self.top_levels)
         accountActivity.show_login_activity_window()
 
     def update_time(self):
@@ -479,11 +496,17 @@ class AdminDashboard:
         self.account_indicator_lbl.config(bg="#3c3c3c")
         self.logout_indicator_lbl.config(bg="#3c3c3c")
 
-    def indicator(self, label, frame):
+    def dashboard_indicator(self, label):
         self.hide_indicator()
         label.config(bg="white")
-        self.clear_frame()
-        frame()
+
+        self.destroy_toplevels()
+
+
+    def destroy_toplevels(self):
+        for toplevel in self.top_levels:
+            toplevel.destroy()
+
 
     def window_indicator(self, label, frame):
         self.hide_indicator()
@@ -524,6 +547,7 @@ class AdminDashboard:
     # ================ TO SET THE PENDING BOOKING DETAILS IN THE ADMIN DASHBOARD ====================
     def display_pending_booking_details(self):
         result = fetch_pending_booking_details()
+        self.pending_bookings = result
         if result is not None:
             for item in self.pending_booking_table.get_children():
                 self.pending_booking_table.delete(item)
@@ -536,23 +560,30 @@ class AdminDashboard:
         booking_details = self.pending_booking_table.item(view_info)
 
         row = booking_details.get("values")
+
         self.booking_details_id = row[0]
+        self.selected_pending_booking_list = row
 
     def cancel_booking_details(self):
-        if not self.booking_details_id == 0:
-            confirmed = messagebox.askyesno("Confirm", f"Are you sure you want to cancel the booking of Booking ID {self.booking_details_id}?")
-            if confirmed:
-                booking = Booking(booking_id = self.booking_details_id)
-                canceled = cancel_booking(booking)
-                if canceled:
-                    messagebox.showinfo("SUCCESS", f"Successfully Canceled Booking of Booking ID {self.booking_details_id}")
-                    self.display_pending_booking_details()
 
-                    self.booking_details_id = 0
+        if len(self.pending_bookings) != 0:
+            if not self.booking_details_id == 0:
+                confirmed = messagebox.askyesno("Confirm", f"Are you sure you want to cancel the booking of Booking ID {self.booking_details_id}?")
+                if confirmed:
+                    booking = Booking(booking_id = self.booking_details_id)
+                    canceled = cancel_booking(booking)
+                    if canceled:
+                        messagebox.showinfo("SUCCESS", f"Successfully Canceled Booking of Booking ID {self.booking_details_id}")
+                        self.display_pending_booking_details()
+                        self.selected_pending_booking_list = None
 
-                    self.count_pending_booking()
+                        self.booking_details_id = 0
+
+                        self.count_pending_booking()
+            else:
+                messagebox.showerror("ERROR", "please select booking from the table.")
         else:
-            messagebox.showerror("ERROR", "please select booking from the table.")
+            messagebox.showerror("No Pending Bookings", "There is no any pending booking to cancel.")
 
     def display_pending_booking_records(self, event):
         self.display_pending_booking_details()
@@ -560,7 +591,18 @@ class AdminDashboard:
     def customer_records(self, event):
         self.customer_details_window()
 
+    def assign_driver(self):
+        if len(self.pending_bookings) != 0:
+            if self.selected_pending_booking_list is not None:
+                self.destroy_toplevels()
 
+                assignDriverPage = AssignDriverPage(self.main_frame, self.selected_pending_booking_list)
+                assignDriverPage.show_assign_driver_window()
+
+            else:
+                messagebox.showerror("Unknown Data", "Please select the booking for assigning the Driver!")
+        else:
+         messagebox.showerror("No Pending Bookings", "There is no any pending booking to assign driver.")
 
 
 def main_window():
