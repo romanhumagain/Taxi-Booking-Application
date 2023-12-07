@@ -1,6 +1,8 @@
 import tkinter.ttk
 from tkinter import *
 import customtkinter
+from PIL import ImageTk, Image
+
 
 class PaymentFrame():
     def __init__(self, frame):
@@ -18,9 +20,12 @@ class PaymentFrame():
                                    fg="white")
         self.heading_label.place(relx=0.5, rely=0.35, anchor="center")
 
-        self.download_button = customtkinter.CTkButton(master=self.top_frame, text="Download Receipt",
+        download_btn_image = ImageTk.PhotoImage(Image.open("Images/download.png").resize((20,20), Image.ANTIALIAS))
+
+
+        self.download_button = customtkinter.CTkButton(master=self.top_frame, text="Download Receipt",image=download_btn_image,
                                                     font=(self.font, 15), corner_radius=10, height=34, width=40)
-        self.download_button.place(x=370, y=100)
+        self.download_button.place(x=360, y=100)
 
         # table to show the driver details
 

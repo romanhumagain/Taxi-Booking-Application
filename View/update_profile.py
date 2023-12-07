@@ -172,6 +172,7 @@ class UpdateProfile:
                 if account_activity_stored:
                     messagebox.showinfo("Profile Update Success","Your Profile Has Been Successfully Updated.", parent = self.update_profile_window)
                     self.set_profile_details()
+
                     self.update_profile_window.destroy()
                     if self.profile_update_callback:
                         self.profile_update_callback()

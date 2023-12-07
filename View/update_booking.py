@@ -236,8 +236,9 @@ class UpdateBooking:
                 account_activity_stored = insert_account_activity_details(accountActivity)
 
                 if account_activity_stored:
-                    self.display_data()
                     messagebox.showinfo("Update Success", "Successfully Updated Booking Details.",parent=self.update_booking_window)
+                    self.display_data()
+
                 else:
                     messagebox.showerror("ERROR!", "Account Activity Couldn't Store.",parent =self.update_booking_window )
             else:

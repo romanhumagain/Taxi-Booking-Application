@@ -32,9 +32,9 @@ def fetch_pending_booking_details():
             query = """ SELECT booking_id, customer.customer_id, name, pickup_address, pickup_date, pickup_time, dropoff_address, booking_status
                         FROM customer 
                         INNER JOIN booking 
-                        ON customer.customer_id = booking.customer_id """
+                        ON customer.customer_id = booking.customer_id WHERE booking_status = %s """
 
-            cursor.execute(query)
+            cursor.execute(query, ("pending",))
             result = cursor.fetchall()
 
         except Exception as error:

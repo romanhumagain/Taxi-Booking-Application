@@ -38,7 +38,7 @@ class CustomerDashboard:
         self.taxi_logo_label.image = photo
         self.taxi_logo_label.place(x=20, y=0)
 
-        self.slogan_label = Label(self.navbar, text="Taxi Booking System - Customer",
+        self.slogan_label = Label(self.navbar, text="Taxi Booking System",
                                   fg='white', bg='#2c2c2c', font=(self.font, 28))
         self.slogan_label.pack()
 
@@ -185,7 +185,7 @@ class CustomerDashboard:
 
     #  simple card to show the total booking number
         self.total_booking_frame = customtkinter.CTkFrame(master = self.profile_frame,  corner_radius=30, height=90, width=190)
-        self.total_booking_frame.place(x=245, y=190)
+        self.total_booking_frame.place(x=225, y=190)
 
         self.booking_number_label = Label(self.total_booking_frame, font=(self.font, 14), text="Total Booking", bg="#2c2c2c", fg="white")
         self.booking_number_label.place(relx=0.5, rely=0.25, anchor = "center")
@@ -199,13 +199,16 @@ class CustomerDashboard:
         #  simple card to show the total requested booking number
         self.booking_requested_frame = customtkinter.CTkFrame(master=self.profile_frame, corner_radius=30, height=90,
                                                           width=190)
-        self.booking_requested_frame.place(x=455, y=190)
+        self.booking_requested_frame.place(x=475, y=190)
 
         self.booking_requested_label = Label(self.booking_requested_frame, font=(self.font, 14), text="Pending Booking",bg="#2c2c2c", fg="white")
         self.booking_requested_label.place(x=10, y=10)
 
         self.pending_booking_count_label = Label(self.booking_requested_frame, font=(self.font, 20), text="", bg="#2c2c2c",fg="#90EE90")
         self.pending_booking_count_label.place(relx=0.5, rely=0.6, anchor="center")
+
+        self.line = Canvas(self.profile_frame, bg="white", highlightthickness=0, height=3, width=40)
+        self.line.place(x=425, y=235)
 
         # ================== TO SET THE TOTAL PENDING BOOKING COUNT =======================
         self.count_pending_booking()
@@ -326,7 +329,7 @@ class CustomerDashboard:
         payment_frame.show_payment_frame()
 
     def login_activity_frame(self):
-        login_activity_frame = LoginActivity(self.innner_main_frame)
+        login_activity_frame = LoginActivity(self.innner_main_frame, [])
         # login_activity_frame.place(x=0, y=0)
         login_activity_frame.show_login_activity_window()
 

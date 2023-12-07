@@ -67,6 +67,13 @@ class BookingFrame(Frame):
         self.dropff_address_entry = ctk.CTkEntry(self, font=(font, 15), width=180, height=38,textvariable=self.dropOffAddress)
         self.dropff_address_entry.place(x=195, y=390)
 
+        full_screen_image = ImageTk.PhotoImage(Image.open("Images/full_screen.png").resize((40,40), Image.ANTIALIAS))
+        full_screen_label = Label(self, image=full_screen_image, bg="#0E0E0E", cursor='hand2')
+        full_screen_label.image = full_screen_image
+        full_screen_label.place(x=850, y= 280)
+        full_screen_label.bind("<Button-1>", self.view_full_screen_map)
+
+
         save_btn_image = ImageTk.PhotoImage(Image.open("Images/save.png").resize((20,20), Image.ANTIALIAS))
 
 
@@ -115,16 +122,12 @@ class BookingFrame(Frame):
             longitude = 85.3240
 
             # The line below initializes the map_view attribute
-            self.map_view = tkintermapview.TkinterMapView(self.map_frame, width=480, height=400)
+            self.map_view = tkintermapview.TkinterMapView(self.map_frame, width=450, height=400)
             self.map_view.pack(expand=True)
 
             # Set the position and zoom level
             self.map_view.set_position(latitude, longitude)
             self.map_view.zoom(8)
-
-        except Exception as e:
-            print(f"Error displaying map: {e}")
-
 
         except Exception as e:
             print(f"Error displaying map: {e}")
@@ -192,6 +195,39 @@ class BookingFrame(Frame):
         self.pickup_date_entry.delete(0, END)
         self.pickup_time_entry.delete(0, END)
         self.dropff_address_entry.delete(0, END)
+
+    def view_full_screen_map(self, event):
+        self.full_map_window = Toplevel(self, width=900, height=600, bg="#2c2c2c")
+        self.full_map_window.title("Full Map")
+        self.full_map_window.resizable(0,0)
+
+        screen_width = self.full_map_window.winfo_screenwidth()
+        screen_height = self.full_map_window.winfo_screenheight()
+
+        window_width = 900
+        window_height = 600
+
+        x_position = (screen_width - window_width) // 2 + 142
+        y_position = (screen_height - window_height) // 2 + 55
+
+        self.full_map_window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
+
+        try:
+            latitude = 27.7172
+            longitude = 85.3240
+
+            # The line below initializes the map_view attribute
+            self.map_view = tkintermapview.TkinterMapView(self.full_map_window, width=900, height=600)
+            self.map_view.pack(expand=True)
+
+            # Set the position and zoom level
+            self.map_view.set_position(latitude, longitude)
+            self.map_view.zoom(8)
+
+        except Exception as e:
+            print(f"Error displaying map: {e}")
+
+
 
 
 

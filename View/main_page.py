@@ -342,6 +342,8 @@ class MainPage:
                 Global.current_user = user
                 Global.logged_in_customer = customer
 
+                print(user, customer)
+
                 login_details_stored = login_device_details()
                 if login_details_stored:
                     self.window.destroy()

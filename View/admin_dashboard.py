@@ -596,7 +596,7 @@ class AdminDashboard:
             if self.selected_pending_booking_list is not None:
                 self.destroy_toplevels()
 
-                assignDriverPage = AssignDriverPage(self.main_frame, self.selected_pending_booking_list)
+                assignDriverPage = AssignDriverPage(self.main_frame, self.selected_pending_booking_list,self.display_pending_booking_details, self.count_pending_booking )
                 assignDriverPage.show_assign_driver_window()
 
             else:

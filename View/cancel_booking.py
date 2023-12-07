@@ -194,31 +194,35 @@ class CancelBooking:
     def cancel_booking(self):
         booking_id = self.bookingId.get()
         if not booking_id == "":
-            booking = Booking(booking_id=booking_id)
-            is_cancelled = cancel_booking(booking)
+            confirmed = messagebox.askyesno("CONFIRM", "Are you sure you want to cancel booking?", parent =self.cancel_booking_window)
+            if confirmed:
+                booking = Booking(booking_id=booking_id)
+                is_cancelled = cancel_booking(booking)
 
-            if is_cancelled:
-                # TO INSERT RECORDS TO THE ACCOUNT ACTIVITY TABLE
-                current_date_time = datetime.now()
-                current_date = current_date_time.date()
-                current_time = current_date_time.time()
+                if is_cancelled:
+                    # TO INSERT RECORDS TO THE ACCOUNT ACTIVITY TABLE
+                    current_date_time = datetime.now()
+                    current_date = current_date_time.date()
+                    current_time = current_date_time.time()
 
-                activity_related = "Booking Cancelled"
-                description = f"Your Booking was Cancelled for the trip of {self.pickUpAddress.get()} to {self.dropOffAddress.get()}"
+                    activity_related = "Booking Cancelled"
+                    description = f"Your Booking was Cancelled for the trip of {self.pickUpAddress.get()} to {self.dropOffAddress.get()}"
 
-                accountActivity = AccountActivity(activity_related=activity_related, description=description,
-                                                  date=current_date, time=current_time, user_id=Global.current_user[0])
-                account_activity_stored = insert_account_activity_details(accountActivity)
+                    accountActivity = AccountActivity(activity_related=activity_related, description=description,
+                                                      date=current_date, time=current_time, user_id=Global.current_user[0])
+                    account_activity_stored = insert_account_activity_details(accountActivity)
 
-                if account_activity_stored:
-                    self.display_data()
-                    self.clear_field()
-                    messagebox.showinfo("Booking Cancelled ", "Your booking has been successfully cancelled!", parent =self.cancel_booking_window)
+                    if account_activity_stored:
+                        self.display_data()
+                        self.clear_field()
+                        messagebox.showinfo("Booking Cancelled ", "Your booking has been successfully cancelled!", parent =self.cancel_booking_window)
+                    else:
+                        messagebox.showerror("ERROR!", "Account Activity Couldn't Store.",parent =self.cancel_booking_window )
                 else:
-                    messagebox.showerror("ERROR!", "Account Activity Couldn't Store.",parent =self.cancel_booking_window )
+                    messagebox.showerror("Cancel Failed !", "Sorry, could't cancel your booking.",
+                                         parent=self.cancel_booking_window)
             else:
-                messagebox.showerror("Cancel Failed !", "Sorry, could't cancel your booking.",
-                                     parent=self.cancel_booking_window)
+                pass
         else:
             messagebox.showerror("Cancel Failed !","Please select booking from table to cancel it.", parent =self.cancel_booking_window)
 

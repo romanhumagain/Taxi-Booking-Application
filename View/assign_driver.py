@@ -2,15 +2,20 @@ import tkinter.ttk
 from tkinter import *
 from PIL import Image, ImageTk
 import customtkinter
+from tkinter import messagebox
 
+from Controller.booking_dbms import assign_driver
 from Controller.driver_dbms import fetch_available_driver
+from Model.booking import Booking
 
 
 class AssignDriverPage:
-    def __init__(self, window, selected_details_list):
+    def __init__(self, window, selected_details_list, display_pending_booking_details,count_pending_booking):
         self.window = window
         self.font = "Century Gothic"
         self.details = selected_details_list
+        self.display_pending_booking_details = display_pending_booking_details
+        self.count_pending_booking = count_pending_booking
 
         self.available_window = None
 
@@ -95,7 +100,7 @@ class AssignDriverPage:
 
         self.assign_button = customtkinter.CTkButton(self.button_frame, text="Assign Driver",
                                                      font=(self.font, 16, 'bold'), width=150, height=35,
-                                                     corner_radius=10)
+                                                     corner_radius=10, command=self.assignDriver)
         self.assign_button.place(x=10, y=125)
 
         self.available_button = customtkinter.CTkButton(self.button_frame, text="Available Driver",
@@ -201,8 +206,30 @@ class AssignDriverPage:
         self.time_ent.delete(0, END)
         self.dropoff_address_ent.delete(0, END)
 
+    # ==== TO ASSIGN DRIVER TO THE BOOKING =====
+    def assignDriver(self):
+        booking_id = self.booking_id_ent.get()
+        driver_id = self.driver_id_ent.get()
+        driver_name = self.driver_name_ent.get()
+
+        if not (booking_id == "" or driver_id == "" or driver_name == ""):
+            booking = Booking(booking_id=booking_id,driver_id=driver_id)
+            assigned = assign_driver(booking)
+            if assigned:
+                messagebox.showinfo("Success !", f"Successfully Assigned Driver To The Booking With Booking ID {booking_id}", parent=self.assign_window)
+                self.display_available_driver()
+                self.display_pending_booking_details()
+                self.count_pending_booking()
+
+            else:
+                messagebox.showerror("Failed !", "Sorry, Could't Assign Driver To This Booking !",parent=self.assign_window)
+        else:
+            messagebox.showerror("Incomplete Data","Please Fill Driver Details While Assigning !", parent = self.assign_window)
+
+
     def on_close(self):
         self.assign_window.destroy()
+        self.available_window.destroy()
 
 
 if __name__ == '__main__':
