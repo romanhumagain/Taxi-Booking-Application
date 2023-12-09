@@ -5,7 +5,8 @@ import customtkinter
 from tkinter import messagebox
 
 from Controller.account_activity_dbms import insert_account_activity_details
-from Controller.driver_dbms import register_driver, search_driver, get_all_driver, get_available_driver, update_driver_details, delete_driver
+from Controller.driver_dbms import register_driver, search_driver, get_all_driver, get_available_driver, \
+    update_driver_details, delete_driver, fetch_reserved_driver
 from Controller.customer_registration_dbms import register_user
 from Model import Global
 from Model.account_activity import AccountActivity
@@ -14,12 +15,15 @@ from Model.driver import Driver
 from PIL import Image, ImageTk
 
 class DriverWindow:
-    def __init__(self, window,top_level_list ):
+    def __init__(self, window, top_level_list = [], count_driver= None):
         self.window = window
         self.font = "Century Gothic"
         self.top_level_list = top_level_list
+        self.count_driver = count_driver
 
-        customtkinter.set_default_color_theme("green")
+        self.view_booking_label = None
+
+        # customtkinter.set_default_color_theme("green")
 
         style1 = tkinter.ttk.Style()
         style1.theme_use("default")
@@ -165,12 +169,12 @@ class DriverWindow:
 
 
         self.available_button = customtkinter.CTkButton(self.button_frame, text="Available Driver", width=150, height=35,
-                                                     font=(self.font, 15,'bold'), corner_radius=10, command=self.set_available_driver_details)
+                                                     font=(self.font, 15,'bold'), corner_radius=10, command=self.available_driver_details_table)
         self.available_button.place(relx=0.5, rely=0.69, anchor="center")
 
         self.reserved_button = customtkinter.CTkButton(self.button_frame, text="Reserved Driver", width=150,
                                                         height=35,
-                                                        font=(self.font, 15,'bold'), corner_radius=10)
+                                                        font=(self.font, 15,'bold'), corner_radius=10, command=self.reserved_driver_details_table)
         self.reserved_button.place(relx=0.5, rely=0.84, anchor="center")
 
         self.table_heading =customtkinter.CTkLabel(self.driver_frame, text="", font=(self.font, 23))
@@ -189,11 +193,13 @@ class DriverWindow:
             driver = Driver(driver_id=driver_id)
             searched_result, table_result = search_driver(driver)
             if not searched_result is None:
-                for item in self.driver_details_table.get_children():
-                    self.driver_details_table.delete(item)
+                # self.clear_driver_table_frame()
+                self.driver_details_table()
+                for item in self.driver_detail_table.get_children():
+                    self.driver_detail_table.delete(item)
 
                 for row in table_result:
-                    self.driver_details_table.insert('', END, values=row)
+                    self.driver_detail_table.insert('', END, values=row)
 
                 self.clear_fields()
                 self.name_entry.insert(0, searched_result[1])
@@ -245,6 +251,7 @@ class DriverWindow:
                         messagebox.showinfo("Registration Success !", "Successfully Registered Driver", parent=self.driver_window)
                         self.set_all_driver_details()
                         self.clear_fields()
+                        self.count_driver()
                     else:
                         messagebox.showerror("Activity Details Failed", "Activity Details Failed to Store.", parent= self.driver_window)
                 else:
@@ -332,6 +339,7 @@ class DriverWindow:
                             self.set_all_driver_details()
                             self.clear_fields()
                             self.search_entry.delete(0, END)
+                            self.count_driver()
                         else:
                             messagebox.showerror("Activity Details Failed", "Activity Details Failed to Store.",
                                                  parent=self.driver_window)
@@ -344,53 +352,98 @@ class DriverWindow:
 
     # ======== TO GET THE ALL DRIVER DETAILS ===========
     def driver_details_table(self):
+        self.clear_driver_table_frame()
+        self.clear_fields()
+        self.search_entry.delete(0, END)
+
+        if self.view_booking_label is not None:
+            self.view_booking_label.destroy()
+            self.view_booking_label = None
+
         self.table_heading.configure(text="Driver Details")
 
-        self.driver_details_table = tkinter.ttk.Treeview(self.driver_table_frame, columns=(
+        self.driver_detail_table = tkinter.ttk.Treeview(self.driver_table_frame, columns=(
             "driver_id", "name", "phone_no", "address", "license_no", "gender", "driver_status"), height=9,
                                                          show="headings")
 
-        self.driver_details_table.heading("driver_id", text="D-ID", anchor=CENTER)
-        self.driver_details_table.heading("name", text="Name", anchor=CENTER)
-        self.driver_details_table.heading("phone_no", text="Phone", anchor=CENTER)
-        self.driver_details_table.heading("address", text="Address", anchor=CENTER)
-        self.driver_details_table.heading("license_no", text="license No", anchor=CENTER)
-        self.driver_details_table.heading("gender", text="Gender", anchor=CENTER)
-        self.driver_details_table.heading("driver_status", text="Status", anchor=CENTER)
+        self.driver_detail_table.heading("driver_id", text="D-ID", anchor=CENTER)
+        self.driver_detail_table.heading("name", text="Name", anchor=CENTER)
+        self.driver_detail_table.heading("phone_no", text="Phone", anchor=CENTER)
+        self.driver_detail_table.heading("address", text="Address", anchor=CENTER)
+        self.driver_detail_table.heading("license_no", text="license No", anchor=CENTER)
+        self.driver_detail_table.heading("gender", text="Gender", anchor=CENTER)
+        self.driver_detail_table.heading("driver_status", text="Status", anchor=CENTER)
 
-        self.driver_details_table.column("driver_id", width=60, anchor=CENTER)
-        self.driver_details_table.column("name", width=100, anchor=CENTER)
-        self.driver_details_table.column("phone_no", width=100, anchor=CENTER)
-        self.driver_details_table.column("address", width=100, anchor=CENTER)
-        self.driver_details_table.column("license_no", width=200, anchor=CENTER)
-        self.driver_details_table.column("gender", width=100, anchor=CENTER)
-        self.driver_details_table.column("driver_status", width=100, anchor=CENTER)
+        self.driver_detail_table.column("driver_id", width=60, anchor=CENTER)
+        self.driver_detail_table.column("name", width=100, anchor=CENTER)
+        self.driver_detail_table.column("phone_no", width=100, anchor=CENTER)
+        self.driver_detail_table.column("address", width=100, anchor=CENTER)
+        self.driver_detail_table.column("license_no", width=200, anchor=CENTER)
+        self.driver_detail_table.column("gender", width=100, anchor=CENTER)
+        self.driver_detail_table.column("driver_status", width=100, anchor=CENTER)
 
-        self.driver_details_table.place(x=0, y=0)
-        self.driver_details_table.bind("<ButtonRelease-1>", self.fill_all_driver_details)
+        self.driver_detail_table.place(x=0, y=0)
+        self.driver_detail_table.bind("<ButtonRelease-1>", lambda event: self.fill_all_driver_details(event,self.driver_detail_table))
 
         self.set_all_driver_details()
 
     def set_all_driver_details(self):
         result = get_all_driver()
-        for item in self.driver_details_table.get_children():
-            self.driver_details_table.delete(item)
+        for item in self.driver_detail_table.get_children():
+            self.driver_detail_table.delete(item)
 
         for row in result:
-            self.driver_details_table.insert('', END, values=row)
+            self.driver_detail_table.insert('', END, values=row)
 
+    def available_driver_details_table(self):
+        self.clear_driver_table_frame()
+        self.clear_fields()
+        self.search_entry.delete(0, END)
+
+        if self.view_booking_label is not None:
+            self.view_booking_label.destroy()
+            self.view_booking_label = None
+
+        self.table_heading.configure(text="Available Driver Details")
+
+        self.available_driver_table = tkinter.ttk.Treeview(self.driver_table_frame, columns=(
+            "driver_id", "name", "phone_no", "address", "license_no", "gender", "driver_status"), height=9,
+                                                         show="headings")
+
+        self.available_driver_table.heading("driver_id", text="D-ID", anchor=CENTER)
+        self.available_driver_table.heading("name", text="Name", anchor=CENTER)
+        self.available_driver_table.heading("phone_no", text="Phone", anchor=CENTER)
+        self.available_driver_table.heading("address", text="Address", anchor=CENTER)
+        self.available_driver_table.heading("license_no", text="license No", anchor=CENTER)
+        self.available_driver_table.heading("gender", text="Gender", anchor=CENTER)
+        self.available_driver_table.heading("driver_status", text="Status", anchor=CENTER)
+
+        self.available_driver_table.column("driver_id", width=60, anchor=CENTER)
+        self.available_driver_table.column("name", width=100, anchor=CENTER)
+        self.available_driver_table.column("phone_no", width=100, anchor=CENTER)
+        self.available_driver_table.column("address", width=100, anchor=CENTER)
+        self.available_driver_table.column("license_no", width=200, anchor=CENTER)
+        self.available_driver_table.column("gender", width=100, anchor=CENTER)
+        self.available_driver_table.column("driver_status", width=100, anchor=CENTER)
+
+        self.available_driver_table.place(x=0, y=0)
+        self.available_driver_table.bind("<ButtonRelease-1>",lambda event: self.fill_all_driver_details(event,self.available_driver_table))
+
+        self.set_available_driver_details()
     def set_available_driver_details(self):
         self.table_heading.configure(text="Available Driver Details")
+
         result = get_available_driver()
-        for item in self.driver_details_table.get_children():
-            self.driver_details_table.delete(item)
+
+        for item in self.available_driver_table.get_children():
+            self.available_driver_table.delete(item)
 
         for row in result:
-            self.driver_details_table.insert('', END, values=row)
+            self.available_driver_table.insert('', END, values=row)
 
-    def fill_all_driver_details(self, event):
-        view_info = self.driver_details_table.focus()
-        driver_info = self.driver_details_table.item(view_info)
+    def fill_all_driver_details(self, event, table):
+        view_info = table.focus()
+        driver_info = table.item(view_info)
 
         row = driver_info.get('values')
         self.clear_fields()
@@ -402,17 +455,89 @@ class DriverWindow:
         self.license_entry.insert(0, row[4])
         self.gender_value.set(row[5])
 
+    def reserved_driver_details_table(self):
+        self.clear_driver_table_frame()
+        self.clear_fields()
+        self.search_entry.delete(0, END)
+        self.table_heading.configure(text="Reserved Driver Details")
+
+        self.reserved_driver_table = tkinter.ttk.Treeview(self.driver_table_frame, columns=(
+            "driver_id","booking_id", "name", "phone_no", "address", "license_no", "gender"), height=9,
+                                                         show="headings")
+
+        self.reserved_driver_table.heading("driver_id", text="D-ID", anchor=CENTER)
+        self.reserved_driver_table.heading("booking_id", text="B-ID", anchor=CENTER)
+        self.reserved_driver_table.heading("name", text="Name", anchor=CENTER)
+        self.reserved_driver_table.heading("phone_no", text="Phone", anchor=CENTER)
+        self.reserved_driver_table.heading("address", text="Address", anchor=CENTER)
+        self.reserved_driver_table.heading("license_no", text="license No", anchor=CENTER)
+        self.reserved_driver_table.heading("gender", text="Gender", anchor=CENTER)
+
+        self.reserved_driver_table.column("driver_id", width=60, anchor=CENTER)
+        self.reserved_driver_table.column("booking_id", width=100, anchor=CENTER)
+        self.reserved_driver_table.column("name", width=100, anchor=CENTER)
+        self.reserved_driver_table.column("phone_no", width=100, anchor=CENTER)
+        self.reserved_driver_table.column("address", width=100, anchor=CENTER)
+        self.reserved_driver_table.column("license_no", width=200, anchor=CENTER)
+        self.reserved_driver_table.column("gender", width=100, anchor=CENTER)
+
+        self.reserved_driver_table.place(x=0, y=0)
+        self.reserved_driver_table.bind("<ButtonRelease-1>",lambda event: self.fill_all_reserved_driver_details(event,self.reserved_driver_table))
 
 
+        self.set_reserved_driver_details()
+
+    def fill_all_reserved_driver_details(self, event, table):
+        view_info = table.focus()
+        driver_info = table.item(view_info)
+
+        row = driver_info.get('values')
+        self.clear_fields()
+        self.search_entry.delete(0, END)
+        self.search_entry.insert(0, row[0])
+        self.name_entry.insert(0, row[2])
+        self.phone_entry.insert(0, row[3])
+        self.address_entry.insert(0, row[4])
+        self.license_entry.insert(0, row[5])
+        self.gender_value.set(row[6])
+
+        self.view_booking_label = Label(self.button_frame, text="View Booking", font = (self.font, 11, 'underline'), cursor="hand2", bg="#2c2c2c", fg="white")
+        self.view_booking_label.place(relx= 0.5, rely= 0.94, anchor = "center")
+        self.view_booking_label.bind("<Button-1>", lambda event: self.view_booking(event, row[1]))
+
+    def set_reserved_driver_details(self):
+
+        result = fetch_reserved_driver()
+
+        for item in self.reserved_driver_table.get_children():
+            self.reserved_driver_table.delete(item)
+
+        for row in result:
+            self.reserved_driver_table.insert('', END, values=row)
+
+    def view_booking(self, event, booking_id):
+        screen_width = self.window.winfo_screenwidth()
+        screen_height = self.window.winfo_screenheight()
+
+        x_position = (screen_width - 820) // 2 + 180
+        y_position = (screen_height - 420) // 2
 
 
-    # ======== TO GET THE AVAILABLE DRIVER DETAILS =========
-    def available_driver_table(self):
-        pass
+        from booking_details_admin import BookingDetails
+        bookingDetails = BookingDetails(self.driver_window)
+        bookingDetails.show_booking_details_window()
+        bookingDetails.booking_details_window.geometry(f"820x420+{x_position}+{y_position}")
+        bookingDetails.top_frame.configure(width=800, height=100)
 
-    # ========= TO GET THE ASSIGNED DRIVER DTAILS TABLE ===========
-    def reserved_driver_table(self):
-        pass
+        bookingDetails.table_frame.configure(height=230)
+        bookingDetails.booking_table_frame.configure(height=200)
+
+        bookingDetails.search_entry.insert(0, booking_id)
+        bookingDetails.search()
+
+        bookingDetails.heading_label.configure(text=f"Showing Booking Details Of Booking ID {booking_id}", font=(self.font, 21))
+        bookingDetails.button_frame.destroy()
+
 
     def clear_fields(self):
         # self.search_entry.delete(0, END)
@@ -422,6 +547,10 @@ class DriverWindow:
         self.gender_value.set("Gender")
         self.license_entry.delete(0, END)
         self.password_entry.delete(0, END)
+
+    def clear_driver_table_frame(self):
+        for widget in self.driver_table_frame.winfo_children():
+            widget.destroy()
 
 
 if __name__ == '__main__':

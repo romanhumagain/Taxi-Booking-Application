@@ -44,6 +44,46 @@ def fetch_pending_booking_details():
             connection.close()
             return result
 
+def fetch_total_booking():
+    connection = mysql_connection()
+    if connection is not None:
+        cursor = None
+        result = None
+        try:
+            cursor = connection.cursor()
+
+            query = """ SELECT * FROM booking """
+
+            cursor.execute(query)
+            result = cursor.fetchall()
+
+        except Exception as error:
+            print(error)
+        finally:
+            cursor.close()
+            connection.close()
+            return result
+
+def fetch_total_driver():
+    connection = mysql_connection()
+    if connection is not None:
+        cursor = None
+        result = None
+        try:
+            cursor = connection.cursor()
+
+            query = """ SELECT * FROM user WHERE user_type = %s """
+
+            cursor.execute(query, ("driver",))
+            result = cursor.fetchall()
+
+        except Exception as error:
+            print(error)
+        finally:
+            cursor.close()
+            connection.close()
+            return result
+
 def search_booking_details(booking):
     connection = mysql_connection()
     if connection is not None:
@@ -69,3 +109,83 @@ def search_booking_details(booking):
             cursor.close()
             connection.close()
             return result
+
+
+def fetch_active_booking():
+    connection = mysql_connection()
+    if connection is not None:
+        cursor = None
+        result = None
+        try:
+            cursor = connection.cursor()
+
+            query = """ SELECT booking.booking_id, booking.customer_id, pickup_address, pickup_date, pickup_time, dropoff_address, booking.driver_id, driver.name
+                        FROM booking 
+                        INNER JOIN customer ON booking.customer_id = customer.customer_id  
+                        INNER JOIN driver ON booking.driver_id = driver.driver_id 
+                        WHERE booking.booking_status = %s;
+                    """
+
+            cursor.execute(query, ("approved",))
+            result = cursor.fetchall()
+
+        except Exception as error:
+            print(error)
+        finally:
+            cursor.close()
+            connection.close()
+            return result
+
+def fetch_booking_history():
+    connection = mysql_connection()
+    if connection is not None:
+        cursor = None
+        result = None
+        try:
+            cursor = connection.cursor()
+
+            query = """ SELECT booking.booking_id, booking.customer_id, pickup_address, pickup_date, pickup_time, dropoff_address, booking.driver_id, driver.name,booking_status
+                        FROM booking 
+                        INNER JOIN customer ON booking.customer_id = customer.customer_id  
+                        INNER JOIN driver ON booking.driver_id = driver.driver_id 
+                        WHERE booking.booking_status = %s OR booking.booking_status = %s;
+                    """
+
+            cursor.execute(query, ("approved","completed"))
+            result = cursor.fetchall()
+
+        except Exception as error:
+            print(error)
+        finally:
+            cursor.close()
+            connection.close()
+            return result
+
+def search_booking_history(booking):
+    connection = mysql_connection()
+    if connection is not None:
+        cursor = None
+        result = None
+        try:
+            cursor = connection.cursor()
+            query = """     SELECT booking_id, booking.customer_id, pickup_address, pickup_date, pickup_time, dropoff_address,booking.driver_id, driver.name, booking_status
+                            FROM booking 
+                            JOIN customer 
+                            ON booking.customer_id = customer.customer_id
+                            JOIN driver 
+                            ON booking.driver_id = driver.driver_id
+                            WHERE booking_id = %s
+                    """
+            values = (booking.get_booking_id(),)
+
+            cursor.execute(query, values)
+            result = cursor.fetchall()
+
+        except Exception as error:
+            print(error)
+        finally:
+            cursor.close()
+            connection.close()
+            return result
+
+

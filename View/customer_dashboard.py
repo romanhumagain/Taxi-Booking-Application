@@ -161,7 +161,7 @@ class CustomerDashboard:
         self.innner_main_frame = Frame(self.main_frame, bg='#1c1c1c', width=900, height=600)
         self.innner_main_frame.place(x=170, y=80)
 
-        self.welcome_label = customtkinter.CTkLabel(master = self.main_frame,font=(self.font, 19), text="WELCOME Roman Humagain")
+        self.welcome_label = customtkinter.CTkLabel(master = self.main_frame,font=(self.font, 19), text="Welcome Roman Humagain")
         self.welcome_label.place(x=940, y=20)
 
         self.my_profile_frame()
@@ -171,6 +171,19 @@ class CustomerDashboard:
 
         self.profile_frame = Frame(self.innner_main_frame, bg="#111111", width=900, height=600)
         self.profile_frame.place(x=0, y=0)
+
+    #     To show the status
+        self.status_icon = ImageTk.PhotoImage(Image.open("Images/active_s.png").resize((23, 23), Image.ANTIALIAS))
+
+
+
+        self.status_icon_label = Label(self.profile_frame, bg="#111111",image=self.status_icon)
+        self.status_icon_label.image = self.status_icon
+        self.status_icon_label.place(x=700, y=15)
+
+        self.status_label = customtkinter.CTkLabel(self.profile_frame, text="You're Now Active! ",
+                                                   font=(self.font, 16))
+        self.status_label.place(x=730, y=15)
 
     # to place the profile icon image
         photo = ImageTk.PhotoImage(PILImage.open("Images/user_profile1.png"))

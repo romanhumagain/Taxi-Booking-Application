@@ -162,3 +162,30 @@ def fetch_available_driver():
             cursor.close()
             connection.close()
             return result
+
+def fetch_reserved_driver():
+    connection = mysql_connection()
+    cursor = None
+    result = None
+    if connection is not None:
+        try:
+            cursor = connection.cursor()
+            query = (""" SELECT booking.driver_id,booking.booking_id, driver.name, phone_no, address, license, gender 
+                         FROM booking
+                         INNER JOIN driver 
+                         ON booking.driver_id = driver.driver_id 
+                         WHERE driver_status = %s 
+                     """
+                     )
+            values = ("assigned",)
+            cursor.execute(query, values)
+            result = cursor.fetchall()
+
+        except Exception as error:
+            messagebox.showerror("ERROR", f"{error}")
+            print(error)
+        finally:
+            cursor.close()
+            connection.close()
+            return result
+

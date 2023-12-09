@@ -291,9 +291,6 @@ class MainPage:
             self.show_hide_password_label.config(image=self.hide_icon)
             self.password_entry.config(show='')
 
-    def signup(self, event):
-        print("Signup option clicked !")
-
     # to register user
     def register_customer(self):
         name = self.name_entry.get()

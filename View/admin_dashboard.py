@@ -4,7 +4,8 @@ import customtkinter
 from PIL import Image as PILImage, ImageTk
 from datetime import datetime
 
-from Controller.admin_dashboard_dbms import fetch_customer_booking, fetch_pending_booking_details, search_booking_details
+from Controller.admin_dashboard_dbms import fetch_customer_booking, fetch_pending_booking_details, \
+    search_booking_details, fetch_total_booking, fetch_total_driver
 from Controller.booking_dbms import cancel_booking
 from Model.booking import Booking
 from View.assign_driver import AssignDriverPage
@@ -44,7 +45,7 @@ class AdminDashboard:
         self.pending_bookings = None
 
 
-        customtkinter.set_default_color_theme("green")
+        # customtkinter.set_default_color_theme("green")
 
 
 
@@ -253,6 +254,8 @@ class AdminDashboard:
                                                 fg="#90EE90")
         self.total_booking_count_label.place(relx=0.5, rely=0.6, anchor="center")
 
+        self.count_total_booking()
+
         # ============= FOR TOTAL PENDING BOOKING FRAME ==========================
         self.total_pending_booking_frame = customtkinter.CTkFrame(master=self.inner_top_frame, corner_radius=30, height=150,
                                                           width=190, cursor="hand2")
@@ -290,6 +293,8 @@ class AdminDashboard:
         self.total_driver_count_label = Label(self.total_driver_frame, font=(self.font, 28), text="5", bg="#2c2c2c",
                                                fg="#90EE90")
         self.total_driver_count_label.place(relx=0.5, rely=0.6, anchor="center")
+
+        self.count_driver()
 
         self.tab_view = customtkinter.CTkTabview(self.innner_main_frame, width=1140, height=470, corner_radius=15, command=self.show_chart)
         self.tab_view.place(x=30, y=220)
@@ -444,7 +449,11 @@ class AdminDashboard:
         self.total_customer_count_label.config(text=count)
 
     def count_total_booking(self):
-        pass
+        count = 0
+        result = fetch_total_booking()
+        for data in result:
+            count += 1
+        self.total_booking_count_label.config(text=count)
 
     def count_pending_booking(self):
         count = 0
@@ -455,7 +464,11 @@ class AdminDashboard:
 
 
     def count_driver(self):
-        pass
+        count = 0
+        result = fetch_total_driver()
+        for data in result:
+            count += 1
+        self.total_driver_count_label.config(text=count)
 
     # =========== TO SHOW THE CUSTOMER DETAILS WINDOW ================
     def customer_details_window(self):
@@ -467,13 +480,13 @@ class AdminDashboard:
     def driver_details_window(self):
         self.destroy_toplevels()
 
-        driverWindow = DriverWindow(self.main_frame, self.top_levels)
+        driverWindow = DriverWindow(self.main_frame, self.top_levels, self.count_driver)
         driverWindow.show_driver_window()
 
     def booking_details_window(self ):
         self.destroy_toplevels()
 
-        bookingDetails = BookingDetails(self.main_frame, self.display_pending_booking_details,self.count_pending_booking, self.top_levels)
+        bookingDetails = BookingDetails(self.main_frame, self.display_pending_booking_details,self.count_pending_booking, self.top_levels, self.count_total_booking)
         bookingDetails.show_booking_details_window()
 
     def activity_log_window(self):
@@ -580,6 +593,7 @@ class AdminDashboard:
                         self.booking_details_id = 0
 
                         self.count_pending_booking()
+                        self.count_total_booking()
             else:
                 messagebox.showerror("ERROR", "please select booking from the table.")
         else:
