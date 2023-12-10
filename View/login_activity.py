@@ -9,7 +9,9 @@ from Controller.account_activity_dbms import fetch_account_activity_details
 import customtkinter
 class LoginActivity:
     # to add the toplevel window to the list in the AdminDashboard
-    def __init__(self, window, top_level_list = None):
+    def __init__(self, window, top_level_list=None):
+        if top_level_list is None:
+            top_level_list = []
         self.window = window
         self.font ="Century Gothic"
 
@@ -34,7 +36,7 @@ class LoginActivity:
 
         self.login_activity_window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
 
-        self.top_frame = Frame(self.login_activity_window, bg="#2c2c2c", height=130)
+        self.top_frame = customtkinter.CTkFrame(self.login_activity_window, height=110, corner_radius=15)
         self.top_frame.pack(side="top", fill="x")
 
         heading_icon = ImageTk.PhotoImage(Image.open("Images/login_details.png"))
@@ -44,20 +46,22 @@ class LoginActivity:
         self.heading_icon_label.place(x=225, y=20)
 
         self.heading_label = Label(self.top_frame, text="", font=(self.font, 26), bg="#2c2c2c", fg="white")
-        self.heading_label.place(relx=0.542, rely=0.39, anchor="center")
+        self.heading_label.place(relx=0.542, rely=0.5, anchor="center")
 
-        self.login_button = customtkinter.CTkButton(master=self.top_frame, text="Login",
-                                                     font=(self.font, 12), corner_radius=10, height=25,width=40, command=self.login_details)
-        self.login_button.place(x=390, y=100)
+        # ============== creating a tab view =================
 
-        self.account_button = customtkinter.CTkButton(master=self.top_frame, text="Account", font=(self.font, 12),
-                                                   height=25, corner_radius=10, width=40, command=self.account_details)
-        self.account_button.place(x=450, y=100)
+        self.tab_view = customtkinter.CTkTabview(self.login_activity_window,height=630, corner_radius=16)
+        self.tab_view.pack(side="bottom", fill="x")
+
+        self.login_tab = self.tab_view.add("Login")
+        self.account_tab = self.tab_view.add("Account")
+
+        self.tab_view.set("Login")
 
         # ================= CREATING A TABLE TO DISPLAY THE LOGIN DETAILS ====================
-#
-        self.table_frame = Frame(self.login_activity_window, bg="white", height=400)
-        self.table_frame.pack(side="bottom", fill="x")
+
+        self.table_frame = Frame(self.login_tab, bg="white", height=630)
+        self.table_frame.pack(side="top", fill="x")
 
         style1 = tkinter.ttk.Style()
         style1.theme_use("default")
@@ -126,13 +130,10 @@ class LoginActivity:
         self.heading_label.config(text="Your Login Activity")
         self.fetch_login_activity()
 
-    def account_details(self):
-        for widget in self.table_frame.winfo_children():
-            widget.destroy()
-        # =============== FOR THE ACCOUNT ACTIVITY TABLE ======================
 
-        self.activity_table_frame = Frame(self.table_frame, bg="white", height=450)
-        self.activity_table_frame.pack(side="bottom", fill="x")
+
+        self.activity_table_frame = Frame(self.account_tab, bg="white", height=620)
+        self.activity_table_frame.pack(side="top", fill="x")
 
         scroll_y = Scrollbar(self.activity_table_frame, orient=VERTICAL)
 

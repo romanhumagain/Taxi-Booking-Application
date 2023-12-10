@@ -1,6 +1,10 @@
 import tkinter.ttk
 from tkinter import *
 
+import customtkinter
+from PIL import ImageTk, Image
+
+
 class DriverFrame(Frame):
     def __init__(self, frame):
         self.frame = frame
@@ -11,11 +15,23 @@ class DriverFrame(Frame):
         self.driver_frame.place(x=0, y=0)
 
         self.top_frame = Frame(self.driver_frame, bg="#2c2c2c")
-        self.top_frame.place(relx=0, rely=0, relwidth=1, relheight=0.19)
+        self.top_frame.place(relx=0, rely=0, relwidth=1, relheight=0.25)
 
         self.heading_label = Label(self.top_frame, text="Driver Details", font=(self.font, 26), bg="#2c2c2c",
                                    fg="white")
-        self.heading_label.place(relx=0.5, rely=0.5, anchor="center")
+        self.heading_label.place(relx=0.5, rely=0.3, anchor="center")
+
+        self.search_entry = customtkinter.CTkEntry(master=self.top_frame, width=100, height=36,
+                                                   placeholder_text="Driver ID")
+        self.search_entry.place(x=20, y=90)
+
+        search_btn_image = ImageTk.PhotoImage(Image.open("Images/search.png").resize((20, 20), Image.ANTIALIAS))
+
+        self.search_button = customtkinter.CTkButton(master=self.top_frame, width=60, height=35, text="search",
+                                                     corner_radius=15, font=(self.font, 15), image=search_btn_image,
+                                                     )
+        self.search_button.place(x=130, y=92)
+
 
         # table to show the driver details
 
@@ -47,7 +63,7 @@ class DriverFrame(Frame):
 
 
         self.table_frame = Frame(self.driver_frame, bg="white", width=900, height=504)
-        self.table_frame.place(x=0, y=110)
+        self.table_frame.place(x=0, y=150)
 
         self.driver_Detals_table = tkinter.ttk.Treeview(self.table_frame, height=24, show="headings", columns=("driver_id","name","phone_no", "address","pickupaddress", "dropoffaddress","date", "time"))
 

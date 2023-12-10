@@ -9,6 +9,7 @@ from Model.user import *
 
 from Controller.customer_registration_dbms import *
 from Controller.login_dbms import *
+from View.driver_dashboard import DriverDashboard
 from signals import login_device_details
 from Model import Global
 from admin_dashboard import AdminDashboard
@@ -333,15 +334,17 @@ class MainPage:
         password = self.password_entry.get()
 
         if not(email == "" or password == ""):
-            user, customer = validate_credentials(email, password)
+            user, customer,driver = validate_credentials(email, password)
 
             if user is not None:
                 Global.current_user = user
                 Global.logged_in_customer = customer
+                Global.logged_in_driver = driver
 
-                print(user, customer)
+                print(driver)
 
                 login_details_stored = login_device_details()
+
                 if login_details_stored:
                     self.window.destroy()
                     dashboard_window = Tk()
@@ -350,8 +353,10 @@ class MainPage:
                         customer_dashboard = CustomerDashboard(dashboard_window)
                     elif user[3] == "admin":
                         adminDashboard = AdminDashboard(dashboard_window)
+                    elif user[3] == "driver":
+                        driverDashboard = DriverDashboard(dashboard_window)
                     else:
-                        pass
+                        print("Invalid Type")
 
                     dashboard_window.mainloop()
 

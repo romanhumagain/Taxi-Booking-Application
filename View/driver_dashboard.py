@@ -1,8 +1,15 @@
 import tkinter.ttk
 from tkinter import *
+from tkinter import messagebox
+
 import customtkinter
 from PIL import Image as PILImage, ImageTk
 from datetime import datetime
+
+from Controller.driver_dashboard_dbms import fetch_assigned_booking
+from Model import Global
+from Model.driver import Driver
+from View.login_activity import LoginActivity
 
 
 class DriverDashboard:
@@ -100,7 +107,7 @@ class DriverDashboard:
         # for booking option
         self.profile_label = Label(self.side_bar_frame, text="Profile", font=(self.font, 17), fg='white',bg='#3c3c3c', cursor='hand2')
         self.profile_label.place(x=130, y=305)
-        # self.trip_label.bind("<Button-1>", lambda event:self.window_indicator(self.customer_indicator_lbl, self.customer_details_window))
+        self.profile_label.bind("<Button-1>",self.show_driver_profile)
 
         self.profile_indicator_lbl = Label(self.side_bar_frame, bg="#3c3c3c", width=0, height=2)
         self.profile_indicator_lbl.place(x=80, y=305)
@@ -114,8 +121,9 @@ class DriverDashboard:
         self.heading_profile_label.image = profile_icon
         self.heading_profile_label.place(x=1280, y=8)
 
-        self.profle_name = Label(self.navbar, bg='#2c2c2c', text="Roman Humagain", font=(self.font, 13), fg="white")
+        self.profle_name = Label(self.navbar, bg='#2c2c2c', text="", font=(self.font, 13), fg="white")
         self.profle_name.place(x=1320, y=10)
+        self.profle_name.configure(text=Global.logged_in_driver[1])
 
         # for booking option
         self.trip_label = Label(self.side_bar_frame, text="Trip", font=(self.font, 17), fg='white',bg='#3c3c3c', cursor='hand2')
@@ -133,7 +141,7 @@ class DriverDashboard:
         # for account Activity
         self.account_activity_label = Label(self.side_bar_frame, text="Activity", font=(self.font, 17), fg='white',bg='#3c3c3c', cursor='hand2')
         self.account_activity_label.place(x=130, y=465)
-        # self.account_activity_label.bind("<Button-1>", lambda event:self.window_indicator(self.account_indicator_lbl, self.activity_log_window))
+        self.account_activity_label.bind("<Button-1>", self.show_activity_window)
 
         self.account_indicator_lbl = Label(self.side_bar_frame, bg="#3c3c3c", width=0, height=2)
         self.account_indicator_lbl.place(x=80, y=465)
@@ -146,7 +154,7 @@ class DriverDashboard:
         # for logout option
         self.logout_label = Label(self.side_bar_frame, text="Log Out", font=(self.font, 17), fg='white',bg='#3c3c3c', cursor='hand2')
         self.logout_label.place(x=130, y=545)
-        # self.logout_label.bind("<Button-1>", self.logout)
+        self.logout_label.bind("<Button-1>", self.logout)
 
 
         self.logout_indicator_lbl = Label(self.side_bar_frame, bg="#3c3c3c", width=0, height=2)
@@ -281,17 +289,66 @@ class DriverDashboard:
         self.assigned_booking_table.column("dropoff_address", width=205, anchor=CENTER)
         self.assigned_booking_table.column("status", width=115, anchor=CENTER)
 
+        self.display_assigned_booking()
+
 
     def update_time(self):
         current_time = datetime.now().strftime("%Y-%m-%d  %H:%M:%S")
         self.time_label.config(text=current_time)
         self.window.after(1000, self.update_time)
 
+    def show_driver_profile(self, event):
+        from View.driver_profile import DriverProfile
+
+        driverProfile = DriverProfile(self.window )
+        driverProfile.show_driver_profile()
+
+    def show_activity_window(self, event):
+        activityWindow = LoginActivity(self.window)
+
+        screen_width = self.window.winfo_screenwidth()
+        screen_height = self.window.winfo_screenheight()
+
+        activityWindow.show_login_activity_window()
+
+        # x_position = (screen_width - 900) // 2 + 142
+        # y_position = (screen_height - 580) // 2 -20
+        # activityWindow.login_activity_window.geometry(f"{900}x{580}+{x_position}+{y_position}")
+
+    def logout(self, event):
+        from main_page import MainPage
+
+        confirmed = messagebox.askyesno("Logout", "Do You Want To Logout ?")
+        if confirmed:
+            self.window.destroy()
+            main_dashboard_window = Tk()
+            main_dashboard = MainPage(main_dashboard_window)
+            main_dashboard_window.mainloop()
+
     def dashboard_indicator(self, dashboard_indicator_lbl):
         pass
 
     def window_indicator(self, customer_indicator_lbl, customer_details_window):
         pass
+
+    def display_assigned_booking(self):
+        if Global.logged_in_driver is not None:
+            driver_id = Global.logged_in_driver[0]
+            driver = Driver(driver_id = driver_id)
+
+            result = fetch_assigned_booking(driver)
+            if result is not None:
+
+                for item in self.assigned_booking_table.get_children():
+                    self.assigned_booking_table.delete(item)
+
+                for row in result:
+                    self.assigned_booking_table.insert('', END, values=row)
+
+
+
+
+
 
 if __name__ == '__main__':
     window = Tk()

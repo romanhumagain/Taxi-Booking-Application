@@ -14,11 +14,22 @@ class PaymentFrame():
         self.payment_frame.place(x=0, y=0)
 
         self.top_frame = Frame(self.payment_frame, bg="#2c2c2c")
-        self.top_frame.place(relx=0, rely=0, relwidth=1, relheight=0.27)
+        self.top_frame.place(relx=0, rely=0, relwidth=1, relheight=0.25)
 
         self.heading_label = Label(self.top_frame, text="Payment Details", font=(self.font, 26), bg="#2c2c2c",
                                    fg="white")
         self.heading_label.place(relx=0.5, rely=0.35, anchor="center")
+
+        self.search_entry = customtkinter.CTkEntry(master=self.top_frame, width=100, height=36,
+                                                   placeholder_text="Payment ID")
+        self.search_entry.place(x=20, y=100)
+
+        search_btn_image = ImageTk.PhotoImage(Image.open("Images/search.png").resize((20, 20), Image.ANTIALIAS))
+
+        self.search_button = customtkinter.CTkButton(master=self.top_frame, width=60, height=35, text="search",
+                                                     corner_radius=15, font=(self.font, 15), image=search_btn_image,
+                                                     )
+        self.search_button.place(x=130, y=102)
 
         download_btn_image = ImageTk.PhotoImage(Image.open("Images/download.png").resize((20,20), Image.ANTIALIAS))
 
@@ -57,7 +68,7 @@ class PaymentFrame():
 
 
         self.table_frame = Frame(self.payment_frame, bg="white", width=900, height=450)
-        self.table_frame.place(x=0, y=160)
+        self.table_frame.place(x=0, y=150)
 
         self.payment_detals_table = tkinter.ttk.Treeview(self.table_frame, height= 16, show="headings", columns=("payment_id","booking_id","pickupaddreess", "dropoffaddress","distance", "unit","total_amount", "date"))
 
