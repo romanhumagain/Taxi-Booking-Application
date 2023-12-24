@@ -10,7 +10,7 @@ def booking_taxi(booking):
             cursor = connection.cursor()
 
             # query for insert
-            query = """INSERT INTO booking(pickup_address, pickup_date, pickup_time, dropoff_address,booking_status, booked_date, customer_id) VALUES (%s, %s, %s, %s,%s, %s, %s)"""
+            query = """INSERT INTO booking(pickup_address, pickup_date, pickup_time, dropoff_address,booking_status, booked_date,trip_status, customer_id) VALUES (%s, %s, %s, %s,%s, %s, %s, %s)"""
             values = (
                 booking.get_pickup_address(),
                 booking.get_pickup_date(),
@@ -18,6 +18,7 @@ def booking_taxi(booking):
                 booking.get_dropoff_address(),
                 booking.get_booking_status(),
                 booking.get_booked_date(),
+                booking.get_trip_status(),
                 booking.get_customer_id()
             )
             cursor.execute(query, values)
@@ -39,7 +40,12 @@ def select_all_booking(booking):
         connection = mysql_connection()
         if connection is not None:
             cursor = connection.cursor()
-            query  = "SELECT * FROM booking WHERE customer_id = %s ORDER BY booking_id DESC"
+            query  = """SELECT booking_id, pickup_address, pickup_date, pickup_time, dropoff_address, booking_status, booking.driver_id
+                         FROM booking 
+                         LEFT JOIN driver
+                         ON booking.driver_id = driver.driver_id  
+                         WHERE booking.customer_id = %s ORDER BY booking_id DESC
+                      """
             values =(booking.get_customer_id(),)
 
             cursor.execute(query, values)
@@ -86,8 +92,13 @@ def select_approved_booking(booking):
         connection = mysql_connection()
         if connection is not None:
             cursor = connection.cursor()
-            query  = "SELECT * FROM booking WHERE customer_id = %s and booking_status = %s ORDER BY booking_id DESC"
-            values =(booking.get_customer_id(), "Approved")
+            # query  = "SELECT * FROM booking WHERE customer_id = %s and booking_status = %s ORDER BY booking_id DESC"
+            query = """SELECT booking_id, pickup_address, pickup_date, pickup_time, dropoff_address, booking.driver_id
+                         FROM booking 
+                         INNER JOIN driver
+                         ON booking.driver_id = driver.driver_id  
+                         WHERE booking.customer_id = %s ORDER BY booking_id DESC"""
+            values =(booking.get_customer_id(),)
 
             cursor.execute(query, values)
             result = cursor.fetchall()
@@ -136,6 +147,7 @@ def update_booking(booking):
 
 # =================== TO CANCEL THE BOOKING =========================
 def cancel_booking(booking):
+    connection = None
     cursor = None
     try:
         connection = mysql_connection()
@@ -171,8 +183,8 @@ def assign_driver(booking):
             cursor = connection.cursor()
 
             # Query to update the booking
-            query = """ UPDATE booking SET driver_id = %s, booking_status = %s WHERE booking_id = %s """
-            values = (booking.get_driver_id(),"approved",booking.get_booking_id())
+            query = """ UPDATE booking SET driver_id = %s, booking_status = %s, trip_status = %s WHERE booking_id = %s """
+            values = (booking.get_driver_id(),"approved",booking.get_booking_id(), "Incomplete")
 
             # To execute the query
             cursor.execute(query, values)

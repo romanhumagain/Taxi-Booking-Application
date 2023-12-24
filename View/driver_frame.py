@@ -1,8 +1,14 @@
 import tkinter.ttk
 from tkinter import *
+from tkinter import messagebox
 
 import customtkinter
 from PIL import ImageTk, Image
+
+from Controller.driver_dbms import get_assigned_driver_details, search_assigned_driver
+from Model import Global
+from Model.customer import Customer
+from Model.driver import Driver
 
 
 class DriverFrame(Frame):
@@ -28,7 +34,7 @@ class DriverFrame(Frame):
         search_btn_image = ImageTk.PhotoImage(Image.open("Images/search.png").resize((20, 20), Image.ANTIALIAS))
 
         self.search_button = customtkinter.CTkButton(master=self.top_frame, width=60, height=35, text="search",
-                                                     corner_radius=15, font=(self.font, 15), image=search_btn_image,
+                                                     corner_radius=15, font=(self.font, 15), image=search_btn_image,command=self.search_driver_details
                                                      )
         self.search_button.place(x=130, y=92)
 
@@ -65,7 +71,7 @@ class DriverFrame(Frame):
         self.table_frame = Frame(self.driver_frame, bg="white", width=900, height=504)
         self.table_frame.place(x=0, y=150)
 
-        self.driver_Detals_table = tkinter.ttk.Treeview(self.table_frame, height=24, show="headings", columns=("driver_id","name","phone_no", "address","pickupaddress", "dropoffaddress","date", "time"))
+        self.driver_Detals_table = tkinter.ttk.Treeview(self.table_frame, height=24, show="headings", columns=("driver_id","name","phone_no", "address","pickupaddress", "dropoffaddress","date", "status"))
 
         self.driver_Detals_table.heading("driver_id", text="ID", anchor=CENTER)
         self.driver_Detals_table.heading("name", text="Name", anchor=CENTER)
@@ -74,20 +80,51 @@ class DriverFrame(Frame):
         self.driver_Detals_table.heading("pickupaddress", text="Pickup Address", anchor=CENTER)
         self.driver_Detals_table.heading("dropoffaddress", text="Dropoff Address", anchor=CENTER)
         self.driver_Detals_table.heading("date", text="Date", anchor=CENTER)
-        self.driver_Detals_table.heading("time", text="Time", anchor=CENTER)
+        self.driver_Detals_table.heading("status", text="Status", anchor=CENTER)
 
 
         self.driver_Detals_table.column("driver_id", width=50, anchor=CENTER)
-        self.driver_Detals_table.column("name",  width=120, anchor=CENTER)
+        self.driver_Detals_table.column("name",  width=110, anchor=CENTER)
         self.driver_Detals_table.column("phone_no",  width=100, anchor=CENTER)
         self.driver_Detals_table.column("address",  width=115, anchor=CENTER)
-        self.driver_Detals_table.column("pickupaddress",  width=185, anchor=CENTER)
-        self.driver_Detals_table.column("dropoffaddress",  width=185, anchor=CENTER)
+        self.driver_Detals_table.column("pickupaddress",  width=175, anchor=CENTER)
+        self.driver_Detals_table.column("dropoffaddress",  width=175, anchor=CENTER)
         self.driver_Detals_table.column("date",  width=75, anchor=CENTER)
-        self.driver_Detals_table.column("time",  width=70, anchor=CENTER)
+        self.driver_Detals_table.column("status",  width=100, anchor=CENTER)
 
 
         self.driver_Detals_table.pack(fill="both", expand=True)
+
+        self.display_driver_data()
+
+    def display_driver_data(self):
+        customer = Customer(Global.logged_in_customer[0])
+        result = get_assigned_driver_details(customer)
+
+        for item in self.driver_Detals_table.get_children():
+            self.driver_Detals_table.delete(item)
+
+        for row in result:
+            self.driver_Detals_table.insert('', END, values=row)
+
+    def search_driver_details(self):
+        driver_id = self.search_entry.get()
+        if driver_id != "":
+            driver = Driver(driver_id = driver_id)
+            customer = Customer(customer_id=Global.logged_in_customer[0])
+            result = search_assigned_driver(customer,driver)
+
+            if len(result) != 0 :
+                for item in self.driver_Detals_table.get_children():
+                    self.driver_Detals_table.delete(item)
+
+                for row in result:
+                    self.driver_Detals_table.insert('', END, values=row)
+            else:
+                messagebox.showerror("INVALID DATA", f"Sorry Driver With Driver ID {driver_id} Doesn't Exists")
+        else:
+            messagebox.showerror("INVALID", f"Please Provide Driver ID To Search Driver Details.")
+
 
 if __name__ == "__main__":
     root = Tk()

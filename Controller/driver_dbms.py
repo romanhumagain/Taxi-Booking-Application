@@ -93,7 +93,6 @@ def search_driver(driver):
             connection.close()
             return result, table_result
 
-
 #  ============ TO UPDATE THE DRIVER DETAILS ==============
 def update_driver_details(driver):
     connection = mysql_connection()
@@ -188,4 +187,60 @@ def fetch_reserved_driver():
             cursor.close()
             connection.close()
             return result
+
+# =============== TO GET THE INFO OF THE ASSIGNED DRIVER DETAILS ===================
+def get_assigned_driver_details(customer):
+    cursor = None
+    connection = None
+    result = None
+    try:
+        connection = mysql_connection()
+        if connection is not None:
+            cursor = connection.cursor()
+            query = """      SELECT booking.driver_id, name, phone_no, address,  booking.pickup_address, booking.dropoff_address, booking.pickup_date, booking.trip_status
+                             FROM booking 
+                             INNER JOIN driver
+                             ON booking.driver_id = driver.driver_id  
+                             WHERE booking.customer_id = %s ORDER BY booking.trip_status DESC
+                    """
+            values = (customer.get_customer_id(),)
+
+            cursor.execute(query, values)
+            result = cursor.fetchall()
+
+    except Exception as error:
+        print(f"ERROR:- {error}")
+
+    finally:
+        cursor.close()
+        connection.close()
+        return result
+
+# ========== TO SEARCH ASSIGNED DRIVER ===============
+def search_assigned_driver(customer,driver):
+    connection = mysql_connection()
+    cursor = None
+    result = None
+    if connection is not None:
+        try:
+            cursor = connection.cursor()
+            query = """
+                        SELECT booking.driver_id, name, phone_no, address,  booking.pickup_address, booking.dropoff_address, booking.pickup_date, booking.trip_status
+                        FROM booking 
+                        INNER JOIN driver
+                        ON booking.driver_id = driver.driver_id  
+                        WHERE booking.customer_id = %s and booking.driver_id = %s ORDER BY booking.trip_status DESC
+                    """
+            values = (customer.get_customer_id(), driver.get_driver_id())
+            cursor.execute(query, values)
+            result = cursor.fetchall()
+
+        except Exception as error:
+            messagebox.showerror("ERROR", f"{error}")
+            print(error)
+        finally:
+            cursor.close()
+            connection.close()
+            return result
+
 

@@ -190,7 +190,7 @@ class ApprovedBooking:
         self.pickUpDate.set(row[2])
         self.pickUpTime.set(row[3])
         self.dropOffAddress.set(row[4])
-        pass
+        self.driverId.set(row[5])
 
     def exit(self):
         self.approved_booking_window.destroy()

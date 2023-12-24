@@ -13,30 +13,18 @@ from Controller.user_dbms import change_user_password
 from Model import Global
 from Model.account_activity import AccountActivity
 from Model.user import User
-from Model.driver import Driver
 from View.main_page import MainPage
-from Controller.driver_dashboard_dbms import update_driver_profile, get_profile_details
 
 
 class DriverProfile:
-    def __init__(self, window, profle_name, top_level_list=None, dashboard_indicator=None):
+    def __init__(self, window):
         self.window = window
-        self.profle_name = profle_name
         self.font = "Century Gothic"
-        if top_level_list is None:
-            self.top_level_list = []
-        self.top_level_list = top_level_list
-        self.dashboard_indicator = dashboard_indicator
-
 
     def show_driver_profile(self):
         self.driver_profile_window = Toplevel(self.window, width=720, height=460, bg="#2c2c2c")
         self.driver_profile_window.title("Driver Profile")
         self.driver_profile_window.resizable(0, 0)
-
-        self.top_level_list.append(self.driver_profile_window)
-        # Configure the window close event to call the on_closing function
-        self.driver_profile_window.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         screen_width = self.driver_profile_window.winfo_screenwidth()
         screen_height = self.driver_profile_window.winfo_screenheight()
@@ -329,12 +317,10 @@ class DriverProfile:
         self.set_profile_details()
 
     def fill_driver_info(self):
-        driver_instance = Driver(driver_id=Global.logged_in_driver[0])
-        user_instance = User(user_id=Global.current_user[0])
+        user = Global.current_user
+        driver = Global.logged_in_driver
 
-        driver, user = get_profile_details(driver_instance, user_instance)
-
-        self.user_name.configure(text=driver[1])
+        self.user_name.config(text=driver[1])
         self.driver_email_label.configure(text=user[1])
         self.driver_mobile_label.configure(text=driver[2])
         self.driver_address_label.configure(text=driver[3])
@@ -343,10 +329,8 @@ class DriverProfile:
         self.driver_status_label.configure(text=driver[6])
 
     def set_profile_details(self):
-        driver_instance = Driver(driver_id=Global.logged_in_driver[0])
-        user_instance = User(user_id=Global.current_user[0])
-
-        driver, user = get_profile_details(driver_instance, user_instance)
+        user = Global.current_user
+        driver = Global.logged_in_driver
 
         self.name_entry.delete(0, END)
         self.name_entry.insert(0, driver[1])
@@ -379,12 +363,12 @@ class DriverProfile:
 
         if not (name == "" or phone_no == "" or email == "" or address == "" or license == "" or gender == ""):
 
-            driver = Driver(driver_id=Global.logged_in_driver[0], name=name, phone_no=phone_no, address=address,
-                            license=license, gender=gender)
+            driver = Driver(customer_id=Global.logged_in_customer[0], name=name, phone_no=phone_no, address=address,
+                            date_of_birth=date_of_birth, payment=payment_method, gender=gender)
 
             user = User(user_id=Global.current_user[0], email=email)
 
-            profile_isupdated = update_driver_profile(driver, user)
+            profile_isupdated = update_customer_profile(customer, user)
 
             if profile_isupdated:
 
@@ -403,10 +387,11 @@ class DriverProfile:
                 if account_activity_stored:
                     messagebox.showinfo("Profile Update Success", "Your Profile Has Been Successfully Updated.",
                                         parent=self.update_profile_window)
-                    self.profle_name.configure(text=name)
-                    self.fill_driver_info()
-                    self.update_profile_window.destroy()
+                    self.set_profile_details()
 
+                    self.update_profile_window.destroy()
+                    if self.profile_update_callback:
+                        self.profile_update_callback()
                 else:
                     messagebox.showerror("ERROR!", "Account Activity Couldn't Store.",
                                          parent=self.update_profile_window)
@@ -416,12 +401,3 @@ class DriverProfile:
         else:
             messagebox.showerror("Update Failed", "Please Fill All The Details", parent=self.update_profile_window)
 
-    def on_closing(self):
-        self.driver_profile_window.destroy()
-        self.dashboard_indicator()
-
-if __name__ == '__main__':
-    window = Tk()
-    driverProfile = DriverProfile(window)
-    driverProfile.show_driver_profile()
-    window.mainloop()

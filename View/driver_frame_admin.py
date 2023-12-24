@@ -317,34 +317,36 @@ class DriverWindow:
             if confirmed:
                 driver = Driver(driver_id=driver_id)
                 found_driver, _ = search_driver(driver)
-
                 if found_driver:
-                    driver = Driver(driver_id=driver_id, user_id=found_driver[7])
-                    driver_isdeleted = delete_driver(driver)
-                    if driver_isdeleted:
-                        # TO INSERT RECORDS TO THE ACCOUNT ACTIVITY TABLE
-                        current_date_time = datetime.now()
-                        current_date = current_date_time.date()
-                        current_time = current_date_time.time()
+                    if found_driver[5] == "available":
+                        driver = Driver(driver_id=driver_id, user_id=found_driver[7])
+                        driver_isdeleted = delete_driver(driver)
+                        if driver_isdeleted:
+                            # TO INSERT RECORDS TO THE ACCOUNT ACTIVITY TABLE
+                            current_date_time = datetime.now()
+                            current_date = current_date_time.date()
+                            current_time = current_date_time.time()
 
-                        activity_related = "Driver Deleted"
-                        description = f"Driver with driver ID {driver_id} was successfully deleted."
+                            activity_related = "Driver Deleted"
+                            description = f"Driver with driver ID {driver_id} was successfully deleted."
 
-                        accountActivity = AccountActivity(activity_related=activity_related, description=description,
-                                                          date=current_date, time=current_time,
-                                                          user_id=Global.current_user[0])
-                        account_activity_stored = insert_account_activity_details(accountActivity)
-                        if account_activity_stored:
-                            messagebox.showinfo("Deletion Success", f"Successfully deleted driver having driver ID {driver_id}", parent=self.driver_window)
-                            self.set_all_driver_details()
-                            self.clear_fields()
-                            self.search_entry.delete(0, END)
-                            self.count_driver()
+                            accountActivity = AccountActivity(activity_related=activity_related, description=description,
+                                                              date=current_date, time=current_time,
+                                                              user_id=Global.current_user[0])
+                            account_activity_stored = insert_account_activity_details(accountActivity)
+                            if account_activity_stored:
+                                messagebox.showinfo("Deletion Success", f"Successfully deleted driver having driver ID {driver_id}", parent=self.driver_window)
+                                self.set_all_driver_details()
+                                self.clear_fields()
+                                self.search_entry.delete(0, END)
+                                self.count_driver()
+                            else:
+                                messagebox.showerror("Activity Details Failed", "Activity Details Failed to Store.",
+                                                     parent=self.driver_window)
                         else:
-                            messagebox.showerror("Activity Details Failed", "Activity Details Failed to Store.",
-                                                 parent=self.driver_window)
+                            messagebox.showerror("ERROR", "Sorry Could't Delete Driver From The System.", parent=self.driver_window)
                     else:
-                        messagebox.showerror("ERROR", "Sorry Could't Delete Driver From The System.", parent=self.driver_window)
+                        messagebox.showerror("ERROR", "Sorry, You Can't Delete The Assigned Driver.\n Please Check The Availability Of Driver.", parent=self.driver_window)
                 else:
                     messagebox.showerror("Invalid ID", f"Driver With Driver ID {driver_id} Does't Exists", parent=self.driver_window)
         else:
@@ -455,6 +457,9 @@ class DriverWindow:
         self.license_entry.insert(0, row[4])
         self.gender_value.set(row[5])
 
+        self.password_entry.configure(show="*")
+        self.password_entry.insert(0, "password")
+
     def reserved_driver_details_table(self):
         self.clear_driver_table_frame()
         self.clear_fields()
@@ -500,6 +505,9 @@ class DriverWindow:
         self.address_entry.insert(0, row[4])
         self.license_entry.insert(0, row[5])
         self.gender_value.set(row[6])
+
+        self.password_entry.configure(show="*")
+        self.password_entry.insert(0, "password")
 
         self.view_booking_label = Label(self.button_frame, text="View Booking", font = (self.font, 11, 'underline'), cursor="hand2", bg="#2c2c2c", fg="white")
         self.view_booking_label.place(relx= 0.5, rely= 0.94, anchor = "center")

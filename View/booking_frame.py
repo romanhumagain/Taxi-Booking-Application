@@ -157,7 +157,8 @@ class BookingFrame(Frame):
                     pickup_time=self.pickUpTime.get(),
                     dropoff_address=self.dropOffAddress.get(),
                     booking_status="Pending",
-                    customer_id=Global.logged_in_customer[0]
+                    customer_id=Global.logged_in_customer[0],
+                    trip_status=""
                 )
                 is_booked = booking_taxi(booking)
                 if is_booked:

@@ -462,7 +462,6 @@ class AdminDashboard:
             count +=1
         self.total_pending_booking_count_label.config(text=count)
 
-
     def count_driver(self):
         count = 0
         result = fetch_total_driver()
