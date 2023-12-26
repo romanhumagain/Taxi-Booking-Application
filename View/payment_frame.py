@@ -1,7 +1,14 @@
 import tkinter.ttk
 from tkinter import *
+from tkinter import messagebox
+
 import customtkinter
 from PIL import ImageTk, Image
+
+from Controller.payment_dbms import fetch_customer_completed_payment, search_customer_completed_payment
+from Model import Global
+from Model.customer import Customer
+from Model.payment import Payment
 
 
 class PaymentFrame():
@@ -10,33 +17,33 @@ class PaymentFrame():
         self.font = "Century Gothic"
 
     def show_payment_frame(self):
-        self.payment_frame = Frame(self.frame, bg="white", width=900, height=600)
+        self.payment_frame = Frame(self.frame, bg="#3c3c3c", width=900, height=600)
         self.payment_frame.place(x=0, y=0)
 
-        self.top_frame = Frame(self.payment_frame, bg="#2c2c2c")
-        self.top_frame.place(relx=0, rely=0, relwidth=1, relheight=0.25)
+        self.top_frame = customtkinter.CTkFrame(self.payment_frame,width=870, height=110, corner_radius=25 )
+        self.top_frame.place(x=15, y=10)
 
-        self.heading_label = Label(self.top_frame, text="Payment Details", font=(self.font, 26), bg="#2c2c2c",
-                                   fg="white")
-        self.heading_label.place(relx=0.5, rely=0.35, anchor="center")
+        self.heading_label = customtkinter.CTkLabel(self.top_frame, text="Payment Details", font=(self.font, 30),
+                                   )
+        self.heading_label.place(relx=0.5, rely=0.5, anchor="center")
 
-        self.search_entry = customtkinter.CTkEntry(master=self.top_frame, width=100, height=36,
-                                                   placeholder_text="Payment ID")
-        self.search_entry.place(x=20, y=100)
+        self.search_entry = customtkinter.CTkEntry(master=self.payment_frame, width=100, height=36,
+                                                   placeholder_text="Invoice No.")
+        self.search_entry.place(x=20, y=140)
 
         search_btn_image = ImageTk.PhotoImage(Image.open("Images/search.png").resize((20, 20), Image.ANTIALIAS))
 
-        self.search_button = customtkinter.CTkButton(master=self.top_frame, width=60, height=35, text="search",
-                                                     corner_radius=15, font=(self.font, 15), image=search_btn_image,
+        self.search_button = customtkinter.CTkButton(master=self.payment_frame, width=60, height=35, text="Search",
+                                                     corner_radius=15, font=(self.font, 15), image=search_btn_image,command=self.search_completed_payment_details
                                                      )
-        self.search_button.place(x=130, y=102)
+        self.search_button.place(x=130, y=142)
 
         download_btn_image = ImageTk.PhotoImage(Image.open("Images/download.png").resize((20,20), Image.ANTIALIAS))
 
 
-        self.download_button = customtkinter.CTkButton(master=self.top_frame, text="Download Receipt",image=download_btn_image,
+        self.download_button = customtkinter.CTkButton(master=self.payment_frame, text="Download Receipt",image=download_btn_image,
                                                     font=(self.font, 15), corner_radius=10, height=34, width=40)
-        self.download_button.place(x=360, y=100)
+        self.download_button.place(x=360, y=140)
 
         # table to show the driver details
 
@@ -67,32 +74,69 @@ class PaymentFrame():
                    foreground=[('active', 'white')])
 
 
-        self.table_frame = Frame(self.payment_frame, bg="white", width=900, height=450)
-        self.table_frame.place(x=0, y=150)
+        self.table_frame = customtkinter.CTkFrame(self.payment_frame, width=870, height=380, corner_radius=20)
+        self.table_frame.place(x=15, y=200)
 
-        self.payment_detals_table = tkinter.ttk.Treeview(self.table_frame, height= 16, show="headings", columns=("payment_id","booking_id","pickupaddreess", "dropoffaddress","distance", "unit","total_amount", "date"))
+        self.completed_payment_table = tkinter.ttk.Treeview(
+            self.table_frame,
+            columns=("bill_id", "booking_id", "pickup_address", "dropoff_address", "date", "distance",
+                     "total_amount"),
+            show="headings",
+            height=14,
+        )
 
-        self.payment_detals_table.heading("payment_id", text="Invoice_no", anchor=CENTER)
-        self.payment_detals_table.heading("booking_id", text="Booking ID", anchor=CENTER)
-        self.payment_detals_table.heading("pickupaddreess", text="Pickup Address", anchor=CENTER)
-        self.payment_detals_table.heading("dropoffaddress", text="Dropoff Address", anchor=CENTER)
-        self.payment_detals_table.heading("distance", text="Distance", anchor=CENTER)
-        self.payment_detals_table.heading("unit", text="Unit", anchor=CENTER)
-        self.payment_detals_table.heading("total_amount", text="Amount", anchor=CENTER)
-        self.payment_detals_table.heading("date", text="Date", anchor=CENTER)
+        self.completed_payment_table.place(x=0, y=0)
+
+        self.completed_payment_table.heading("bill_id", text="Bill No.", anchor=CENTER)
+        self.completed_payment_table.heading("booking_id", text="B-ID", anchor=CENTER)
+        self.completed_payment_table.heading("pickup_address", text="Pickup Address", anchor=CENTER)
+        self.completed_payment_table.heading("dropoff_address", text="Dropoff Address", anchor=CENTER)
+        self.completed_payment_table.heading("date", text="Bill Date", anchor=CENTER)
+        self.completed_payment_table.heading("distance", text="Distance(KM)", anchor=CENTER)
+        self.completed_payment_table.heading("total_amount", text="Total Amount", anchor=CENTER)
+
+        self.completed_payment_table.column("bill_id", width=60, anchor=CENTER)
+        self.completed_payment_table.column("booking_id", width=50, anchor=CENTER)
+        self.completed_payment_table.column("pickup_address", width=210, anchor=CENTER)
+        self.completed_payment_table.column("dropoff_address", width=210, anchor=CENTER)
+        self.completed_payment_table.column("date", width=90, anchor=CENTER)
+        self.completed_payment_table.column("distance", width=100, anchor=CENTER)
+        self.completed_payment_table.column("total_amount", width=150, anchor=CENTER)
+
+        self.get_completed_payment_details()
+
+        # self.pending_booking_table.bind("<ButtonRelease-1>", self.select_booking)
+
+    def get_completed_payment_details(self):
+        customer = Customer(customer_id=Global.logged_in_customer[0])
+        result = fetch_customer_completed_payment(customer)
+
+        if result is not None:
+            for item in self.completed_payment_table.get_children():
+                self.completed_payment_table.delete(item)
+            for row in result:
+                self.completed_payment_table.insert('', END, values=row)
+
+    def search_completed_payment_details(self):
+        payment_id = self.search_entry.get()
+        if payment_id != "":
+
+            customer = Customer(customer_id=Global.logged_in_customer[0])
+            payment = Payment(payment_id=payment_id)
+
+            result = search_customer_completed_payment(customer, payment)
+
+            if len(result) != 0:
+                for item in self.completed_payment_table.get_children():
+                    self.completed_payment_table.delete(item)
+                for row in result:
+                    self.completed_payment_table.insert('', END, values=row)
+            else:
+                messagebox.showerror("ERROR", f"Invoice With ID No. {payment_id} Doesn't Exists !")
+        else:
+            messagebox.showerror("ERROR", "Please Provide Invoice No. To Search!")
 
 
-        self.payment_detals_table.column("payment_id", width=100, anchor=CENTER)
-        self.payment_detals_table.column("booking_id",  width=80, anchor=CENTER)
-        self.payment_detals_table.column("pickupaddreess",  width=190, anchor=CENTER)
-        self.payment_detals_table.column("dropoffaddress",  width=190, anchor=CENTER)
-        self.payment_detals_table.column("distance",  width=90, anchor=CENTER)
-        self.payment_detals_table.column("unit",  width=60, anchor=CENTER)
-        self.payment_detals_table.column("total_amount",  width=120, anchor=CENTER)
-        self.payment_detals_table.column("date",  width=70, anchor=CENTER)
-
-
-        self.payment_detals_table.pack(fill="both", expand=True)
 
 if __name__ == "__main__":
     root = Tk()

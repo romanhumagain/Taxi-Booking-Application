@@ -15,7 +15,9 @@ from Model.driver import Driver
 from PIL import Image, ImageTk
 
 class DriverWindow:
-    def __init__(self, window, top_level_list = [], count_driver= None):
+    def __init__(self, window, top_level_list=None, count_driver= None):
+        if top_level_list is None:
+            top_level_list = []
         self.window = window
         self.font = "Century Gothic"
         self.top_level_list = top_level_list
@@ -53,7 +55,7 @@ class DriverWindow:
 
     def show_driver_window(self):
         self.driver_window = Toplevel(self.window, bg="#3c3c3c")
-        self.driver_window.title("Driver Management System")
+        self.driver_window.title("Driver Management Portal")
         self.driver_window.resizable(0, 0)
 
         # to add toplevel window to the list in the AdminDashboard Class

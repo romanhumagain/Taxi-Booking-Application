@@ -9,6 +9,7 @@ from Controller.admin_dashboard_dbms import fetch_customer_booking, fetch_pendin
 from Controller.booking_dbms import cancel_booking
 from Model.booking import Booking
 from View.assign_driver import AssignDriverPage
+from View.payment_details_admin import PaymentDetails
 from customer_details_admin import CustomerDetails
 from View.login_activity import LoginActivity
 from driver_frame_admin import DriverWindow
@@ -172,7 +173,7 @@ class AdminDashboard:
         # for payment option
         self.payment_label = Label(self.side_bar_frame, text="Payment", font=(self.font, 17), fg='white',bg='#3c3c3c', cursor='hand2')
         self.payment_label.place(x=130, y=485)
-        # self.payment_label.bind("<Button-1>", lambda event:self.indicator(self.payment_indicator_lbl, self.payment_frame))
+        self.payment_label.bind("<Button-1>", lambda event:self.window_indicator(self.payment_indicator_lbl, self.payment_details_window))
 
         self.payment_indicator_lbl = Label(self.side_bar_frame, bg="#3c3c3c", width=0, height=2)
         self.payment_indicator_lbl.place(x=80, y=485)
@@ -481,6 +482,11 @@ class AdminDashboard:
 
         driverWindow = DriverWindow(self.main_frame, self.top_levels, self.count_driver)
         driverWindow.show_driver_window()
+
+    def payment_details_window(self):
+        self.destroy_toplevels()
+        payment_window = PaymentDetails(self.main_frame, self.top_levels)
+        payment_window.show_payment_details_window()
 
     def booking_details_window(self ):
         self.destroy_toplevels()

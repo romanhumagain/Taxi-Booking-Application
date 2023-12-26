@@ -1,5 +1,7 @@
 from Controller.connection import mysql_connection
 from Model.booking import Booking
+from Model.payment import Payment
+
 
 # ================== TO INSERT RECORD TO THE BOOKING TABLE ====================
 def booking_taxi(booking):
@@ -23,6 +25,10 @@ def booking_taxi(booking):
             )
             cursor.execute(query, values)
             connection.commit()
+
+            booking_id = cursor.lastrowid
+
+            booking.set_booking_id(booking_id)
 
             return True
     except Exception as e:
@@ -156,6 +162,15 @@ def cancel_booking(booking):
 
             # Query to update the booking
             query = " DELETE FROM booking WHERE booking_id = %s "
+            values = (
+                booking.get_booking_id(),
+            )
+
+            # To execute the query
+            cursor.execute(query, values)
+
+            # to delete the payment when booking is cancelled
+            query = " DELETE FROM payment WHERE booking_id = %s "
             values = (
                 booking.get_booking_id(),
             )

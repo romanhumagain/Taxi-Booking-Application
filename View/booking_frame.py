@@ -7,6 +7,8 @@ import tkintermapview
 from tkcalendar import  DateEntry
 
 from tkinter import messagebox
+
+from Controller.payment_dbms import create_payment_table
 from Model.booking import Booking
 from Model.account_activity import AccountActivity
 from Controller.booking_dbms import booking_taxi
@@ -16,6 +18,7 @@ from datetime import datetime
 
 
 from Model import Global
+from Model.payment import Payment
 from View.approved_booking import ApprovedBooking
 from View.booking_history import BookingHistory
 from View.cancel_booking import CancelBooking
@@ -162,28 +165,35 @@ class BookingFrame(Frame):
                 )
                 is_booked = booking_taxi(booking)
                 if is_booked:
-                    # TO INSERT RECORDS TO THE ACCOUNT ACTIVITY TABLE
-                    current_date_time = datetime.now()
-                    current_date = current_date_time.date()
-                    current_time = current_date_time.time()
 
-                    activity_related = "Booking Requested"
-                    description = f"Your Booking was requested for the trip of {self.pickUpAddress.get()} to {self.dropOffAddress.get()}"
+                    payment = Payment(booking_id=booking.get_booking_id())
+                    payment_table_created = create_payment_table(payment)
 
-                    accountActivity = AccountActivity(activity_related=activity_related, description=description,
-                                                      date=current_date, time=current_time,
-                                                      user_id=Global.current_user[0])
-                    account_activity_stored = insert_account_activity_details(accountActivity)
-                    if account_activity_stored:
-                        message_content = (
-                            "Your booking request was successful!\n\n"
-                            "Thank you for choosing our service. Your booking is now pending approval. "
-                            "Our team will review your request, and you can expect a confirmation within 24 hours.\n\n"
-                        )
-                        messagebox.showinfo("Booking Success", message_content)
-                        self.clear_field()
+                    if payment_table_created:
+                        # TO INSERT RECORDS TO THE ACCOUNT ACTIVITY TABLE
+                        current_date_time = datetime.now()
+                        current_date = current_date_time.date()
+                        current_time = current_date_time.time()
+
+                        activity_related = "Booking Requested"
+                        description = f"Your Booking was requested for the trip of {self.pickUpAddress.get()} to {self.dropOffAddress.get()}"
+
+                        accountActivity = AccountActivity(activity_related=activity_related, description=description,
+                                                          date=current_date, time=current_time,
+                                                          user_id=Global.current_user[0])
+                        account_activity_stored = insert_account_activity_details(accountActivity)
+                        if account_activity_stored:
+                            message_content = (
+                                "Your booking request was successful!\n\n"
+                                "Thank you for choosing our service. Your booking is now pending approval. "
+                                "Our team will review your request, and you can expect a confirmation within 24 hours.\n\n"
+                            )
+                            messagebox.showinfo("Booking Success", message_content)
+                            self.clear_field()
+                        else:
+                            messagebox.showerror("ERROR!", "Account Activity Couldn't Store.")
                     else:
-                        messagebox.showerror("ERROR!", "Account Activity Couldn't Store.")
+                        messagebox.showerror("Booking Failed!", "Sorry, Couldn't Create Payment Table !")
                 else:
                     messagebox.showerror("Booking Failed!", "Sorry, Couldn't Book Your Request!")
             else:

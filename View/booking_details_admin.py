@@ -291,8 +291,6 @@ class BookingDetails:
                     self.cancel_booking_callback()
                     self.count_booking_callback()
                     self.count_total_booking()
-
-
         else:
             messagebox.showerror("ERROR", "please select booking from the table.", parent = self.booking_details_window)
 

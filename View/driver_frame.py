@@ -17,27 +17,25 @@ class DriverFrame(Frame):
         self.font = "Century Gothic"
 
     def show_driver_frame(self):
-        self.driver_frame = Frame(self.frame, bg="white", width=900, height=600)
+        self.driver_frame = Frame(self.frame, bg="#3c3c3c", width=900, height=600)
         self.driver_frame.place(x=0, y=0)
 
-        self.top_frame = Frame(self.driver_frame, bg="#2c2c2c")
-        self.top_frame.place(relx=0, rely=0, relwidth=1, relheight=0.25)
+        self.top_frame = customtkinter.CTkFrame(self.driver_frame,width=870, height=110,corner_radius=20)
+        self.top_frame.place(x=15, y=15)
 
-        self.heading_label = Label(self.top_frame, text="Driver Details", font=(self.font, 26), bg="#2c2c2c",
-                                   fg="white")
-        self.heading_label.place(relx=0.5, rely=0.3, anchor="center")
+        self.heading_label = customtkinter.CTkLabel(self.top_frame, text="Driver Details", font=(self.font, 30))
+        self.heading_label.place(relx=0.5, rely=0.5, anchor="center")
 
-        self.search_entry = customtkinter.CTkEntry(master=self.top_frame, width=100, height=36,
+        self.search_entry = customtkinter.CTkEntry(master=self.driver_frame, width=100, height=36,
                                                    placeholder_text="Driver ID")
-        self.search_entry.place(x=20, y=90)
+        self.search_entry.place(x=20, y=140)
 
         search_btn_image = ImageTk.PhotoImage(Image.open("Images/search.png").resize((20, 20), Image.ANTIALIAS))
 
-        self.search_button = customtkinter.CTkButton(master=self.top_frame, width=60, height=35, text="search",
+        self.search_button = customtkinter.CTkButton(master=self.driver_frame, width=60, height=35, text="search",
                                                      corner_radius=15, font=(self.font, 15), image=search_btn_image,command=self.search_driver_details
                                                      )
-        self.search_button.place(x=130, y=92)
-
+        self.search_button.place(x=130, y=142)
 
         # table to show the driver details
 
@@ -68,8 +66,8 @@ class DriverFrame(Frame):
                    foreground=[('active', 'white')])
 
 
-        self.table_frame = Frame(self.driver_frame, bg="white", width=900, height=504)
-        self.table_frame.place(x=0, y=150)
+        self.table_frame = customtkinter.CTkFrame(self.driver_frame, width=870, height=395)
+        self.table_frame.place(x=15, y=195)
 
         self.driver_Detals_table = tkinter.ttk.Treeview(self.table_frame, height=24, show="headings", columns=("driver_id","name","phone_no", "address","pickupaddress", "dropoffaddress","date", "status"))
 
@@ -86,14 +84,14 @@ class DriverFrame(Frame):
         self.driver_Detals_table.column("driver_id", width=50, anchor=CENTER)
         self.driver_Detals_table.column("name",  width=110, anchor=CENTER)
         self.driver_Detals_table.column("phone_no",  width=100, anchor=CENTER)
-        self.driver_Detals_table.column("address",  width=115, anchor=CENTER)
-        self.driver_Detals_table.column("pickupaddress",  width=175, anchor=CENTER)
-        self.driver_Detals_table.column("dropoffaddress",  width=175, anchor=CENTER)
-        self.driver_Detals_table.column("date",  width=75, anchor=CENTER)
+        self.driver_Detals_table.column("address",  width=110, anchor=CENTER)
+        self.driver_Detals_table.column("pickupaddress",  width=165, anchor=CENTER)
+        self.driver_Detals_table.column("dropoffaddress",  width=165, anchor=CENTER)
+        self.driver_Detals_table.column("date",  width=70, anchor=CENTER)
         self.driver_Detals_table.column("status",  width=100, anchor=CENTER)
 
 
-        self.driver_Detals_table.pack(fill="both", expand=True)
+        self.driver_Detals_table.place(x=0, y=0)
 
         self.display_driver_data()
 
