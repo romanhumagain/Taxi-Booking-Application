@@ -9,12 +9,14 @@ from Controller.payment_dbms import fetch_customer_completed_payment, search_cus
 from Model import Global
 from Model.customer import Customer
 from Model.payment import Payment
+from View.Invoice import InvoiceFrame
 
 
 class PaymentFrame():
     def __init__(self, frame):
         self.frame = frame
         self.font = "Century Gothic"
+        self.invoice_no = 0
 
     def show_payment_frame(self):
         self.payment_frame = Frame(self.frame, bg="#3c3c3c", width=900, height=600)
@@ -42,7 +44,7 @@ class PaymentFrame():
 
 
         self.download_button = customtkinter.CTkButton(master=self.payment_frame, text="Download Receipt",image=download_btn_image,
-                                                    font=(self.font, 15), corner_radius=10, height=34, width=40)
+                                                    font=(self.font, 15), corner_radius=10, height=34, width=40, command=self.print_invoice)
         self.download_button.place(x=360, y=140)
 
         # table to show the driver details
@@ -105,7 +107,7 @@ class PaymentFrame():
 
         self.get_completed_payment_details()
 
-        # self.pending_booking_table.bind("<ButtonRelease-1>", self.select_booking)
+        self.completed_payment_table.bind("<ButtonRelease-1>", self.select_payment_details)
 
     def get_completed_payment_details(self):
         customer = Customer(customer_id=Global.logged_in_customer[0])
@@ -135,6 +137,30 @@ class PaymentFrame():
                 messagebox.showerror("ERROR", f"Invoice With ID No. {payment_id} Doesn't Exists !")
         else:
             messagebox.showerror("ERROR", "Please Provide Invoice No. To Search!")
+
+    def select_payment_details(self, event):
+        value = self.completed_payment_table.focus()
+        payment_details = self.completed_payment_table.item(value)
+
+        row = payment_details.get('values')
+        self.invoice_no = row[0]
+    def print_invoice(self):
+        if self.invoice_no !=0:
+            invoiceFrame = InvoiceFrame(self.payment_frame, self.invoice_no)
+            invoiceFrame.show_invoice_window()
+
+            screen_width = self.payment_frame.winfo_screenwidth()
+            screen_height = self.payment_frame.winfo_screenheight()
+
+            window_width = 550
+            window_height = 500
+
+            x_position = (screen_width - window_width) // 2 + 150
+            y_position = (screen_height - window_height) // 2
+
+            invoiceFrame.invoice_frame.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
+        else:
+            messagebox.showerror("ERROR", "Please Select The Payment Details From The Table To Print Invoice!")
 
 
 

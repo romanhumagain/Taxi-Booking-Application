@@ -11,6 +11,7 @@ from Controller.payment_dbms import fetch_pending_payment, fetch_pending_payment
 from datetime import datetime
 
 from Model.payment import Payment
+from View.Invoice import InvoiceFrame
 
 
 class PaymentDetails:
@@ -23,6 +24,8 @@ class PaymentDetails:
 
         date_time = datetime.now()
         self.date = date_time.date()
+
+        self.bill_no =0
 
         style1 = tkinter.ttk.Style()
         style1.theme_use("default")
@@ -217,7 +220,7 @@ class PaymentDetails:
         self.download_bill_button = customtkinter.CTkButton(self.completed_tab,
                                                                font=(self.font, 18), corner_radius=15,text="",width=30,
                                                                height=34,
-                                                               image=download_bill_btn_image,)
+                                                               image=download_bill_btn_image,command=self.print_invoice)
         self.download_bill_button.place(x=780, y=0)
 
         self.completed_payment_table = tkinter.ttk.Treeview(
@@ -229,7 +232,7 @@ class PaymentDetails:
         )
 
         self.completed_payment_table.place(x=0, y=0)
-        # self.pending_payment_table.bind("<ButtonRelease-1>", self.select_booking)
+        self.completed_payment_table.bind("<ButtonRelease-1>", self.select_payment_details)
 
         self.completed_payment_table.heading("bill_id", text="Bill No.", anchor=CENTER)
         self.completed_payment_table.heading("booking_id", text="B-ID", anchor=CENTER)
@@ -330,9 +333,30 @@ class PaymentDetails:
 
 
 
+    def select_payment_details(self, event):
+        value = self.completed_payment_table.focus()
+        payment_details = self.completed_payment_table.item(value)
 
+        row = payment_details.get('values')
+        self.bill_no = row[0]
 
+    def print_invoice(self):
+        if self.bill_no !=0:
+            invoiceFrame = InvoiceFrame(self.payment_frame, self.bill_no)
+            invoiceFrame.show_invoice_window()
 
+            screen_width = self.payment_frame.winfo_screenwidth()
+            screen_height = self.payment_frame.winfo_screenheight()
+
+            window_width = 550
+            window_height = 500
+
+            x_position = (screen_width - window_width) // 2 + 150
+            y_position = (screen_height - window_height) // 2
+
+            invoiceFrame.invoice_frame.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
+        else:
+            messagebox.showerror("ERROR", "Please Select The Payment Details From The Table To Print Invoice!", parent = self.payment_details_window)
 
 
 if __name__ == '__main__':
