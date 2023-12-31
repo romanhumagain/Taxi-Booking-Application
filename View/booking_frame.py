@@ -1,3 +1,4 @@
+import re
 from tkinter import *
 from tkinter import Frame, Label
 
@@ -61,7 +62,7 @@ class BookingFrame(Frame):
         self.pickup_time_label = Label(self, text="Pick Up Time", font=(font, 14), bg="#0E0E0E", fg="white")
         self.pickup_time_label.place(x=30, y=310)
 
-        self.pickup_time_entry = ctk.CTkEntry(self, font=(font, 15), width=180, height=38,textvariable=self.pickUpTime)
+        self.pickup_time_entry = ctk.CTkEntry(self, font=(font, 15), width=180, height=38, placeholder_text="0:00 AM/PM")
         self.pickup_time_entry.place(x=195, y=310)
 
         self.dropoff_address_label = Label(self, text="Drop Off Address", font=(font, 14), bg="#0E0E0E", fg="white")
@@ -152,54 +153,58 @@ class BookingFrame(Frame):
 
     def booking_taxi(self):
         if Global.logged_in_customer is not None:  # Check if logged_in_customer is not None
-            if not (
-                    self.pickUpAddress.get() == "" or self.pickUpDate.get() == "" or self.pickUpTime.get() == "" or self.dropOffAddress.get() == ""):
-                booking = Booking(
-                    pickup_address=self.pickUpAddress.get(),
-                    pickup_date=self.pickUpDate.get(),
-                    pickup_time=self.pickUpTime.get(),
-                    dropoff_address=self.dropOffAddress.get(),
-                    booking_status="Pending",
-                    customer_id=Global.logged_in_customer[0],
-                    trip_status=""
-                )
-                is_booked = booking_taxi(booking)
-                if is_booked:
+            if not (self.pickUpAddress.get() == "" or self.pickUpDate.get() == "" or self.pickup_time_entry.get() == "" or self.dropOffAddress.get() == ""):
+                valid_time = self.validate_time_format(self.pickup_time_entry.get())
+                if valid_time:
+                    booking = Booking(
+                        pickup_address=self.pickUpAddress.get(),
+                        pickup_date=self.pickUpDate.get(),
+                        pickup_time=self.pickup_time_entry.get(),
+                        dropoff_address=self.dropOffAddress.get(),
+                        booking_status="Pending",
+                        customer_id=Global.logged_in_customer[0],
+                        trip_status=""
+                    )
+                    is_booked = booking_taxi(booking)
+                    if is_booked:
 
-                    payment = Payment(booking_id=booking.get_booking_id())
-                    payment_table_created = create_payment_table(payment)
+                        payment = Payment(booking_id=booking.get_booking_id())
+                        payment_table_created = create_payment_table(payment)
 
-                    if payment_table_created:
-                        # TO INSERT RECORDS TO THE ACCOUNT ACTIVITY TABLE
-                        current_date_time = datetime.now()
-                        current_date = current_date_time.date()
-                        current_time = current_date_time.time()
+                        if payment_table_created:
+                            # TO INSERT RECORDS TO THE ACCOUNT ACTIVITY TABLE
+                            current_date_time = datetime.now()
+                            current_date = current_date_time.date()
+                            current_time = current_date_time.time()
 
-                        activity_related = "Booking Requested"
-                        description = f"Your Booking was requested for the trip of {self.pickUpAddress.get()} to {self.dropOffAddress.get()}"
+                            activity_related = "Booking Requested"
+                            description = f"Your Booking was requested for the trip of {self.pickUpAddress.get()} to {self.dropOffAddress.get()}"
 
-                        accountActivity = AccountActivity(activity_related=activity_related, description=description,
-                                                          date=current_date, time=current_time,
-                                                          user_id=Global.current_user[0])
-                        account_activity_stored = insert_account_activity_details(accountActivity)
-                        if account_activity_stored:
-                            message_content = (
-                                "Your booking request was successful!\n\n"
-                                "Thank you for choosing our service. Your booking is now pending approval. "
-                                "Our team will review your request, and you can expect a confirmation within 24 hours.\n\n"
-                            )
-                            messagebox.showinfo("Booking Success", message_content)
-                            self.clear_field()
+                            accountActivity = AccountActivity(activity_related=activity_related, description=description,
+                                                              date=current_date, time=current_time,
+                                                              user_id=Global.current_user[0])
+                            account_activity_stored = insert_account_activity_details(accountActivity)
+                            if account_activity_stored:
+                                message_content = (
+                                    "Your booking request was successful!\n\n"
+                                    "Thank you for choosing our service. Your booking is now pending approval. "
+                                    "Our team will review your request, and you can expect a confirmation within 24 hours.\n\n"
+                                )
+                                messagebox.showinfo("Booking Success", message_content)
+                                self.clear_field()
+                            else:
+                                messagebox.showerror("ERROR!", "Account Activity Couldn't Store.")
                         else:
-                            messagebox.showerror("ERROR!", "Account Activity Couldn't Store.")
+                            messagebox.showerror("Booking Failed!", "Sorry, Couldn't Create Payment Table !")
                     else:
-                        messagebox.showerror("Booking Failed!", "Sorry, Couldn't Create Payment Table !")
+                        messagebox.showerror("Booking Failed!", "Sorry, Couldn't Book Your Request!")
                 else:
-                    messagebox.showerror("Booking Failed!", "Sorry, Couldn't Book Your Request!")
+                    messagebox.showerror("Invalid Time Format", "Please Provide Time in 0:00 AM/PM Format.")
             else:
                 messagebox.showerror("Booking Failed!", "Please Provide All The Required Details !")
         else:
             messagebox.showerror("Booking Failed!", "User not logged in!")
+
 
     def clear_field(self):
         self.pickup_address_entry.delete(0, END)
@@ -237,6 +242,12 @@ class BookingFrame(Frame):
 
         except Exception as e:
             print(f"Error displaying map: {e}")
+
+    def validate_time_format(self,time_str):
+        # Regular expression for matching time in the format of "4:00 AM"
+        time_pattern = re.compile(r'^([1-9]|1[0-2]):[0-5][0-9] (AM|PM)$', re.IGNORECASE)
+
+        return bool(re.match(time_pattern, time_str))
 
 
 

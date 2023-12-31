@@ -3,7 +3,8 @@ from tkinter import *
 from tkinter import messagebox
 from Model.booking import Booking
 from Model import Global
-from Controller.booking_dbms import select_all_booking
+from Controller.booking_dbms import select_all_booking, select_all_booking_history
+
 
 class BookingHistory():
     def __init__(self, frame):
@@ -95,8 +96,8 @@ class BookingHistory():
         self.display_data()
 
     def display_data(self):
-        booking = Booking(customer_id=97)
-        result = select_all_booking(booking)
+        booking = Booking(customer_id=Global.logged_in_customer[0])
+        result = select_all_booking_history(booking)
 
         # first clear the data in the table
         for item in self.booking_records_table.get_children():

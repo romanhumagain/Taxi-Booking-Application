@@ -341,6 +341,7 @@ class PaymentDetails:
         self.bill_no = row[0]
 
     def print_invoice(self):
+        print(self.bill_no)
         if self.bill_no !=0:
             invoiceFrame = InvoiceFrame(self.payment_frame, self.bill_no)
             invoiceFrame.show_invoice_window()

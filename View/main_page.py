@@ -1,3 +1,4 @@
+import re
 from tkinter import *
 from PIL import Image as PILImage, ImageTk
 from tkinter import ttk
@@ -296,34 +297,43 @@ class MainPage:
     def register_customer(self):
         name = self.name_entry.get()
         phone_no = self.mobile_entry.get()
-        email = self.email_entry.get()
+        email = self.email_entry.get().lower()
         address = self.address_entry.get()
         date_of_birth = self.dob_entry.get()
         gender = self.gender_entry.get()
         password = self.password_entry.get()
         confirm_password = self.co_password_entry.get()
 
+        valid_email = self.is_valid_email(email)
+        print(phone_no.isdigit())
+        print(valid_email)
+
         if not (name == "" or phone_no == "" or email=="" or address == "" or date_of_birth == "" or gender == "Gender" or password == "" or confirm_password == ""):
-            if password == confirm_password:
-                if len(password) >= 8:
-                    user = User(email= email, password= password,user_type="customer")
+            if phone_no.isdigit():
+                if valid_email:
+                    if password == confirm_password:
+                        if len(password) >= 8:
+                            user = User(email= email, password= password,user_type="customer")
 
-                    customer = Customer(name=name, phone_no= phone_no,payment="Online", address= address, date_of_birth = date_of_birth, gender= gender)
+                            customer = Customer(name=name, phone_no= phone_no,payment="Online", address= address, date_of_birth = date_of_birth, gender= gender)
 
-                    user_isregistered = register_user(user)
-                    if user_isregistered:
-                        customer_isregistered = register_customer(customer, user)
-                        if customer_isregistered:
-                            messagebox.showinfo("Registration Complete", "Successfully Registered Your Account, You Can Login Now.")
-                            self.inner_registration_frame.pack_forget()
-                            self.login_frame()
+                            user_isregistered = register_user(user)
+                            if user_isregistered:
+                                customer_isregistered = register_customer(customer, user)
+                                if customer_isregistered:
+                                    messagebox.showinfo("Registration Complete", "Successfully Registered Your Account, You Can Login Now.")
+                                    self.inner_registration_frame.pack_forget()
+                                    self.login_frame()
+                                else:
+                                    messagebox.showerror("Registration ERROR", "Sorry Could't Register Your Account !")
                         else:
-                            messagebox.showerror("Registration ERROR", "Sorry Could't Register Your Account !")
+                            messagebox.showwarning("Password ERROR!", "Password Should Be Atleast 8 Character Long !")
+                    else:
+                        messagebox.showwarning("Password ERROR", "Password Didn't Match !")
                 else:
-                    messagebox.showwarning("Password ERROR!", "Password Should Be Atleast 8 Character Long !")
-
+                    messagebox.showwarning("Password ERROR", "Please Provide Valid Email")
             else:
-                messagebox.showwarning("Password ERROR", "Password Didn't Match !")
+                messagebox.showwarning("Password ERROR", "Phone no. couldn't contain any alphabet.")
         else:
             messagebox.showwarning("Registration Incomplete", "Please Fill All The Details To Register Your Account !")
 
@@ -367,7 +377,15 @@ class MainPage:
         else:
             messagebox.showwarning("Empty Field", "Please Provide Your Login Credentials !")
 
+    def is_valid_email(self,email):
+        # Define the regular expression pattern for a simple email validation
+        email_pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
 
+        # Use re.match to check if the email matches the pattern
+        if re.match(email_pattern, email):
+            return True
+        else:
+            return False
 def page():
     window = Tk()
     MainPage(window)

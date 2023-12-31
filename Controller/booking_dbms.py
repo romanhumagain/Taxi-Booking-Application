@@ -46,12 +46,7 @@ def select_all_booking(booking):
         connection = mysql_connection()
         if connection is not None:
             cursor = connection.cursor()
-            query  = """SELECT booking_id, pickup_address, pickup_date, pickup_time, dropoff_address, booking_status, booking.driver_id
-                         FROM booking 
-                         LEFT JOIN driver
-                         ON booking.driver_id = driver.driver_id  
-                         WHERE booking.customer_id = %s ORDER BY booking_id DESC
-                      """
+            query  = """SELECT booking_id, pickup_address, pickup_date, pickup_time, dropoff_address, booking_status FROM booking WHERE customer_id = %s ORDER BY booking_id DESC """
             values =(booking.get_customer_id(),)
 
             cursor.execute(query, values)
@@ -64,9 +59,6 @@ def select_all_booking(booking):
         cursor.close()
         connection.close()
         return result
-
-
-
 
 # ================== TO SELECT THE PENDING BOOKING =====================
 def select_pending_booking(booking):
@@ -117,6 +109,29 @@ def select_approved_booking(booking):
     finally:
         cursor.close()
         connection.close()
+
+def select_all_booking_history(booking):
+    cursor = None
+    result = None
+    try:
+        connection = mysql_connection()
+        if connection is not None:
+            cursor = connection.cursor()
+            query  = """SELECT booking_id, pickup_address, pickup_date, pickup_time, dropoff_address, booking_status, driver_id
+                         FROM booking WHERE customer_id = %s ORDER BY booking_id DESC
+                      """
+            values =(booking.get_customer_id(),)
+
+            cursor.execute(query, values)
+            result = cursor.fetchall()
+
+    except Exception as error:
+        print(f"ERROR:- {error}")
+
+    finally:
+        cursor.close()
+        connection.close()
+        return result
 
 
 # ================== TO UPDATE THE BOOKING =========================
@@ -199,7 +214,7 @@ def assign_driver(booking):
 
             # Query to update the booking
             query = """ UPDATE booking SET driver_id = %s, booking_status = %s, trip_status = %s WHERE booking_id = %s """
-            values = (booking.get_driver_id(),"approved",booking.get_booking_id(), "Incomplete")
+            values = (booking.get_driver_id(),"approved", "Incomplete",booking.get_booking_id(),)
 
             # To execute the query
             cursor.execute(query, values)

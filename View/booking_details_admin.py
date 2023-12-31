@@ -6,7 +6,7 @@ import customtkinter
 from PIL import ImageTk, Image as PILImage
 
 from Controller.admin_dashboard_dbms import fetch_pending_booking_details, fetch_active_booking, fetch_booking_history, \
-    search_booking_history
+    search_booking_history, fetch_completed_booking
 from Controller.booking_dbms import cancel_booking
 from Model.booking import Booking
 
@@ -71,21 +71,28 @@ class BookingDetails:
         active_btn_image = ImageTk.PhotoImage(PILImage.open("Images/active.png").resize((30,30), PILImage.ANTIALIAS))
 
         self.active_button = customtkinter.CTkButton(self.button_frame,text="Active ", width=150, font=(self.font, 16, 'bold'), height=35,corner_radius=10,image=active_btn_image, command=self.create_active_booking_table)
-        self.active_button.place(x=10, y= 90)
+        self.active_button.place(x=10, y= 70)
 
         pending_btn_image = ImageTk.PhotoImage(PILImage.open("Images/pending.png").resize((30,30), PILImage.ANTIALIAS))
 
 
         self.pending_booking = customtkinter.CTkButton(self.button_frame, text="Pending", width=150, height=35,
                                                      font=(self.font, 16, 'bold'), corner_radius=10, image=pending_btn_image,command=self.create_pending_table)
-        self.pending_booking.place(x=10, y=160)
+        self.pending_booking.place(x=10, y=145)
 
         history_btn_image = ImageTk.PhotoImage(PILImage.open("Images/history.png").resize((30,30), PILImage.ANTIALIAS))
 
 
         self.booking_history = customtkinter.CTkButton(self.button_frame, text="History", width=150,height=35,image=history_btn_image,
                                                        font=(self.font, 16, 'bold'), corner_radius=10, command=self.create_booking_history_table)
-        self.booking_history.place(x=10, y=230)
+        self.booking_history.place(x=10, y=220)
+
+        complete_btn_image = ImageTk.PhotoImage(PILImage.open("Images/approved.png").resize((25, 25), PILImage.ANTIALIAS))
+
+        self.complete_booking = customtkinter.CTkButton(self.button_frame, text="Completed", width=150, height=35,
+                                                      font=(self.font, 16, 'bold'), corner_radius=10,
+                                                      image=complete_btn_image, command=self.create_completed_booking_table)
+        self.complete_booking.place(x=10, y=295)
 
 
         # creating a table in the table_frame to show the booking details
@@ -129,9 +136,6 @@ class BookingDetails:
     def create_active_booking_table(self):
         self.heading_label.configure(text="Customer Active Booking Details")
         self.clear_booking_table_frame()
-        if not self.cancel_booking is None:
-            self.cancel_booking.destroy()
-            self.cancel_booking = None
 
         self.scroll_y = Scrollbar(self.booking_table_frame, orient=VERTICAL)
         self.active_booking_table = tkinter.ttk.Treeview(self.booking_table_frame, height=12, columns=("booking_id", "customer_id", "pickup", "date", "time", "dropoff", "driver_id","driver_name"),show="headings", yscrollcommand=self.scroll_y)
@@ -162,12 +166,6 @@ class BookingDetails:
         self.heading_label.configure(text="Customer Pending Booking Details")
 
         self.clear_booking_table_frame()
-        # creating a button to cancel the pending booking
-        if self.cancel_booking is None:
-            cancel_btn_image = ImageTk.PhotoImage(PILImage.open("Images/cancel.png").resize((30, 30), PILImage.ANTIALIAS))
-
-            self.cancel_booking = customtkinter.CTkButton(self.button_frame, text="Cancel", width=150, height=35,font=(self.font, 16, 'bold'), corner_radius=10,image=cancel_btn_image, command=self.cancel_booking_details )
-            self.cancel_booking.place(x=10, y=300)
 
         self.scroll_y = Scrollbar(self.booking_table_frame, orient=VERTICAL)
         self.pending_booking_table = tkinter.ttk.Treeview(
@@ -209,9 +207,6 @@ class BookingDetails:
         self.clear_booking_table_frame()
 
         self.heading_label.configure(text="Customer Booking History")
-        if not self.cancel_booking is None:
-            self.cancel_booking.destroy()
-            self.cancel_booking = None
 
         self.scroll_y = Scrollbar(self.booking_table_frame, orient=VERTICAL)
         self.booking_history_table = tkinter.ttk.Treeview(self.booking_table_frame, height=12, columns=(
@@ -243,6 +238,38 @@ class BookingDetails:
 
         self.display_booking_history()
 
+    def create_completed_booking_table(self):
+        self.heading_label.configure(text="Customer Completed Booking Details")
+        self.clear_booking_table_frame()
+
+        self.scroll_y = Scrollbar(self.booking_table_frame, orient=VERTICAL)
+        self.completed_booking_table = tkinter.ttk.Treeview(self.booking_table_frame, height=12, columns=("booking_id", "customer_id", "pickup", "date", "time", "dropoff", "driver_id","driver_name", "status"),show="headings", yscrollcommand=self.scroll_y)
+        self.completed_booking_table.place(x=0, y=0)
+
+        self.completed_booking_table.heading("booking_id", text="B-ID", anchor=CENTER)
+        self.completed_booking_table.heading("customer_id", text="C-ID", anchor=CENTER)
+        self.completed_booking_table.heading("pickup", text="Pickup Address", anchor=CENTER)
+        self.completed_booking_table.heading("date", text="Date", anchor=CENTER)
+        self.completed_booking_table.heading("time", text="Time", anchor=CENTER)
+        self.completed_booking_table.heading("dropoff", text="Dropoff Address", anchor=CENTER)
+        self.completed_booking_table.heading("driver_id", text="D-ID", anchor=CENTER)
+        self.completed_booking_table.heading("driver_name", text="D-Name", anchor=CENTER)
+        self.completed_booking_table.heading("status", text="Status", anchor=CENTER)
+
+
+
+        self.completed_booking_table.column("booking_id", width=40, anchor=CENTER)
+        self.completed_booking_table.column("customer_id", width=40, anchor=CENTER)
+        self.completed_booking_table.column("pickup", width=150, anchor=CENTER)
+        self.completed_booking_table.column("date", width=50, anchor=CENTER)
+        self.completed_booking_table.column("time", width=50, anchor=CENTER)
+        self.completed_booking_table.column("dropoff", width=150, anchor=CENTER)
+        self.completed_booking_table.column("driver_id", width=40, anchor=CENTER)
+        self.completed_booking_table.column("driver_name", width=140, anchor=CENTER)
+        self.completed_booking_table.column("status", width=140, anchor=CENTER)
+
+        self.display_completed_booking()
+
     def display_pending_booking(self):
         result = fetch_pending_booking_details()
         if result is not None:
@@ -270,29 +297,21 @@ class BookingDetails:
             for row in result:
                 self.booking_history_table.insert('', END, values=row)
 
+    def display_completed_booking(self):
+        result = fetch_completed_booking()
+        if result is not None:
+            for item in self.completed_booking_table.get_children():
+                self.completed_booking_table.delete(item)
+
+            for row in result:
+                self.completed_booking_table.insert('', END, values=row)
+
     def select_booking(self, event):
         view_info = self.pending_booking_table.focus()
         booking_details = self.pending_booking_table.item(view_info)
 
         row = booking_details.get("values")
         self.booking_id = row[0]
-
-
-    def cancel_booking_details(self):
-        if not self.booking_id == 0:
-            confirmed = messagebox.askyesno("Confirm", f"Are you sure you want to cancel the booking of Booking ID {self.booking_id}?", parent = self.booking_details_window)
-            if confirmed:
-                booking = Booking(booking_id = self.booking_id)
-                canceled = cancel_booking(booking)
-                if canceled:
-                    messagebox.showinfo("SUCCESS", f"Successfully Canceled Booking of Booking ID {self.booking_id}", parent = self.booking_details_window)
-                    self.display_pending_booking()
-                    self.booking_id = 0
-                    self.cancel_booking_callback()
-                    self.count_booking_callback()
-                    self.count_total_booking()
-        else:
-            messagebox.showerror("ERROR", "please select booking from the table.", parent = self.booking_details_window)
 
     def search(self):
         booking_id = self.search_entry.get()

@@ -124,6 +124,14 @@ def complete_assigned_trip(booking):
             values = ("Completed",booking.get_booking_id())
             cursor.execute(query, values)
 
+            query = """ UPDATE driver SET driver_status = %s WHERE driver_id = %s"""
+            values = ("available", booking.get_driver_id())
+            cursor.execute(query, values)
+
+            query = """ UPDATE payment SET payment_status = %s WHERE booking_id = %s"""
+            values = ("Paid", booking.get_booking_id())
+            cursor.execute(query, values)
+
             connection.commit()
             return True
         except Exception as error:

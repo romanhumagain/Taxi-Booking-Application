@@ -161,6 +161,31 @@ def fetch_booking_history():
             connection.close()
             return result
 
+def fetch_completed_booking():
+    connection = mysql_connection()
+    if connection is not None:
+        cursor = None
+        result = None
+        try:
+            cursor = connection.cursor()
+
+            query = """ SELECT booking.booking_id, booking.customer_id, pickup_address, pickup_date, pickup_time, dropoff_address, booking.driver_id, driver.name, booking.trip_status
+                        FROM booking 
+                        INNER JOIN customer ON booking.customer_id = customer.customer_id  
+                        INNER JOIN driver ON booking.driver_id = driver.driver_id 
+                        WHERE booking.trip_status = %s;
+                    """
+
+            cursor.execute(query, ("Completed",))
+            result = cursor.fetchall()
+
+        except Exception as error:
+            print(error)
+        finally:
+            cursor.close()
+            connection.close()
+            return result
+
 def search_booking_history(booking):
     connection = mysql_connection()
     if connection is not None:

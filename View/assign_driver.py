@@ -220,7 +220,6 @@ class AssignDriverPage:
                 self.display_available_driver()
                 self.display_pending_booking_details()
                 self.count_pending_booking()
-
             else:
                 messagebox.showerror("Failed !", "Sorry, Could't Assign Driver To This Booking !",parent=self.assign_window)
         else:

@@ -17,9 +17,9 @@ def fetch_payment_details(payment):
                     ON booking.booking_id = payment.booking_id
                     INNER JOIN customer
                     ON booking.customer_id = customer.customer_id 
-                    WHERE payment.payment_status = %s and payment.payment_id = %s
+                    WHERE payment.is_generated = %s and payment.payment_id = %s
                     """
-            values = ("Success",payment.get_payment_id())
+            values = (True,payment.get_payment_id())
             cursor.execute(query, values)
             result = cursor.fetchone()
 

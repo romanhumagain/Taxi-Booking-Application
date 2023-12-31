@@ -225,42 +225,49 @@ class DriverWindow:
 
         if not (self.name_entry.get()=="" or self.address_entry.get()=="" or self.phone_entry.get() == "" or self.license_entry.get()=="" or self.gender_value.get() == "Gender" or self.password_entry.get()==""):
             name = self.name_entry.get()
-            email = name.lower().strip() + "@gmail.com"
+            name_without_spaces = name.replace(" ", "")  # Remove spaces from the name
+            email = name_without_spaces.lower() + "@gmail.com"
+
             password = self.password_entry.get()
             user_type = "driver"
 
-            # Creating a instance of the User Model
-            user = User(email=email, password=password, user_type= user_type)
-            user_registered = register_user(user)
-            if user_registered:
-                driver = Driver(name=self.name_entry.get(), address=self.address_entry.get(), phone_no=self.phone_entry.get(), license=self.license_entry.get(), gender=self.gender_value.get(), driver_status="available")
-                driver_registered = register_driver(driver, user)
-                if driver_registered:
-                    # TO INSERT RECORDS TO THE ACCOUNT ACTIVITY TABLE
-                    current_date_time = datetime.now()
-                    current_date = current_date_time.date()
-                    current_time = current_date_time.time()
+            if self.phone_entry.get().isdigit():
+                if len(password) >= 8:
+                    # Creating a instance of the User Model
+                    user = User(email=email, password=password, user_type= user_type)
+                    user_registered = register_user(user)
+                    if user_registered:
+                        driver = Driver(name=self.name_entry.get(), address=self.address_entry.get(), phone_no=self.phone_entry.get(), license=self.license_entry.get(), gender=self.gender_value.get(), driver_status="available")
+                        driver_registered = register_driver(driver, user)
+                        if driver_registered:
+                            # TO INSERT RECORDS TO THE ACCOUNT ACTIVITY TABLE
+                            current_date_time = datetime.now()
+                            current_date = current_date_time.date()
+                            current_time = current_date_time.time()
 
-                    activity_related = "Driver Registered"
-                    description = f"{self.name_entry.get()} was successfully registered as a driver"
+                            activity_related = "Driver Registered"
+                            description = f"{self.name_entry.get()} was successfully registered as a driver"
 
-                    accountActivity = AccountActivity(activity_related=activity_related, description=description,
-                                                      date=current_date, time=current_time,
-                                                      user_id=Global.current_user[0])
-                    account_activity_stored = insert_account_activity_details(accountActivity)
+                            accountActivity = AccountActivity(activity_related=activity_related, description=description,
+                                                              date=current_date, time=current_time,
+                                                              user_id=Global.current_user[0])
+                            account_activity_stored = insert_account_activity_details(accountActivity)
 
-                    if account_activity_stored:
-                        messagebox.showinfo("Registration Success !", "Successfully Registered Driver", parent=self.driver_window)
-                        self.set_all_driver_details()
-                        self.clear_fields()
-                        self.count_driver()
+                            if account_activity_stored:
+                                messagebox.showinfo("Registration Success !", "Successfully Registered Driver", parent=self.driver_window)
+                                self.set_all_driver_details()
+                                self.clear_fields()
+                                self.count_driver()
+                            else:
+                                messagebox.showerror("Activity Details Failed", "Activity Details Failed to Store.", parent= self.driver_window)
+                        else:
+                            messagebox.showerror("Registration Failed", "Sorry Could't Register Driver!", parent=self.driver_window)
                     else:
-                        messagebox.showerror("Activity Details Failed", "Activity Details Failed to Store.", parent= self.driver_window)
+                        messagebox.showerror("Registration Failed", "Sorry Could't Register User!", parent=self.driver_window)
                 else:
-                    messagebox.showerror("Registration Failed", "Sorry Could't Register Driver!", parent=self.driver_window)
+                    messagebox.showerror("Registration Failed", "Password should be at least 8 character long", parent=self.driver_window)
             else:
-                messagebox.showerror("Registration Failed", "Sorry Could't Register User!", parent=self.driver_window)
-
+                messagebox.showerror("Registration Failed", "Phone no. couldn't contain any alphabet.", parent=self.driver_window)
         else:
             messagebox.showerror("Registration Failed", "Please Fill All The Details!", parent=self.driver_window)
 

@@ -6,6 +6,7 @@ import customtkinter
 from PIL import Image as PILImage, ImageTk
 from datetime import datetime
 
+import Model.Global
 from Controller.account_activity_dbms import insert_account_activity_details
 from Controller.driver_dashboard_dbms import fetch_assigned_booking, complete_assigned_trip, \
     fetch_complete_trip_history, check_active_status
@@ -477,26 +478,37 @@ class DriverDashboard:
             input_date = datetime.strptime(input_date_str, "%m/%d/%y").date()
 
             input_time_str = self.time_entry.get()
-            input_time = datetime.strptime(input_time_str, "%H:%M").time()
+            try:
+                input_time = datetime.strptime(input_time_str, "%I:%M %p").time()
+            except ValueError:
+                messagebox.showerror("ERROR", "Invalid time format. Please use HH:MM AM/PM.")
+                return
 
             if current_date < input_date or (current_date == input_date and current_time < input_time):
-                messagebox.showerror("ERROR", "Couldn't Complete Trip Now !")
+                messagebox.showerror("ERROR", "Couldn't Complete Trip Now!")
             else:
-                booking = Booking(booking_id=bookingId)
+                booking = Booking(booking_id=bookingId, driver_id=Model.Global.logged_in_driver[0])
                 trip_completed = complete_assigned_trip(booking)
+
                 if trip_completed:
                     activity_related = "Trip Completed"
                     description = f"Your trip for Booking ID {bookingId} was successfully completed."
 
-                    accountActivity = AccountActivity(activity_related=activity_related, description=description,
-                                                      date=current_date, time=current_time,
-                                                      user_id=Global.current_user[0])
+                    accountActivity = AccountActivity(
+                        activity_related=activity_related, description=description,
+                        date=current_date, time=current_time, user_id=Global.current_user[0]
+                    )
+
                     account_activity_stored = insert_account_activity_details(accountActivity)
 
                     if account_activity_stored:
                         messagebox.showinfo("SUCCESS", f"Successfully Completed Trip For The Booking ID {bookingId}")
                         self.display_assigned_booking()
                         self.clear_complete_booking_fields()
+                        self.count_completed_riding()
+                        self.count_assigned_riding()
+                    else:
+                        messagebox.showerror("INVALID", "Sorry Couldn't Completed Trip")
                 else:
                     messagebox.showerror("INVALID", "Sorry Couldn't Completed Trip")
         else:

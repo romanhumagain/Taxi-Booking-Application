@@ -65,15 +65,14 @@ def fetch_pending_payment():
         if connection is not None:
             cursor = connection.cursor()
             query = """
-                    SELECT payment.booking_id,customer.customer_id, pickup_address, dropoff_address, booking.pickup_date
-                    FROM booking 
-                    INNER JOIN payment
-                    ON booking.booking_id = payment.booking_id
-                    INNER JOIN customer
-                    ON booking.customer_id = customer.customer_id 
-                    WHERE payment.is_generated = %s
-                    """
-            values = (False,)
+                SELECT payment.booking_id, customer.customer_id, pickup_address, dropoff_address, booking.pickup_date
+                FROM booking 
+                INNER JOIN payment ON booking.booking_id = payment.booking_id
+                INNER JOIN customer ON booking.customer_id = customer.customer_id 
+                WHERE payment.is_generated = %s AND NOT booking.booking_status = %s
+            """
+            values = (False, "Pending")
+
             cursor.execute(query, values)
             result = cursor.fetchall()
     except Exception as error:
@@ -98,9 +97,9 @@ def fetch_pending_payment_details():
                     ON booking.booking_id = payment.booking_id
                     INNER JOIN customer
                     ON booking.customer_id = customer.customer_id 
-                    WHERE payment.is_generated = %s
+                    WHERE payment.is_generated = %s AND NOT booking.booking_status = %s
                     """
-            values = (False,)
+            values = (False,"Pending")
             cursor.execute(query, values)
             result = cursor.fetchall()
     except Exception as error:
@@ -125,9 +124,9 @@ def fetch_completed_payment():
                     ON booking.booking_id = payment.booking_id
                     INNER JOIN customer
                     ON booking.customer_id = customer.customer_id 
-                    WHERE payment.payment_status = %s
+                    WHERE payment.is_generated = %s
                     """
-            values = ("Success",)
+            values = (True,)
             cursor.execute(query, values)
             result = cursor.fetchall()
 
@@ -158,7 +157,7 @@ def fetch_customer_completed_payment(customer):
                     WHERE payment.payment_status = %s and customer.customer_id = %s 
                     ORDER BY payment_id DESC
                     """
-            values = ("Success",customer.get_customer_id())
+            values = ("Paid",customer.get_customer_id())
             cursor.execute(query, values)
             result = cursor.fetchall()
 
