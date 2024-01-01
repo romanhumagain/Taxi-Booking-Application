@@ -89,7 +89,7 @@ class MainPage:
         self.username_image_label.image = photo
         self.username_image_label.place(x=87, y=210)
 
-        self.username_label = Label(self.inner_login_frame, text="Username", bg='#111111', fg='white',
+        self.username_label = Label(self.inner_login_frame, text="Email", bg='#111111', fg='white',
                                     font=(self.font, 14))
         self.username_label.place(x=90, y=170)
 
@@ -308,34 +308,38 @@ class MainPage:
         print(phone_no.isdigit())
         print(valid_email)
 
-        if not (name == "" or phone_no == "" or email=="" or address == "" or date_of_birth == "" or gender == "Gender" or password == "" or confirm_password == ""):
-            if phone_no.isdigit():
+        if not (name == "" or phone_no == "" or email=="" or address == "" or date_of_birth == "" or gender == "Gender" or password == ""):
+            # Validate phone number format
+                if not re.match(r"^\d{10}$", phone_no):
+                    messagebox.showerror("Invalid Phone Number", "Please enter a valid 10-digit phone number.")
+                    return
                 if valid_email:
-                    if password == confirm_password:
-                        if len(password) >= 8:
-                            user = User(email= email, password= password,user_type="customer")
+                    if len(password) >= 8:
+                        if confirm_password != "":
+                            if password == confirm_password:
+                                user = User(email= email, password= password,user_type="customer")
 
-                            customer = Customer(name=name, phone_no= phone_no,payment="Online", address= address, date_of_birth = date_of_birth, gender= gender)
+                                customer = Customer(name=name, phone_no= phone_no,payment="Online", address= address, date_of_birth = date_of_birth, gender= gender)
 
-                            user_isregistered = register_user(user)
-                            if user_isregistered:
-                                customer_isregistered = register_customer(customer, user)
-                                if customer_isregistered:
-                                    messagebox.showinfo("Registration Complete", "Successfully Registered Your Account, You Can Login Now.")
-                                    self.inner_registration_frame.pack_forget()
-                                    self.login_frame()
-                                else:
-                                    messagebox.showerror("Registration ERROR", "Sorry Could't Register Your Account !")
+                                user_isregistered = register_user(user)
+                                if user_isregistered:
+                                    customer_isregistered = register_customer(customer, user)
+                                    if customer_isregistered:
+                                        messagebox.showinfo("Registration Complete", "Successfully Registered Your Account.\n\n You Can Login Now.")
+                                        self.inner_registration_frame.pack_forget()
+                                        self.login_frame()
+                                    else:
+                                        messagebox.showerror("Registration ERROR", "Sorry Could't Register Your Account !")
+                            else:
+                                messagebox.showerror("Password ERROR", "Password Didn't Match !")
                         else:
-                            messagebox.showwarning("Password ERROR!", "Password Should Be Atleast 8 Character Long !")
+                            messagebox.showerror("Password ERROR", "Please Confirm Your Password")
                     else:
-                        messagebox.showwarning("Password ERROR", "Password Didn't Match !")
+                        messagebox.showerror("Password ERROR!", "Password Should Be Atleast 8 Character Long !")
                 else:
-                    messagebox.showwarning("Password ERROR", "Please Provide Valid Email")
-            else:
-                messagebox.showwarning("Password ERROR", "Phone no. couldn't contain any alphabet.")
+                    messagebox.showerror("Invalid Email", "Please Enter a Valid Email Address !")
         else:
-            messagebox.showwarning("Registration Incomplete", "Please Fill All The Details To Register Your Account !")
+            messagebox.showerror("Registration Failed", "Please Fill All The Details To Register Your Account !")
 
     # to check the login credentials
     def login_user(self):
@@ -350,8 +354,6 @@ class MainPage:
                 Global.current_user = user
                 Global.logged_in_customer = customer
                 Global.logged_in_driver = driver
-
-                print(driver)
 
                 login_details_stored = login_device_details()
 

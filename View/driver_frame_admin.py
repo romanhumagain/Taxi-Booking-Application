@@ -1,3 +1,4 @@
+import re
 import tkinter.ttk
 from datetime import datetime
 from tkinter import *
@@ -231,8 +232,10 @@ class DriverWindow:
             password = self.password_entry.get()
             user_type = "driver"
 
-            if self.phone_entry.get().isdigit():
-                if len(password) >= 8:
+            if not re.match(r"^\d{10}$", self.phone_entry.get()):
+                messagebox.showerror("Invalid Phone Number", "Please enter a valid 10-digit phone number.", parent=self.driver_window)
+                return
+            if len(password) >= 8:
                     # Creating a instance of the User Model
                     user = User(email=email, password=password, user_type= user_type)
                     user_registered = register_user(user)
@@ -264,10 +267,8 @@ class DriverWindow:
                             messagebox.showerror("Registration Failed", "Sorry Could't Register Driver!", parent=self.driver_window)
                     else:
                         messagebox.showerror("Registration Failed", "Sorry Could't Register User!", parent=self.driver_window)
-                else:
-                    messagebox.showerror("Registration Failed", "Password should be at least 8 character long", parent=self.driver_window)
             else:
-                messagebox.showerror("Registration Failed", "Phone no. couldn't contain any alphabet.", parent=self.driver_window)
+                messagebox.showerror("Registration Failed", "Password should be at least 8 character long", parent=self.driver_window)
         else:
             messagebox.showerror("Registration Failed", "Please Fill All The Details!", parent=self.driver_window)
 
@@ -276,7 +277,9 @@ class DriverWindow:
     def update_driver(self):
         driver_id = self.search_entry.get()
         if not ( driver_id== "" or self.name_entry.get() == "" or self.address_entry.get() == "" or self.phone_entry.get() == "" or self.license_entry.get() == "" or self.gender_value.get() == "Gender" ):
-
+            if not re.match(r"^\d{10}$", self.phone_entry.get()):
+                messagebox.showerror("Invalid Phone Number", "Please enter a valid 10-digit phone number.", parent=self.driver_window)
+                return
             driver = Driver(driver_id=driver_id)
             found_driver, _ = search_driver(driver)
 
@@ -327,7 +330,7 @@ class DriverWindow:
                 driver = Driver(driver_id=driver_id)
                 found_driver, _ = search_driver(driver)
                 if found_driver:
-                    if found_driver[5] == "available":
+                    if found_driver[6] == "available":
                         driver = Driver(driver_id=driver_id, user_id=found_driver[7])
                         driver_isdeleted = delete_driver(driver)
                         if driver_isdeleted:

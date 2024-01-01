@@ -166,6 +166,8 @@ class CustomerDashboard:
 
         self.my_profile_frame()
         self.set_profile_details()
+        # messagebox.showinfo("WELCOME", f"Welcome to your personalized dashboard, {Global.logged_in_customer[1]}! We're excited to have you on board.\n\nExplore the features and make the most of your experience with us.")
+
 
     def my_profile_frame(self):
 

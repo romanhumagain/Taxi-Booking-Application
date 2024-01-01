@@ -1,3 +1,4 @@
+import re
 from tkinter import *
 from tkcalendar import calendar_, DateEntry
 import  customtkinter
@@ -136,7 +137,6 @@ class UpdateProfile:
         self.update_profile_window.destroy()
 
     def update_profile(self):
-
         name = self.name_entry.get()
         phone_no = self.mobile_entry.get()
         email = self.email_entry.get()
@@ -145,46 +145,55 @@ class UpdateProfile:
         gender = self.gender_var.get()
         date_of_birth = self.dob_entry.get()
 
+        # Validate email format
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            messagebox.showerror("Invalid Email", "Please enter a valid email address.",
+                                 parent=self.update_profile_window)
+            return
 
-        if not (name =="" or phone_no == "" or email =="" or address=="" or payment_method=="" or gender == ""):
-            print(payment_method, gender, email)
+        # Validate phone number format
+        if not re.match(r"^\d{10}$", phone_no):
+            messagebox.showerror("Invalid Phone Number", "Please enter a valid 10-digit phone number.",
+                                 parent=self.update_profile_window)
+            return
 
-            customer = Customer(customer_id=Global.logged_in_customer[0], name= name, phone_no= phone_no, address= address,date_of_birth = date_of_birth, payment=payment_method, gender=gender)
+        # Check other non-empty fields
+        if not (name == "" or phone_no == "" or email == "" or address == "" or payment_method == "" or gender == ""):
+            customer = Customer(customer_id=Global.logged_in_customer[0], name=name, phone_no=phone_no, address=address,
+                                date_of_birth=date_of_birth, payment=payment_method, gender=gender)
+            user = User(user_id=Global.current_user[0], email=email)
 
-            user = User(user_id=Global.current_user[0],email=email)
+            profile_is_updated = update_customer_profile(customer, user)
 
-            profile_isupdated = update_customer_profile(customer, user)
-
-            if profile_isupdated:
-
+            if profile_is_updated:
                 # TO INSERT RECORDS TO THE ACCOUNT ACTIVITY TABLE
                 current_date_time = datetime.now()
                 current_date = current_date_time.date()
                 current_time = current_date_time.time()
 
                 activity_related = "Profile Updated"
-                description = f"Your Profile was updated."
+                description = "Your Profile was updated."
 
                 accountActivity = AccountActivity(activity_related=activity_related, description=description,
                                                   date=current_date, time=current_time, user_id=Global.current_user[0])
                 account_activity_stored = insert_account_activity_details(accountActivity)
 
                 if account_activity_stored:
-                    messagebox.showinfo("Profile Update Success","Your Profile Has Been Successfully Updated.", parent = self.update_profile_window)
+                    messagebox.showinfo("Profile Update Success", "Your Profile Has Been Successfully Updated.",
+                                        parent=self.update_profile_window)
                     self.set_profile_details()
 
                     self.update_profile_window.destroy()
                     if self.profile_update_callback:
                         self.profile_update_callback()
                 else:
-                    messagebox.showerror("ERROR!", "Account Activity Couldn't Store.",parent =self.update_profile_window )
+                    messagebox.showerror("ERROR!", "Account Activity Couldn't Store.",
+                                         parent=self.update_profile_window)
             else:
-                messagebox.showerror("Update Failed", "Sorry, Your Profile Couldn't Update !", parent = self.update_profile_window)
+                messagebox.showerror("Update Failed", "Sorry, Your Profile Couldn't Update!",
+                                     parent=self.update_profile_window)
         else:
-            messagebox.showerror("Update Failed", "Please Fill All The Details", parent = self.update_profile_window)
-
-
-
+            messagebox.showerror("Update Failed", "Please Fill All The Details", parent=self.update_profile_window)
 
 
 if __name__ == '__main__':

@@ -1,3 +1,4 @@
+import re
 import tkinter.ttk
 from tkinter import *
 from tkcalendar import DateEntry
@@ -211,7 +212,6 @@ class UpdateBooking:
 
 
     def update_booking(self):
-        pass
         bookingID = self.bookingid_entry.get()
         pickup_address = self.address_entry.get()
         pickup_date = self.date_entry.get()
@@ -219,33 +219,54 @@ class UpdateBooking:
         dropoff_address = self.dropoff_address_entry.get()
 
         if not (bookingID == "" or pickup_address == "" or pickup_date == "" or pickup_time == "" or dropoff_address == ""):
-            booking = Booking(booking_id=bookingID,pickup_address = pickup_address, pickup_date=pickup_date, pickup_time= pickup_time, dropoff_address = dropoff_address)
-            is_updated = update_booking(booking)
-            if is_updated:
+            valid_time = self.validate_time_format(pickup_time)
+            if valid_time:
+                if self.is_valid_pickup_date(pickup_date):
 
-                # TO INSERT RECORDS TO THE ACCOUNT ACTIVITY TABLE
-                current_date_time = datetime.now()
-                current_date = current_date_time.date()
-                current_time = current_date_time.time()
+                    booking = Booking(booking_id=bookingID,pickup_address = pickup_address, pickup_date=pickup_date, pickup_time= pickup_time, dropoff_address = dropoff_address)
+                    is_updated = update_booking(booking)
+                    if is_updated:
 
-                activity_related = "Booking Updated"
-                description = f"Your Booking was Updated for Booking Id {bookingID}"
+                        # TO INSERT RECORDS TO THE ACCOUNT ACTIVITY TABLE
+                        current_date_time = datetime.now()
+                        current_date = current_date_time.date()
+                        current_time = current_date_time.time()
 
-                accountActivity = AccountActivity(activity_related=activity_related, description=description,
-                                                  date=current_date, time=current_time, user_id=Global.current_user[0])
-                account_activity_stored = insert_account_activity_details(accountActivity)
+                        activity_related = "Booking Updated"
+                        description = f"Your Booking was Updated for Booking Id {bookingID}"
 
-                if account_activity_stored:
-                    messagebox.showinfo("Update Success", "Successfully Updated Booking Details.",parent=self.update_booking_window)
-                    self.display_data()
+                        accountActivity = AccountActivity(activity_related=activity_related, description=description,
+                                                          date=current_date, time=current_time, user_id=Global.current_user[0])
+                        account_activity_stored = insert_account_activity_details(accountActivity)
 
+                        if account_activity_stored:
+                            messagebox.showinfo("Update Success", "Successfully Updated Booking Details.",parent=self.update_booking_window)
+                            self.display_data()
+
+                        else:
+                            messagebox.showerror("ERROR!", "Account Activity Couldn't Store.",parent =self.update_booking_window )
+                    else:
+                        messagebox.showerror("Update Failed", "Sorry, Could't Update Your Booking Details !",parent=self.update_booking_window)
                 else:
-                    messagebox.showerror("ERROR!", "Account Activity Couldn't Store.",parent =self.update_booking_window )
+                    messagebox.showerror("Invalid PickuSp Date", "Please provide a pickup date on or after today.",parent=self.update_booking_window)
             else:
-                messagebox.showerror("Update Failed", "Sorry, Could't Update Your Booking Details !",parent=self.update_booking_window)
+                messagebox.showerror("Invalid Time Format", "Please Provide Time in 0:00 AM/PM Format.",parent=self.update_booking_window)
         else:
             messagebox.showerror("Update Failed !", "Please Fill All The Details Properly!",parent=self.update_booking_window)
 
+    def is_valid_pickup_date(self, pickup_date):
+        try:
+            pickup_date_object = datetime.strptime(pickup_date, "%m/%d/%y").date()
+            current_date = datetime.today().date()
+            return pickup_date_object >= current_date
+        except ValueError:
+            return False
+
+    def validate_time_format(self,time_str):
+        # Regular expression for matching time in the format of "4:00 AM"
+        time_pattern = re.compile(r'^([1-9]|1[0-2]):[0-5][0-9] (AM|PM)$', re.IGNORECASE)
+
+        return bool(re.match(time_pattern, time_str))
 
 if __name__ == '__main__':
     window = Tk()

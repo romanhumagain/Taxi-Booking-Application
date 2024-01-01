@@ -213,9 +213,9 @@ class CancelBooking:
                     account_activity_stored = insert_account_activity_details(accountActivity)
 
                     if account_activity_stored:
+                        messagebox.showinfo("Booking Cancelled ", "Your booking has been successfully cancelled!", parent =self.cancel_booking_window)
                         self.display_data()
                         self.clear_field()
-                        messagebox.showinfo("Booking Cancelled ", "Your booking has been successfully cancelled!", parent =self.cancel_booking_window)
                     else:
                         messagebox.showerror("ERROR!", "Account Activity Couldn't Store.",parent =self.cancel_booking_window )
                 else:

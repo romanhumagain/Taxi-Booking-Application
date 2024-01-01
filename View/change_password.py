@@ -74,9 +74,8 @@ class ChangePassword:
     def change_password(self):
         password = self.password_entry.get()
         confirm_password = self.co_password_entry.get()
-
-        if password == confirm_password:
-            if len(password) >= 8:
+        if len(password) >= 8:
+            if password == confirm_password:
                 user = User(user_id = Global.current_user[0], password=password)
                 password_changed = change_user_password(user)
                 if password_changed:
@@ -104,14 +103,10 @@ class ChangePassword:
                 else:
                     messagebox.showerror("Password Changed Failed", "Sorry, could't change your password !")
             else:
-                messagebox.showerror("Invalid Entry", "password should be atleast 8 character long.", parent = self.change_password_window)
-
-
-
-
+                messagebox.showerror("Invalid Entry", "Password Didn't Matched !", parent = self.change_password_window)
         else:
-            messagebox.showerror("Invalid Entry", "Password Didn't Matched !", parent = self.change_password_window)
-
+            messagebox.showerror("Invalid Entry", "password should be atleast 8 character long.",
+                                 parent=self.change_password_window)
 
 
 
