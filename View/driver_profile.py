@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from tkinter import *
 from tkinter import messagebox
@@ -27,7 +28,6 @@ class DriverProfile:
             self.top_level_list = []
         self.top_level_list = top_level_list
         self.dashboard_indicator = dashboard_indicator
-
 
     def show_driver_profile(self):
         self.driver_profile_window = Toplevel(self.window, width=720, height=460, bg="#2c2c2c")
@@ -198,9 +198,8 @@ class DriverProfile:
     def change_password(self):
         password = self.password_entry.get()
         confirm_password = self.co_password_entry.get()
-
-        if password == confirm_password:
-            if len(password) >= 8:
+        if len(password) >= 8:
+            if password == confirm_password:
                 user = User(user_id=Global.current_user[0], password=password)
                 password_changed = change_user_password(user)
                 if password_changed:
@@ -234,11 +233,10 @@ class DriverProfile:
                     messagebox.showerror("Password Changed Failed", "Sorry, could't change your password !",
                                          parent=self.change_password_window)
             else:
-                messagebox.showerror("Invalid Entry", "password should be atleast 8 character long.",
-                                     parent=self.change_password_window)
+                messagebox.showerror("Invalid Entry", "Password Didn't Matched !", parent=self.change_password_window)
         else:
-            messagebox.showerror("Invalid Entry", "Password Didn't Matched !", parent=self.change_password_window)
-
+            messagebox.showerror("Invalid Entry", "Pssword should be atleast 8 character long.",
+                                 parent=self.change_password_window)
     #     ================= WINDOW FOR UPDATING PROFILE ========================
     def show_update_profile_window(self):
         self.update_profile_window = Toplevel(self.driver_profile_window)
@@ -378,6 +376,16 @@ class DriverProfile:
         gender = self.gender_var.get()
 
         if not (name == "" or phone_no == "" or email == "" or address == "" or license == "" or gender == ""):
+            if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+                messagebox.showerror("Invalid Email", "Please enter a valid email address.",
+                                     parent=self.update_profile_window)
+                return
+
+            # Validate phone number format
+            if not re.match(r"^\d{10}$", phone_no):
+                messagebox.showerror("Invalid Phone Number", "Please enter a valid 10-digit phone number.",
+                                     parent=self.update_profile_window)
+                return
 
             driver = Driver(driver_id=Global.logged_in_driver[0], name=name, phone_no=phone_no, address=address,
                             license=license, gender=gender)
