@@ -65,7 +65,9 @@ class MainPage:
         self.side_image_label.image = side_photo
         self.side_image_label.place(x=4, y=100)
 
+        # calling a function to display the login frame
         self.login_frame()
+    # creating a login frame
     def login_frame(self):
 
         self.inner_login_frame = Frame(self.main_frame, bg="#111111", width="440", height="500")
@@ -285,6 +287,7 @@ class MainPage:
         elif event.widget == self.signin_option_label:
             self.login_frame()
 
+    # function to show and hide password
     def show_hide_password(self, event):
         if self.password_entry['show'] == '':
             self.show_hide_password_label.config(image=self.show_icon)
