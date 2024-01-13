@@ -15,6 +15,7 @@ from signals import login_device_details
 from Model import Global
 from admin_dashboard import AdminDashboard
 
+
 class MainPage:
     def __init__(self, window):
         self.window = window
@@ -29,8 +30,6 @@ class MainPage:
         photo = ImageTk.PhotoImage(self.bg_frame)
 
         customtkinter.set_appearance_mode("System")
-        # customtkinter.set_default_color_theme("green")
-
 
         self.bg_panel = Label(self.window, image=photo)
         self.bg_panel.image = photo
@@ -67,6 +66,7 @@ class MainPage:
 
         # calling a function to display the login frame
         self.login_frame()
+
     # creating a login frame
     def login_frame(self):
 
@@ -96,7 +96,7 @@ class MainPage:
         self.username_label.place(x=90, y=170)
 
         self.username_entry = Entry(self.inner_login_frame, highlightthickness=0, relief=FLAT, bg='#111111',
-                                    fg='white',insertbackground="white", font=(self.font, 12))
+                                    fg='white', insertbackground="white", font=(self.font, 12))
         self.username_entry.place(x=115, y=215, width=250)
 
         self.username_line = Canvas(self.inner_login_frame, width=250, height=2.0, bg='#bdb9b1', highlightthickness=0)
@@ -124,10 +124,10 @@ class MainPage:
         # self.show_hide_button = Button(self.inner_login_frame, image=self.show_icon,bd=0, relief="flat", highlightthickness=0)
         # self.show_hide_button.place(x=340, y=312)
 
-        self.show_hide_password_label = Label(self.inner_login_frame, image=self.show_icon, bg='#111111',cursor='hand2')
+        self.show_hide_password_label = Label(self.inner_login_frame, image=self.show_icon, bg='#111111',
+                                              cursor='hand2')
         self.show_hide_password_label.place(x=340, y=290)
         self.show_hide_password_label.bind("<Button-1>", self.show_hide_password)
-
 
         self.password_line = Canvas(self.inner_login_frame, width=300, height=2.0, bg='#bdb9b1', highlightthickness=0)
         self.password_line.place(x=115, y=322, width=250)
@@ -190,56 +190,65 @@ class MainPage:
                                 font=(self.font, 13))
         # self.name_label.place(x=10, y=70)
 
-        self.name_entry = customtkinter.CTkEntry(master=self.inner_registration_frame, font = (self.font, 15), width=170, placeholder_text="Full Name", height=38)
+        self.name_entry = customtkinter.CTkEntry(master=self.inner_registration_frame, font=(self.font, 15), width=170,
+                                                 placeholder_text="Full Name", height=38)
         self.name_entry.place(x=35, y=70)
 
         self.mobile_label = Label(self.inner_registration_frame, text="Phone", fg="white", bg="#111111",
                                   font=(self.font, 13))
         # self.mobile_label.place(x=250, y=70)
 
-        self.mobile_entry = customtkinter.CTkEntry(master=self.inner_registration_frame, font=(self.font, 15), width=170, placeholder_text="Phone No", height=38,
-                                      )
+        self.mobile_entry = customtkinter.CTkEntry(master=self.inner_registration_frame, font=(self.font, 15),
+                                                   width=170, placeholder_text="Phone No", height=38,
+                                                   )
         self.mobile_entry.place(x=250, y=70)
 
         self.email_label = Label(self.inner_registration_frame, text="Email", fg="white", bg="#111111",
                                  font=(self.font, 13))
         # self.email_label.place(x=10, y=130)
 
-        self.email_entry = customtkinter.CTkEntry(master=self.inner_registration_frame, font=(self.font, 13), width=170, placeholder_text="example@gmail.com", height=38)
+        self.email_entry = customtkinter.CTkEntry(master=self.inner_registration_frame, font=(self.font, 13), width=170,
+                                                  placeholder_text="example@gmail.com", height=38)
         self.email_entry.place(x=35, y=130)
 
         self.address_label = Label(self.inner_registration_frame, text="Address", fg="white", bg="#111111",
                                    font=(self.font, 13))
         # self.address_label.place(x=250, y=130)
 
-        self.address_entry = customtkinter.CTkEntry(master=self.inner_registration_frame, font=(self.font, 15), width=170, placeholder_text="Current Address", height=38)
+        self.address_entry = customtkinter.CTkEntry(master=self.inner_registration_frame, font=(self.font, 15),
+                                                    width=170, placeholder_text="Current Address", height=38)
         self.address_entry.place(x=250, y=130)
 
         self.gender_label = Label(self.inner_registration_frame, text="Gender", fg="white", bg="#111111",
                                   font=(self.font, 13))
         # self.gender_label.place(x=250, y=195)
 
-        gender_var = customtkinter.StringVar(value = "Gender")
+        gender_var = customtkinter.StringVar(value="Gender")
 
-        self.gender_entry = customtkinter.CTkComboBox(master = self.inner_registration_frame, values=["Male", "Female", "Others"], variable=gender_var, width=170, height=40)
+        self.gender_entry = customtkinter.CTkComboBox(master=self.inner_registration_frame,
+                                                      values=["Male", "Female", "Others"], variable=gender_var,
+                                                      width=170, height=40)
         self.gender_entry.place(x=35, y=195)
 
         payment_methods = StringVar(value="Payment Method")
-        self.payment_entry = customtkinter.CTkComboBox(master = self.inner_registration_frame,values=["Online", "Cash"], variable=payment_methods, width=170, height=40)
+        self.payment_entry = customtkinter.CTkComboBox(master=self.inner_registration_frame, values=["Online", "Cash"],
+                                                       variable=payment_methods, width=170, height=40)
         self.payment_entry.place(x=250, y=195)
 
         self.password_label = Label(self.inner_registration_frame, text="Password", fg="white", bg="#111111",
                                     font=(self.font, 13))
         # self.password_label.place(x=10, y=260)
 
-        self.password_entry = customtkinter.CTkEntry(master=self.inner_registration_frame, font=(self.font, 15), width=170, placeholder_text="Password", height=40)
+        self.password_entry = customtkinter.CTkEntry(master=self.inner_registration_frame, font=(self.font, 15),
+                                                     width=170, placeholder_text="Password", height=40)
         self.password_entry.place(x=35, y=260)
 
         self.co_password_label = Label(self.inner_registration_frame, text="Confirm Password", fg="white", bg="#111111",
                                        font=(self.font, 13))
         # self.co_password_label.place(x=10, y=315)
 
-        self.co_password_entry = customtkinter.CTkEntry(master=self.inner_registration_frame, font=(self.font, 15),width=170, placeholder_text="Confirm Password", height=40)
+        self.co_password_entry = customtkinter.CTkEntry(master=self.inner_registration_frame, font=(self.font, 15),
+                                                        width=170, placeholder_text="Confirm Password", height=40)
         self.co_password_entry.place(x=35, y=315)
 
         self.dob_label = Label(self.inner_registration_frame, text="DOB", fg="white", bg="#111111",
@@ -311,36 +320,39 @@ class MainPage:
         print(phone_no.isdigit())
         print(valid_email)
 
-        if not (name == "" or phone_no == "" or email=="" or address == "" or date_of_birth == "" or gender == "Gender" or password == ""):
+        if not (
+                name == "" or phone_no == "" or email == "" or address == "" or date_of_birth == "" or gender == "Gender" or password == ""):
             # Validate phone number format
-                if not re.match(r"^\d{10}$", phone_no):
-                    messagebox.showerror("Invalid Phone Number", "Please enter a valid 10-digit phone number.")
-                    return
-                if valid_email:
-                    if len(password) >= 8:
-                        if confirm_password != "":
-                            if password == confirm_password:
-                                user = User(email= email, password= password,user_type="customer")
+            if not re.match(r"^\d{10}$", phone_no):
+                messagebox.showerror("Invalid Phone Number", "Please enter a valid 10-digit phone number.")
+                return
+            if valid_email:
+                if len(password) >= 8:
+                    if confirm_password != "":
+                        if password == confirm_password:
+                            user = User(email=email, password=password, user_type="customer")
 
-                                customer = Customer(name=name, phone_no= phone_no,payment="Online", address= address, date_of_birth = date_of_birth, gender= gender)
+                            customer = Customer(name=name, phone_no=phone_no, payment="Online", address=address,
+                                                date_of_birth=date_of_birth, gender=gender)
 
-                                user_isregistered = register_user(user)
-                                if user_isregistered:
-                                    customer_isregistered = register_customer(customer, user)
-                                    if customer_isregistered:
-                                        messagebox.showinfo("Registration Complete", "Successfully Registered Your Account.\n\n You Can Login Now.")
-                                        self.inner_registration_frame.pack_forget()
-                                        self.login_frame()
-                                    else:
-                                        messagebox.showerror("Registration ERROR", "Sorry Could't Register Your Account !")
-                            else:
-                                messagebox.showerror("Password ERROR", "Password Didn't Match !")
+                            user_isregistered = register_user(user)
+                            if user_isregistered:
+                                customer_isregistered = register_customer(customer, user)
+                                if customer_isregistered:
+                                    messagebox.showinfo("Registration Complete",
+                                                        "Successfully Registered Your Account.\n\n You Can Login Now.")
+                                    self.inner_registration_frame.pack_forget()
+                                    self.login_frame()
+                                else:
+                                    messagebox.showerror("Registration ERROR", "Sorry Could't Register Your Account !")
                         else:
-                            messagebox.showerror("Password ERROR", "Please Confirm Your Password")
+                            messagebox.showerror("Password ERROR", "Password Didn't Match !")
                     else:
-                        messagebox.showerror("Password ERROR!", "Password Should Be Atleast 8 Character Long !")
+                        messagebox.showerror("Password ERROR", "Please Confirm Your Password")
                 else:
-                    messagebox.showerror("Invalid Email", "Please Enter a Valid Email Address !")
+                    messagebox.showerror("Password ERROR!", "Password Should Be Atleast 8 Character Long !")
+            else:
+                messagebox.showerror("Invalid Email", "Please Enter a Valid Email Address !")
         else:
             messagebox.showerror("Registration Failed", "Please Fill All The Details To Register Your Account !")
 
@@ -350,8 +362,8 @@ class MainPage:
         email = self.username_entry.get()
         password = self.password_entry.get()
 
-        if not(email == "" or password == ""):
-            user, customer,driver = validate_credentials(email, password)
+        if not (email == "" or password == ""):
+            user, customer, driver = validate_credentials(email, password)
 
             if user is not None:
                 Global.current_user = user
@@ -382,7 +394,7 @@ class MainPage:
         else:
             messagebox.showwarning("Empty Field", "Please Provide Your Login Credentials !")
 
-    def is_valid_email(self,email):
+    def is_valid_email(self, email):
         # Define the regular expression pattern for a simple email validation
         email_pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
 
@@ -391,10 +403,13 @@ class MainPage:
             return True
         else:
             return False
+
+
 def page():
     window = Tk()
     MainPage(window)
     window.mainloop()
+
 
 if __name__ == '__main__':
     page()

@@ -98,7 +98,7 @@ class DriverDashboard:
         # for profile option
         self.dashboard_label = Label(self.side_bar_frame, text = "Dashboard",font=(self.font, 17), fg='white', bg='#3c3c3c', cursor='hand2')
         self.dashboard_label.place(x=130, y=225)
-        self.dashboard_label.bind('<Button-1>', lambda event:self.dashboard_indicator(self.dashboard_indicator_lbl))
+        # self.dashboard_label.bind('<Button-1>', lambda event:self.dashboard_indicator(self.dashboard_indicator_lbl))
 
         self.dashboard_indicator_lbl = Label(self.side_bar_frame, bg="white", width=0, height=2)
         self.dashboard_indicator_lbl.place(x=80, y=225)
@@ -269,13 +269,13 @@ class DriverDashboard:
         self.assigned_tab_frame = customtkinter.CTkFrame(self.assigned_tab, width=1160, height=460)
         self.assigned_tab_frame.place(x=0, y=5)
 
-        assigned_label = customtkinter.CTkLabel(self.assigned_tab_frame, text="Your Assigned Booking Details",
+        assigned_label = customtkinter.CTkLabel(self.assigned_tab_frame, text="Your Recently Assigned Booking Details",
                                                font=(self.font, 26))
         assigned_label.place(relx=0.5, rely=0.069, anchor="center")
 
         self.scroll_y = Scrollbar(self.assigned_tab_frame, orient=VERTICAL)
 
-        self.assigned_booking_table = tkinter.ttk.Treeview(
+        self.assigned_booking_table1 = tkinter.ttk.Treeview(
             self.assigned_tab_frame,
             columns=("booking_id", "customer_id", "customer_name", "pickup_address", "date", "time", "dropoff_address",
                      "status"),
@@ -285,28 +285,28 @@ class DriverDashboard:
         )
 
         self.scroll_y.place(x=1120, y=80, height=285)
-        self.assigned_booking_table.place(x=0, y=80)
+        self.assigned_booking_table1.place(x=0, y=80)
         # self.assigned_booking_table.bind("<ButtonRelease-1>", self.select_booking)
 
-        self.assigned_booking_table.heading("booking_id", text="Booking ID", anchor=CENTER)
-        self.assigned_booking_table.heading("customer_id", text="Customer ID", anchor=CENTER)
-        self.assigned_booking_table.heading("customer_name", text="Name", anchor=CENTER)
-        self.assigned_booking_table.heading("pickup_address", text="Pickup Address", anchor=CENTER)
-        self.assigned_booking_table.heading("date", text="Date", anchor=CENTER)
-        self.assigned_booking_table.heading("time", text="Time", anchor=CENTER)
-        self.assigned_booking_table.heading("dropoff_address", text="Dropoff Address", anchor=CENTER)
-        self.assigned_booking_table.heading("status", text="Status", anchor=CENTER)
+        self.assigned_booking_table1.heading("booking_id", text="Booking ID", anchor=CENTER)
+        self.assigned_booking_table1.heading("customer_id", text="Customer ID", anchor=CENTER)
+        self.assigned_booking_table1.heading("customer_name", text="Name", anchor=CENTER)
+        self.assigned_booking_table1.heading("pickup_address", text="Pickup Address", anchor=CENTER)
+        self.assigned_booking_table1.heading("date", text="Date", anchor=CENTER)
+        self.assigned_booking_table1.heading("time", text="Time", anchor=CENTER)
+        self.assigned_booking_table1.heading("dropoff_address", text="Dropoff Address", anchor=CENTER)
+        self.assigned_booking_table1.heading("status", text="Status", anchor=CENTER)
 
-        self.assigned_booking_table.column("booking_id", width=100, anchor=CENTER)
-        self.assigned_booking_table.column("customer_id", width=100, anchor=CENTER)
-        self.assigned_booking_table.column("customer_name", width=150, anchor=CENTER)
-        self.assigned_booking_table.column("pickup_address", width=250, anchor=CENTER)
-        self.assigned_booking_table.column("date", width=100, anchor=CENTER)
-        self.assigned_booking_table.column("time", width=100, anchor=CENTER)
-        self.assigned_booking_table.column("dropoff_address", width=205, anchor=CENTER)
-        self.assigned_booking_table.column("status", width=115, anchor=CENTER)
+        self.assigned_booking_table1.column("booking_id", width=100, anchor=CENTER)
+        self.assigned_booking_table1.column("customer_id", width=100, anchor=CENTER)
+        self.assigned_booking_table1.column("customer_name", width=150, anchor=CENTER)
+        self.assigned_booking_table1.column("pickup_address", width=250, anchor=CENTER)
+        self.assigned_booking_table1.column("date", width=100, anchor=CENTER)
+        self.assigned_booking_table1.column("time", width=100, anchor=CENTER)
+        self.assigned_booking_table1.column("dropoff_address", width=205, anchor=CENTER)
+        self.assigned_booking_table1.column("status", width=115, anchor=CENTER)
 
-        self.display_assigned_booking()
+        self.display_assigned_booking1()
 
         self.complete_tab_frame = customtkinter.CTkFrame(self.complete_tab, width=1160, height=460, corner_radius=15)
         self.complete_tab_frame.place(x=0, y=5)
@@ -428,6 +428,20 @@ class DriverDashboard:
             main_dashboard = MainPage(main_dashboard_window)
             main_dashboard_window.mainloop()
 
+    def display_assigned_booking1(self):
+        if Global.logged_in_driver is not None:
+            driver_id = Global.logged_in_driver[0]
+            driver = Driver(driver_id = driver_id)
+
+            result = fetch_assigned_booking(driver)
+            if result is not None:
+
+                for item in self.assigned_booking_table1.get_children():
+                    self.assigned_booking_table1.delete(item)
+
+                for row in result:
+                    self.assigned_booking_table1.insert('', END, values=row)
+
     def display_assigned_booking(self):
         if Global.logged_in_driver is not None:
             driver_id = Global.logged_in_driver[0]
@@ -504,9 +518,11 @@ class DriverDashboard:
                     if account_activity_stored:
                         messagebox.showinfo("SUCCESS", f"Successfully Completed Trip For The Booking ID {bookingId}")
                         self.display_assigned_booking()
+                        self.display_assigned_booking1()
                         self.clear_complete_booking_fields()
                         self.count_completed_riding()
                         self.count_assigned_riding()
+                        self.check_active_status()
                     else:
                         messagebox.showerror("INVALID", "Sorry Couldn't Completed Trip")
                 else:

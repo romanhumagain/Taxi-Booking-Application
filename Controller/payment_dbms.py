@@ -154,10 +154,12 @@ def fetch_customer_completed_payment(customer):
                     ON booking.booking_id = payment.booking_id
                     INNER JOIN customer
                     ON booking.customer_id = customer.customer_id 
-                    WHERE payment.payment_status = %s and customer.customer_id = %s 
+                    WHERE payment.payment_status = %s and payment.is_generated = %s and customer.customer_id = %s 
                     ORDER BY payment_id DESC
+                    
+                    
                     """
-            values = ("Paid",customer.get_customer_id())
+            values = ("Paid",True,customer.get_customer_id())
             cursor.execute(query, values)
             result = cursor.fetchall()
 

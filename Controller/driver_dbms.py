@@ -170,13 +170,14 @@ def fetch_reserved_driver():
         try:
             cursor = connection.cursor()
             query = (""" SELECT booking.driver_id,booking.booking_id, driver.name, phone_no, address, license, gender 
-                         FROM booking
-                         INNER JOIN driver 
+                         FROM driver
+                         LEFT JOIN booking 
                          ON booking.driver_id = driver.driver_id 
-                         WHERE driver_status = %s 
+                         WHERE driver_status = %s and booking.trip_status = %s
+                          
                      """
                      )
-            values = ("assigned",)
+            values = ("assigned","Incomplete")
             cursor.execute(query, values)
             result = cursor.fetchall()
 
